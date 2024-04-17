@@ -1,0 +1,176 @@
+
+<%-include("../layouts/header")-%>
+<script>
+  // Function to handle when the user tries to leave the page
+  window.onbeforeunload = function(event) {
+      // Check if the user is logged in (you need to implement this logic)
+      var loggedIn = false; // Set to true if user is logged in
+  
+      // Check if the user is logged in and display a confirmation message
+      if (loggedIn) {
+          // Create a confirmation message (browser-specific)
+          var message = 'Are you sure you want to leave this page?';
+  
+          // For some browsers
+          if (typeof event === 'undefined') {
+              event = window.event;
+          }
+          if (event) {
+              event.returnValue = message;
+          }
+  
+          // For others
+          return message;
+      }
+  };
+  </script>
+<nav class="navbar bg-body-tertiary bg-secondary border-bottom border-body py-1" data-bs-theme="dark">
+  <div class="container-fluid">
+    <button class="button btn btn-secondary ms-4">&#9776; Menu</button>
+      <button class="button btn btn-dark btn-sm ms-2"><a href="\logout">Logout</a></button>
+    </form>
+  </div>
+</nav>
+  <div class="contbody container my-5">
+    <div class="row gy-4">
+      <div class="col-sm-12 col-md-6 col-lg-4">
+        <div class="card h-100">
+          <img src="/userImages/porsche1.webp" class="card-img-top" alt="porche" />
+          <div class="card-body">
+            <h5 class="card-title text-center">718</h5>
+            <p class="card-text">
+              The 718 models were made for the sport of it. They are mid-engined
+              roadsters that unite the sporting spirit of the legendary Porsche
+              718 with the sports car of tomorrow.
+            </p>
+            <div class="buttons">
+              <button type="button" class="btn btn-outline-dark me-1">
+                All Models
+              </button>
+              <button type="button" class="btn btn-outline-dark">
+                Build Your Own
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-12 col-md-6 col-lg-4">
+        <div class="card h-100">
+          <img src="/userImages/porsche2.webp" class="card-img-top" alt="porche" />
+          <div class="card-body">
+            <h5 class="card-title text-center">911</h5>
+            <p class="card-text">
+              Fewer kilograms equals to more agility and contact patch with the
+              road is more important than ever. The 911 Carrera T is a commitment
+              to purism .
+            </p>
+            <div class="buttons">
+              <button type="button" class="btn btn-outline-dark me-1">
+                All Models
+              </button>
+              <button type="button" class="btn btn-outline-dark">
+                Build Your Own
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-12 col-md-6 col-lg-4">
+        <div class="card h-100">
+          <img src="/userImages/porsche3.webp" class="card-img-top" alt="porche" />
+          <div class="card-body">
+            <h5 class="card-title text-center">Tacyan</h5>
+            <div></div>
+            <p class="card-text">
+              Purist, expressive, timeless. Three attributes that describe every
+              Porsche – and especially this one, which takes our DNA into a new
+              automotive era.
+            </p>
+            <div class="buttons">
+              <button type="button" class="btn btn-outline-dark me-1">
+                All Models
+              </button>
+              <button type="button" class="btn btn-outline-dark">
+                Build Your Own
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-12 col-md-6 col-lg-4">
+        <div class="card h-100">
+          <img src="/userImages/porsche4.webp" class="card-img-top" alt="porche" />
+          <div class="card-body">
+            <h5 class="card-title text-center">Panamera</h5>
+            <p class="card-text">
+              Experience the pinnacle of automotive excellence with the Panamera —
+              where cutting-edge technology, unparalleled performance, and sleek
+              design converge to redefine the art.
+            </p>
+            <div class="buttons">
+              <button type="button" class="btn btn-outline-dark me-1">
+                All Models
+              </button>
+              <button type="button" class="btn btn-outline-dark">
+                Build Your Own
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-12 col-md-6 col-lg-4">
+        <div class="card h-100">
+          <img src="/userImages/porsche5.webp" class="card-img-top" alt="porche" />
+          <div class="card-body">
+            <h5 class="card-title text-center">Macan</h5>
+            <p class="card-text">
+              Standing out where others disappear into the masses: the new Macan
+              T. Contemporary,with extensive standard equipment, model-specific
+              design features and of course, typical Porsche performance.
+            </p>
+            <div class="buttons">
+              <button type="button" class="btn btn-outline-dark me-1">
+                All Models
+              </button>
+              <button type="button" class="btn btn-outline-dark">
+                Build Your Own
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-12 col-md-6 col-lg-4">
+        <div class="card h-100">
+          <img src="/userImages/porsche6.webp" class="card-img-top" alt="porche" />
+          <div class="card-body">
+            <h5 class="card-title text-center">Cayenna</h5>
+            <p class="card-text">
+              Power output becomes system performance. Together with the 130 kW
+              electric motor, the powerful 4.0-litre V8 twin-turbo engine achieves
+              a new dimension of performance.Drive a sports car for the family.
+            </p>
+            <div class="buttons">
+              <button type="button" class="btn btn-outline-dark me-1">
+                All Models
+              </button>
+              <button type="button" class="btn btn-outline-dark">
+                Build Your Own
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- <script>
+    if ( window.history.replaceState ) {
+      window.history.replaceState( null, null, window.location.href );
+    }
+    </script> -->
+    
+  <%-include("../layouts/footer")-%>

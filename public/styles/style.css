@@ -1,0 +1,98 @@
+
+.button a{
+  text-decoration: none;
+  color: rgb(255, 255, 255);
+}
+.table{
+  margin-left: auto;
+  margin-right: auto;
+
+}
+#buttonadmin{
+text-decoration: none;
+color: white;
+}
+#box-signin{
+  border-radius: 6px;
+  background-color: rgba(44, 45, 49);
+  width: 360px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  min-height:fit-content;
+  max-width: 400px;
+}
+#h1{
+  color: white;
+  margin-top: 15px;
+}
+#placeholder{
+  border-radius: 40px;
+  width: 80%;
+  height: 45px;
+  margin-bottom: 14px;
+  padding-left: 16px; 
+  outline: 0;
+} 
+#btn-signin{
+  border-radius: 20px;
+  background-color: rgb(229, 9, 20);
+  width: 80%;
+  margin-top: 15px;
+  margin-bottom: 12px;
+}
+.background-signin{
+ background-color:rgba(168, 168, 173, 0.918);
+ background-image: linear-gradient(rgba(199, 199, 203, 0.554),rgba(76, 76, 88, 0.835));
+ 
+  height: 100vh;
+}
+body{
+  position: relative;
+}
+#span-signin{
+  color: white;
+  font-size: 14px;
+}
+#link-signup{
+  text-decoration: none;
+  color: rgb(166, 196, 232);
+  font-size: 15px;
+}
+.bottom-div{
+  margin-bottom: 62px;
+}
+#message{
+  color: white;
+}
+#btn-signup
+{
+  border-radius: 20px;
+  background-color: rgb(229, 9, 20);
+  width: 80%;
+  margin-top: 12px;
+  margin-bottom: 40px;
+}
+#top-message{
+  margin-top: 10px;
+}
+#btn-adminsignup{
+  border-radius: 20px;
+  background-color: rgb(229, 9, 20);
+  width: 80%;
+  margin-top: 16px;
+  margin-bottom: 60px;
+}
+tr:nth-child(even) {
+  background-color: #ccccd46f;
+}
+input[name=search]{
+vertical-align: middle;
+border-radius: 4px;
+border: none;
+height: 35px;
+width: 200px;
+padding-left:8px;
+font-size: 18px;
+}

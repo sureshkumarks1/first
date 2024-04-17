@@ -1,0 +1,59 @@
+<%-include('../layouts/header')-%>
+<div class="background-signin"></div>
+<div class="container text-center" id="box-signin">
+  <h1 id="h1">Add Admin</h1>
+  <%if(locals.message){%>
+  <div id="top-message">
+    <small id="message"><%=message%></small>
+    <a href="/admin/home" id="link-signup">Back</a>
+  </div>
+
+  <%}%>
+  <a href="/admin/home" id="link-signup">Back</a>
+  <form method="post" action="/admin/add-admin">
+    <br />
+    <div>
+      <input
+        type="text"
+        name="name"
+        id="placeholder"
+        placeholder="Name"
+        required
+      />
+    </div>
+
+    <div>
+      <input
+        type="email"
+        name="email"
+        id="placeholder"
+        placeholder="Email"
+        required
+      />
+    </div>
+
+    <div>
+      <input
+        type="text"
+        name="mobile"
+        id="placeholder"
+        placeholder="Mobile"
+        required
+      />
+    </div>
+
+    <div>
+      <input
+        type="password"
+        name="password"
+        id="placeholder"
+        placeholder="Password"
+        required
+      />
+    </div>
+
+    <button type="submit" class="btn btn-danger" id="btn-signup">Submit</button>
+  </form>
+</div>
+
+<%-include('../layouts/footer')-%>

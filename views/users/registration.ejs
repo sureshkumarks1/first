@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title><%=title %></title>
+    <link href="/login/css/styles.css" rel="stylesheet" />
+    <link href="/login/js/style.css" rel="stylesheet" />
+   
+  </head>
+<body>
+
+  <main>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-7">
+          <div class="card shadow-lg border-0 rounded-lg mt-5">
+            <div class="card-header">
+              <h3 class="text-center font-weight-light my-4">Create Account</h3>
+            </div>
+            <div class="card-body">
+              <div id="message" class="text-danger"></div>
+             <form name="frm">
+                <div class="form-floating mb-3">
+                  <input
+                    class="form-control"
+                    id="inputFirstName"
+                    type="text"
+                    placeholder="Enter your first name"
+                    name="fname"
+                  />
+                  <label for="inputFirstName">Full Name</label>
+                  <div id="nameerror" class="text-danger"></div>
+                </div>
+
+                <div class="form-floating mb-3">
+                  <input
+                    class="form-control"
+                    id="inputEmail"
+                    type="email"
+                    placeholder="name@example.com"
+                    name="email"
+                  />
+                  <label for="inputEmail">Email address</label>
+                  <div id="emailerror" class="text-danger"></div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <div class="form-floating mb-3 mb-md-0">
+                      <input
+                        class="form-control"
+                        id="inputPassword"
+                        type="password"
+                        placeholder="Create a password"
+                        name="password"
+                      />
+                      <label for="inputPassword">Password</label>
+                      <div id="passworderror" class="text-danger"></div>
+                      <div id="messageerror" class="text-danger"></div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-floating mb-3 mb-md-0">
+                      <input
+                        class="form-control"
+                        id="inputPasswordConfirm"
+                        type="password"
+                        placeholder="Confirm password"
+                        name="cpassword"
+                      />
+                      <label for="inputPasswordConfirm">Confirm Password</label>
+                      <div id="cpassworderror" class="text-danger"></div>
+                    </div>
+                    <div class="text-danger" id="#wrong_pass_alert"></div>
+                  </div>
+                </div>
+                <div class="mt-4 mb-0">
+                  <button  class="btn btn-primary">send OTP</button>
+                  <!-- modal -->
+                  <!-- Button trigger modal -->
+<button  id="timer" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+  Open Modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Verify OTP</h1>
+        <button type="button" class="btn-close" id="closebtn" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- timer -->
+        <div id="divotpform">
+        <div  class="container innerfrm" >
+          <header>
+            <div  id="countdown" class="d-flex justify-content-center pt-3"></div>
+          </header>
+          <h4 class="mt-4">Enter OTP Code</h4>
+          <form name="otpverify" id="frmotp" class="innerfrmdiv">
+            <div class="input-field">
+              <input type="number" id="txtfirst" />
+              <input type="number" id="txtsecond"  />
+              <input type="number" id="txtthird"  />
+              <input type="number" id="txtforth"  />
+            </div>
+            <button class="btn btn-primary" type="submit" id="verify">Verify OTP</button>
+          </form>
+        </div>
+      </div>
+         
+
+
+        
+        <!-- timer -->
+      </div>
+      
+    </div>
+  </div>
+</div>
+                  <!-- modal -->
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="card-footer text-center py-3">
+              <div class="small">
+                <a href="/login">Have an account? Go to login</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+
+
+
+</div>
+  
+
+  
+
+<script src="/login/js/bootstrap.min.js"></script>
+<script src="/login/js/jquery.js"></script>
+<script src="/login/js/jquery.countdown360.js"></script>
+<script src="/login/js/clo.js"></script>
+<!-- <script src="/login/js/script.js" defer></script> -->
+<script src="/js/register-frm.js"></script>
+
+  </body>
+  </html>
+</body>

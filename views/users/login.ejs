@@ -1,0 +1,33 @@
+<%-include("../layouts/header2.ejs")-%>
+<div class="background">
+  <div class="shape"></div>
+  <div class="shape"></div>
+</div>
+<form name="loginfrm" id="loginfrm" method="post" action="/login">
+  <!-- <form name="loginfrm" id="loginfrm"> -->
+  <p class="text-warning"><% if(locals.errors){%> <%=errors %> <%}%></p>
+
+  <h3>Login Here</h3>
+  <div class="danger" id="errors"></div>
+  <label for="email"
+    >Username
+    <input
+      type="email"
+      id="email"
+      name="email"
+      required
+      value="<% if(locals.old){%> <%=locals.old.email %> <%}%>"
+      autocomplete="true"
+  /></label>
+
+  <label for="password"
+    >Password <input type="password" id="password" name="password" required
+  /></label>
+  <button type="submit" class="btn btn-danger" id="btn-signin" name="login">
+    Sign in
+  </button>
+  <div class="social">
+    <span id="span-signin">Don't have an account? </span>
+    <a id="link-signup" href="/register">&nbsp;Sign up</a>
+  </div>
+</form>

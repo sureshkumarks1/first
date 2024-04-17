@@ -1,0 +1,26 @@
+<%-include('../layouts/header')-%>
+<div class="background-signin" >
+</div>
+  <div class="container text-center" id="box-signin">
+    <h1 id="h1">Edit user</h1>
+   <br>
+    <form method="post" action="/admin/edit-user">
+      <div>
+        <input type="text" id="placeholder" name="name" placeholder="Enter name" value="<%=user.name%>" required>
+      </div>
+      
+      <div>
+      <div>
+        <input type="email" id="placeholder" name="email" placeholder="Enter email" value="<%=user.email%>" required>
+      </div>
+ 
+      <div>
+        <input type="text" id="placeholder" name="mobile" placeholder="Enter mobile number"value="<%=user.mobile%>" required>
+      </div>
+ 
+      <button type="submit" class="btn btn-danger" id="btn-signup" >Submit</button>
+      <input type="hidden" name="id" value="<%=user._id %>">
+    </form>
+  </div>
+
+  <%-include('../layouts/footer')-%>
