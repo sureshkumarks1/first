@@ -5,12 +5,15 @@
           fontColor: "#FFFFFF",
           autostart: false,
           onComplete: function () {
-            console.log("done");
+            $('#verify').hide()
+            $('#resendverify').show()
+
           },
         });
 
         $('#timer').on('click',()=>{
           countdown.start();
+          $('#resendverify').hide()
         });
 
         //console.log("countdown360 ", countdown);

@@ -4,13 +4,14 @@ const Joi = require('joi')
 
 
 
-const userSchema=new mongoose.Schema({
+const adminSchema=new mongoose.Schema({
 
-  name:{
-    type:String,
-    required:true
-  },
-  email:{
+    name:{
+        type:String,
+        required:true,
+        maxlength:255
+    },
+    email:{
     type:String,
     unique:true,
     required:true
@@ -29,26 +30,25 @@ const userSchema=new mongoose.Schema({
   },
   status:{
     type:String,
-    required:true,
-    default:'active'
-  },
-  created: {type: Date, default: Date.now}
+    required:true
+  }
 
 });
 
-const User = mongoose.model("users",userSchema)
+const Admin = mongoose.model("admins",adminSchema)
 
-async function validateUser(User){
+async function validateUser(Admin){
   const schema = Joi.object({
     name:Joi.string().min(3).required(),
-    email:Joi.string().min(3).required(),
+    email:Joi.string().required(),
     password:Joi.string().min(6).max(1024).required(),
+    status:Joi.string().required()
   })
   
 
   try {
     let value = '';
-     value = await schema.validateAsync(User);
+     value = await schema.validateAsync(Admin);
     return value;
 }
 catch (err) {
@@ -57,4 +57,4 @@ catch (err) {
 
 }
 
-module.exports = {User , validateUser };
+module.exports = { Admin , validateUser };

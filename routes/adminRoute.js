@@ -18,6 +18,10 @@ admin_route.set("view engine", "ejs");
 
 admin_route.set("views", "./views/admin");
 
+// admin_route.set('views', __dirname + '/views/admin');
+
+// console.log(__dirname + '/views/admin')
+
 admin_route.use(session({
   secret: process.env.SESSION_SECRET,
   resave: true,
@@ -29,16 +33,16 @@ admin_route.get("/",auth.isLogout, admin.loadLogin);
 
 //admin_route.post("/", admin.loadLogin);
 
-admin_route.get("/login", admin.loadLogin);
+admin_route.get("/login",auth.isLogout, admin.loadLogin);
 
 admin_route.get("/chart", admin.loadChart);
 
-admin_route.get("/users", admin.loadUsers);
+admin_route.get("/users",auth.isLogin, admin.loadUsers);
 
 admin_route.post("/verify", admin.verifyLogin);
 
 //admin_route.get("/home",auth.isLogin, admin.adminDashboard);
-admin_route.get("/home", admin.adminDashboard);
+admin_route.get("/home",auth.isLogin, admin.adminDashboard);
 
 
 
@@ -58,9 +62,13 @@ admin_route.post("/edit-user", admin.updateUser);
 
 admin_route.get("/delete-user", admin.deleteUser);
 
+admin_route.post("/block-user", auth.isLogin, admin.blockUser);
+
+
+
 admin_route.get("*", (req, res) => {
 
-  res.redirect("/admin");
+  res.redirect("/admin/login");
 
 })
 

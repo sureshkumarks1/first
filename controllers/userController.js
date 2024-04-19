@@ -38,55 +38,58 @@ const verifyOTP = (req, res) => {
   // console.log(req.body)
   const {otp} = req.body;
 
-  res.status(200).send({"otp":otp,"message":"success"}).json()
+  if(req.session.otp==otp){
+
+    res.status(200).send({"otp":otp,"message":"success"}).json()
+
+  }else{
+    res.status(200).send({"otp":otp,"message":"failure"}).json()
+  }
+
 
 }
 
 // create a new user 
 
-const insertUser = async (req, res) => {
+
+const checkvalues = async (req, res) =>{
+  const {name, email, password} = req.body
+
+  if(name!== "" && email!=="" && password!==""){
+
+    const checkmail =  await sendEmail(email)
+
+      req.session.otp =  checkmail     
+
+      if(req.session.otp){        
+        console.log("the otp is ",req.session.otp)
+        res.status(200).send({"message":"success", "otp":req.session.otp}).json()
+    }
+  }
+}
+
+
+const insertUser = async (req) => {
+
+
   try {
 
+    //console.log(user)
+      
     const {name, email, password} = req.body
 
     if(name!== "" && email!=="" && password!==""){
-      const checkmail =  sendEmail(email)
-
-      req.session.otp = checkmail
-
-      if(req.session.otp){
-          //console.log("mail send")
-          res.status(200).send({"url":"http://127.0.0.1:3000/verify","message":"success"}).json()
-      }
-    //const result = new Promise(resolve=>{
-
-      //res.status(200).send({"url":"http://127.0.0.1:3000/verify","message":"success"}).json()
-
-   // })
-  }else{
-    const result = new Promise(reject=>{
-      res.status(404).send({"message":"failure"}).json()
-    })
-  }
-    //res.redirect("verification")
-
-    return;
-
-    const errors = await validateUser(req.body);
-
-    if(typeof errors !== 'object'){      
-      res.send(errors)
-    }
-    // }else {
-    //   res.send({"succrss":"working"})
-
-    // }
-
-    // if (!errors.isEmpty()) {
-    //   //res.render("registration", { errors:errors.array()[0].msg, old:{email,mobile,name} });
       
-    //       } 
-          else {
+      //console.log(name)
+      const errors = await validateUser(req.body);
+      
+      if(typeof errors !== 'object'){   
+           
+        console.log(errors)
+
+      }else {
+
+      console.log("i am fron insert user function")
 
             const spassword = await securePassword(password);
             const user = new User({      
@@ -99,14 +102,14 @@ const insertUser = async (req, res) => {
 
           const userData = await user.save();
 
-          // if (userData) {
-          //   res.render("registration", { message: "Registration Successfull" });
-          // } else res.render("registration", { message: "Registration failed" });
           if (userData) {
-            res.send({ message: "Registration Successfull" });
-          } else res.send({ message: "Registration failed" });
+            return({ message: "successf" });
+          } else return({ message: "Registration failed" });
         
         }
+      } else {
+        console.log("something error will coming")
+      }
   }catch (error) {
     console.log(error.message);
     }
@@ -115,6 +118,8 @@ const insertUser = async (req, res) => {
 
 const loginLoad = async (req, res) => {
   try {
+    // res.render("login-old");
+    console.log(req.cookies.un)
     res.render("login");
   } catch (error) {
     console.log(error.message);
@@ -126,6 +131,7 @@ const verifyLogin = async (req, res) => {
     
      const {email, password} = req.body;
      
+     console.log(`password ${password} email is : ${email}`)
      
      const errors = validationResult(req.body);
      if (errors.isEmpty()) {    
@@ -135,8 +141,10 @@ const verifyLogin = async (req, res) => {
       const passwordMatch = await bcrypt.compare(password, userData.password);
 
       if (passwordMatch) {
+
         req.session.user_id = userData._id;
         req.session.uname = userData.name
+        res.cookie('un',userData.name)
 
         res.redirect("/");
 
@@ -146,7 +154,8 @@ const verifyLogin = async (req, res) => {
          
 
       } else {
-        res.render("login", { errors: "incorrect Username/Password" });
+        if(email=="")
+          res.render("login", { email: "Email is required" });
       }
     } else {
       res.render("login", { errors: "incorrect Username/Password" });      
@@ -166,14 +175,19 @@ const verifyLogin = async (req, res) => {
 };
 const loadHome = async (req, res) => {
   try {
-    let word = "guest";
+    let word;
+    // res.render("home")
 
-    if(req.session.uname){
-      word = req.session.uname
+    if(req.cookies.un){
+      word = req.cookies.un
+      const capitalized = word.charAt(0).toUpperCase()+ word.slice(1)
+      res.render("home", {name:capitalized});
+    }else{
+      word = "guest";
+      const capitalized = word.charAt(0).toUpperCase()+ word.slice(1)
+      res.render("home", {name:capitalized});
     }
-    const capitalized = word.charAt(0).toUpperCase()+ word.slice(1)
     
-    res.render("home", {name:capitalized});
 
   } catch (error) {
     console.log(error.message);
@@ -184,6 +198,7 @@ const userLogout = async (req,res) => {
 
   try {
     req.session.destroy();
+    res.clearCookie('un')
     res.redirect("/");
   }
   catch (error) {
@@ -198,5 +213,6 @@ module.exports = {
   verifyLogin,
   loadHome,
   userLogout,
-  verifyOTP
-};
+  verifyOTP,
+  checkvalues
+}

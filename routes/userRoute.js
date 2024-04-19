@@ -7,6 +7,7 @@ const nocache = require("nocache");
 const userController = require("../controllers/userController");
 const auth = require("../middleware/auth");
 const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser')
 
 
 const cors = require('cors')
@@ -14,6 +15,7 @@ const cors = require('cors')
 const { body } = require('express-validator');
 
 user_route.use(bodyParser.json());
+user_route.use(cookieParser())
 user_route.use(express.json());
 user_route.use(express.urlencoded({ extended: true }));
 // user_route.set('/public', path.join(__dirname,'/public'))
@@ -41,7 +43,11 @@ user_route.get("/register",  userController.loadRegister);
 //user_route.post("/register",body('email').isEmail().withMessage('Please Enter a valid Email address'),body('password').isLength({min:5}).withMessage('Please enter the password'),body('mobile').isLength({min:10}).withMessage("Enter 10 Digit Mobile Number"), userController.insertUser);
 //user_route.post("/register",body('email').isEmail().withMessage('Please Enter a valid Email address'), userController.insertUser);
 
-user_route.post("/register", userController.insertUser)
+user_route.post("/register", userController.checkvalues)
+
+user_route.post("/insert", userController.insertUser)
+
+
 
 
 user_route.post("/verifyotp", userController.verifyOTP)
@@ -52,9 +58,12 @@ user_route.post("/verifyotp", userController.verifyOTP)
 
 //user_route.get("/" , auth.isLogout, userController.loginLoad);
 
-user_route.get("/" ,  userController.loadHome);
+user_route.get("/", userController.loadHome);
 
-user_route.get("/login" , auth.isLogout, userController.loginLoad); 
+//user_route.get("/home",  userController.loadHome);
+
+user_route.get("/login" , auth.isLogout , userController.loginLoad); 
+// user_route.get("/login" , auth.isLogin, userController.loadHome); 
 
 //user_route.get("/login" , auth.isLogout, userController.loginLoad); 
 
@@ -64,9 +73,9 @@ user_route.post("/login",body('email').isEmail().withMessage('Please Enter a val
 // user_route.get("/home", userController.loadHome);
 //user_route.get("/home", userController.loadHome);
 
-user_route.get("/logout", auth.isLogin, userController.userLogout)
+user_route.get("/logout",  userController.userLogout)
 
-user_route.get("*", userController.userLogout)
+//user_route.get("*", userController.userLogout)
 
 
 module.exports = user_route;

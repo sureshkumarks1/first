@@ -1,6 +1,6 @@
 
-const inputs = document.querySelectorAll(".innerfrmdiv input"),
-  button = document.querySelector("button");
+const inputs = document.querySelectorAll("#exampleModal input"),
+  button = document.querySelector("#verify");
 
 // iterate over all inputs
 inputs.forEach((input, index1) => {

@@ -1,23 +1,14 @@
 <%-include("../layouts/header.ejs")-%>
 <div id="layoutSidenav_content">
   <main>
-    <div class="container-fluid px-4">
-      <h1 class="mt-4">Tables</h1>
+    <div class="container-fluid px-4"id="divtable">
+      <h1 class="mt-4">Users</h1>
       <ol class="breadcrumb mb-4">
         <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
-        <li class="breadcrumb-item active">Tables</li>
+        <li class="breadcrumb-item active">Users</li>
       </ol>
-      <div class="card mb-4">
-        <div class="card-body">
-          DataTables is a third party plugin that is used to generate the demo
-          table below. For more information about DataTables, please visit the
-          <a target="_blank" href="https://datatables.net/"
-            >official DataTables documentation</a
-          >
-          .
-        </div>
-      </div>
-      <div class="card mb-4">
+      
+      <div class="card mb-4" >
         <div class="card-header">
           <i class="fas fa-table me-1"></i>
           Users
@@ -29,6 +20,8 @@
                 <th>#</th>
                 <th>Name</th>
                 <th>Email</th>                
+                <th>Status</th>                
+                <th>Action</th>                
               </tr>
             </thead>
             <!-- <tfoot>
@@ -52,13 +45,18 @@
               <%if(user.length>0){
                 for(let i=0;i<user.length;i++){
                 %>
-              <tr>
+              <tr >
+                <td class="d-none col1"><%=user[i]._id %></td>
+                <td class="d-none col2"><%=user[i].status %></td>
                 <td><%=i+1 %></td>
                 <td><%=user[i].name %></td>
                 <td><%=user[i].email %></td>
-                <td><%=user[i].mobile %></td>
-                <td><a class="btn btn-primary btn-sm text-white" text-white href="/admin/edit-user?id=<%=user[i]._id%>"id="buttonadmin">Edit</a>
-                  <a class="btn btn-danger btn-sm ms-3" href="/admin/delete-user?id=<%=user[i]._id%>"id="buttonadmin" onclick="return confirm('Are you sure you want to delete this item?');">Delete</a>
+                <td><%=user[i].status %></td>
+                <% if (user[i].status=='Active'){ %>
+                <td align="center"><button class="btn btn-danger btn-sm text-white inp"  >Block</button>
+                  <%} else {%>
+                <td align="center"><button class="btn btn-success btn-sm text-white inp" >Unlock</button>
+                  <% } %>
                 </td>
           
               </tr>
@@ -73,4 +71,5 @@
     </div>
   </main>
 </div>
+
 <%-include("../layouts/footer.ejs")-%>

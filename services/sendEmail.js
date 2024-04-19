@@ -5,21 +5,22 @@ const generateOTP = require("./generateOTP");
 dotenv.config();
 
 let transporter = nodemailer.createTransport({
+  service: 'gmail',
   host: process.env.SMTP_HOST,
   port: process.env.SMTP_PORT,
-  secure: false,
+  secure: true,
   auth: {
     user: process.env.SMTP_MAIL,
     pass: process.env.SMTP_PASSWORD,
   },
 });
 
+//console.log(transporter)
+
 const sendEmail = expressAsyncHandler(async (email) => {
   
   
   const otp = generateOTP();
-
-  
 
   var mailOptions = {
     from: process.env.SMTP_MAIL,
@@ -28,23 +29,19 @@ const sendEmail = expressAsyncHandler(async (email) => {
     text: `Your OTP is: ${otp}`,
   };
 
-  console.log(mailOptions)
+  //console.log(mailOptions)
 
-  return otp;
-
-  /*
+  
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
       console.log(error);
       return false;
-    } else {
-
-      console.log("Email sent successfully!");
-      return true;
-
+    } else {    
+      console.log("Mail sent")
+      return otp;
     }
   });
-  */
+  return otp;
 });
 
 module.exports = { sendEmail };

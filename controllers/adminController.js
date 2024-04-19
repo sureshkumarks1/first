@@ -1,3 +1,4 @@
+const {Admin} = require("../models/adminModel");
 const {User} = require("../models/userModel");
 const bcrypt = require("bcrypt");
  
@@ -20,6 +21,8 @@ const loadChart = async (req,res) => {
   }
 }
 
+
+
 const loadUsers = async (req, res) => {
   try {
     
@@ -38,27 +41,53 @@ const loadUsers = async (req, res) => {
 const verifyLogin = async (req, res) => {
 
   try {
-    const {email , password } = req.body;
+    const { email , password } = req.body;        
     
-    const adminData = await User.findOne({ email , is_admin:{$eq:1}});
-    
+    if(email && password){
+      const adminData = await Admin.findOne({email});    
+      
     if (adminData) {
       const passwordMatch = await bcrypt.compare(password, adminData.password);      
-      if (passwordMatch) {
-        
-        if (adminData.is_admin == 1) {
+     
+      if (passwordMatch) {        
+     
+        if (adminData.role == 'admin') {
           req.session.admin_id = adminData._id;
-          res.redirect("/admin/home");
-        } else {
-          res.render("login",{message:"Invalid Credentials",title:"login"})
-        }
+          res.cookie('adn',adminData.name)
+          //res.redirect("/admin/home");
+          res.send({ message: "success",title:"login" }).json();
+        } 
         
-      } else {
-        res.render("login", { message: "incorrect Username/Password",title:"login"  });
       }
-    } else {
-      res.render("login", { message: "incorrect Username/Password",title:"login" });
+    } else{
+      res.send({message:"nouser"})
     }
+
+    }else{
+      res.send({message:"failure"})
+    }
+
+
+
+    // const adminData = await User.findOne({ email , role:'admin'});
+    
+    // if (adminData) {
+    //   const passwordMatch = await bcrypt.compare(password, adminData.password);      
+    //   if (passwordMatch) {
+        
+    //     if (adminData.is_admin == 1) {
+    //       req.session.admin_id = adminData._id;
+    //       res.redirect("/admin/home");
+    //     } else {
+    //       res.render("login",{message:"Invalid Credentials",title:"login"})
+    //     }
+        
+    //   } else {
+    //     res.render("login", { message: "incorrect Username/Password",title:"login"  });
+    //   }
+    // } else {
+    //   res.render("login", { message: "incorrect Username/Password",title:"login" });
+    // }
   } catch (error) {
     console.log(error.message); 
   }
@@ -90,6 +119,7 @@ const adminDashboard = async (req, res) => {
 const adminLogout = async (req,res) => {
   try {
     req.session.destroy();
+    res.clearCookie('adn')
     res.redirect("/admin");
   }
   catch (error) {
@@ -154,6 +184,34 @@ const updateUser = async (req,res) => {
     console.log(error.message);
   }
 }
+
+//block user
+const blockUser = async (req,res) => {
+  try {
+    let status = req.body.status
+   
+    if(status == 'Active'){
+      status = 'Deactive'
+    }else{
+      status= 'Active'
+    }
+
+    const userdata = await User.findByIdAndUpdate({ _id: req.body.id },{$set:{
+      status : status   
+    }
+    
+    })
+*
+    res.send({"message":status})   
+
+  }
+  catch (error) {
+    res.send({"message":"Failure"})
+    console.log(error.message);
+  }
+}
+
+
 const deleteUser = async (req, res) =>
 {
   try {
@@ -231,5 +289,6 @@ module.exports = {
   updateUser,
   deleteUser,
   loadChart,
-  loadUsers
+  loadUsers,
+  blockUser
 }
