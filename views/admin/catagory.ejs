@@ -1,0 +1,35 @@
+<%-include("../layouts/header.ejs")-%>
+<div id="layoutSidenav_content">
+  <main>
+    <div class="container-fluid px-4" id="divtable">
+      <h1 class="mt-4">Catagory</h1>
+      <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+        <li class="breadcrumb-item active">Catagory</li>
+      </ol>
+
+      <div class="card mb-4">
+        <div class="card-header">
+          <i class="fas fa-table me-1"></i>
+          Catagory
+        </div>
+        <div class="card-body">
+          <div><buttton class="btn btn-success" id="addcat">Add</buttton></div>
+          <table id="showchart" class="table table-striped" style="width: 100%">
+            <thead>
+              <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Status</th>
+                <!-- <th>Edit</th> -->
+                <!-- <th>Delete</th> -->
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<%-include("../layouts/footer.ejs")-%>

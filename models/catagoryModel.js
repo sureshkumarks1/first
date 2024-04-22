@@ -5,15 +5,33 @@ const Joi = require('joi')
 const catagorySchema = new mongoose.Schema({
     name:{
         type:String,
-        required:true
+        required:true,
+        unique:true
       },
     status:{
-        type:String,
+        type:Boolean,
         required:true,
-        default:1
+        default:true
     }
-})
+},{ timestamps: true })
+
+async function validateCat(Cat){
+    const schema = Joi.object({
+      name:Joi.string().min(3).required()      
+    })
+    
+  
+    try {
+      let value = '';
+       value = await schema.validateAsync(Cat);
+      return value;
+  }
+  catch (err) {
+    return err.message
+   }
+  
+  }
 
 const Catagory = new mongoose.model('Catagory', catagorySchema)
 
-module.exports = {Catagory}
+module.exports = {Catagory, validateCat}

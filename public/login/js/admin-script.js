@@ -77,3 +77,162 @@ $(".inp").click(function () {
     });
     
  });
+//deleting catagory from tables
+$(".delbtn").click(function () {
+    let $row = $(this).closest("tr");
+    let $id = $row.find(".col1").text();
+    let $status = $row.find(".col2").text();
+    $.confirm({
+        theme: 'modern',
+        title: 'Delete Catagory?!',        
+        content: 'Are you sure ?!',
+        buttons: {
+            
+                confirm: function () {                    
+                    const data={
+                        id:$id,
+                        status:false
+                    }
+                    var self = this;
+                    return $.ajax({
+                        url: `http://localhost:3000/admin/catagory/del`,
+                        dataType: 'json',
+                        method: 'post',
+                        data:data
+                    }).done(function (response) {                      
+                        location.reload(true);
+                    }).fail(function(){
+                        self.setContent('Something went wrong.');
+                    });
+                
+                
+            },
+            cancel: function () {
+                
+            },
+        }
+            
+        
+    });
+    
+ });
+// add new item to the data base
+ $("#addt").click(function () {
+    $.confirm({
+        title: 'Catagory!',
+        content: '' +
+        '<form action="" class="formName">' +
+        '<div class="form-group">' +
+        '<label>Enter the Catagory</label>' +
+        '<input type="text" placeholder="Your name" class="name form-control" name="newcat" required />' +
+        '</div>' +
+        '</form>',
+        buttons: {
+            formSubmit: {
+                text: 'Submit',
+                btnClass: 'btn-blue',
+                action: function () {
+                    var name = this.$content.find('.name').val();
+                    if(!name){
+                        $.alert('provide a valid Catagory Name');
+                        
+                        return false;
+                    }
+
+                    // $.alert('Your name is ' + name);
+                    const data={
+                        name                       
+                    }
+                    var self = this;
+                    return $.ajax({
+                        url: `http://localhost:3000/admin/catagory/insertcat`,
+                        dataType: 'json',
+                        method: 'post',
+                        data:data
+                    }).done(function (response) {                      
+                        //$.alert("Successfully added : "+ response.message);
+                        // location.reload(true);
+                    }).fail(function(){
+                        self.setContent('Something went wrong.');
+                    });
+                }
+            },
+            cancel: function () {
+                //close
+            },
+        },
+        onContentReady: function () {
+            // bind to events
+            var jc = this;
+            this.$content.find('form').on('submit', function (e) {
+                // if the user submits the form by pressing enter in the field.
+                e.preventDefault();
+                jc.$$formSubmit.trigger('click'); // reference the button and click it
+            });
+        }
+    });
+ });
+
+
+ //edit catagory item
+
+ $(".edtcat").click(function () {
+    let $row = $(this).closest("tr");
+    let $id = $row.find(".col1").text();
+    let $status = $row.find(".col2").text();
+    let $name = $row.find(".col3").text();
+    $.confirm({
+        title: 'Catagory!',
+        content: '' +
+        '<form action="" class="formName">' +
+        '<div class="form-group">' +
+        '<label>Enter the Catagory</label>' +
+        '<input type="text" placeholder="Your name" class="name form-control" name="newcat" required />' +
+        '</div>' +
+        '</form>',
+        buttons: {
+            formSubmit: {
+                text: 'Submit',
+                btnClass: 'btn-blue',
+                action: function () {
+                    var name = $name;
+                    if(!name){
+                        $.alert('provide a valid Catagory Name');
+                        
+                        return false;
+                    }
+
+                    // $.alert('Your name is ' + name);
+                    const data={
+                        id:$id,
+                        name                       
+                    }
+                    var self = this;
+                    return $.ajax({
+                        url: `http://localhost:3000/admin/catagory/edt`,
+                        dataType: 'json',
+                        method: 'post',
+                        data:data
+                    }).done(function (response) {                      
+                        //$.alert("Successfully added : "+ response.message);
+                        location.reload(true);
+                    }).fail(function(){
+                        self.setContent('Something went wrong.');
+                    });
+                }
+            },
+            cancel: function () {
+                //close
+            },
+        },
+        onContentReady: function () {
+            // bind to events
+            var jc = this;
+            this.$content.find('form').on('submit', function (e) {
+                // if the user submits the form by pressing enter in the field.
+                e.preventDefault();
+                jc.$$formSubmit.trigger('click'); // reference the button and click it
+            });
+        }
+    });
+ });

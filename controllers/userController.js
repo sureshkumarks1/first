@@ -193,7 +193,15 @@ const loadHome = async (req, res) => {
     console.log(error.message);
   }
 };
- 
+
+const productDetails = (req, res) => {
+  res.render("product-details",{name:"suresh"})
+}
+
+const notfound = (req, res)=>{
+  res.render("404");
+}
+
 const userLogout = async (req,res) => {
 
   try {
@@ -214,5 +222,7 @@ module.exports = {
   loadHome,
   userLogout,
   verifyOTP,
-  checkvalues
+  checkvalues,
+  notfound,
+  productDetails
 }

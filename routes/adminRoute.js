@@ -5,12 +5,18 @@ const session = require("express-session");
 const nocache = require("nocache");
 const auth = require("../middleware/adminauth");
 
+const catroute = require('../routes/catRoute')
+
 const admin= require("../controllers/adminController");
+const catagory= require("../controllers/catagoryController");
 
 admin_route.use(express.json());
 admin_route.use(express.urlencoded({ extended: true }));
 
 admin_route.use(nocache());
+
+
+admin_route.use("/catagory",  catroute);
 
 admin_route.use(express.static("public"));
 
@@ -38,6 +44,8 @@ admin_route.get("/login",auth.isLogout, admin.loadLogin);
 admin_route.get("/chart", admin.loadChart);
 
 admin_route.get("/users",auth.isLogin, admin.loadUsers);
+
+// admin_route.get("/catagory",auth.isLogin, catagory.loadCat);
 
 admin_route.post("/verify", admin.verifyLogin);
 

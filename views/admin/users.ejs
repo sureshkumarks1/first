@@ -26,14 +26,13 @@
             </thead>
             <!-- <tfoot>
               <tr>
+                <th>#</th>
                 <th>Name</th>
-                <th>Position</th>
-                <th>Office</th>
-                <th>Age</th>
-                <th>Start date</th>
-                <th>Salary</th>
-              </tr> -->
-            </tfoot>
+                <th>Email</th>                
+                <th>Status</th>                
+                <th>Action</th>   
+              </tr> 
+            </tfoot>-->
             <tbody>
             
               <!-- <tr>
@@ -53,9 +52,9 @@
                 <td><%=user[i].email %></td>
                 <td><%=user[i].status %></td>
                 <% if (user[i].status=='Active'){ %>
-                <td align="center"><button class="btn btn-danger btn-sm text-white inp"  >Block</button>
+                <td align="center"><button class="btn btn-danger btn-sm text-white inp" >Block</button>
                   <%} else {%>
-                <td align="center"><button class="btn btn-success btn-sm text-white inp" >Unlock</button>
+                <td align="center"><button class="btn btn-success btn-sm text-white inp">Unlock</button>
                   <% } %>
                 </td>
           

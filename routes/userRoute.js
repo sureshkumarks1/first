@@ -74,8 +74,10 @@ user_route.post("/login",body('email').isEmail().withMessage('Please Enter a val
 //user_route.get("/home", userController.loadHome);
 
 user_route.get("/logout",  userController.userLogout)
+user_route.get("/product-details",  userController.productDetails)
+// user_route.get("/logout",  userController.userLogout)
 
-//user_route.get("*", userController.userLogout)
+// user_route.get("/*", userController.notfound)
 
 
 module.exports = user_route;

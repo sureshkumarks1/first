@@ -1,5 +1,6 @@
 const {Admin} = require("../models/adminModel");
 const {User} = require("../models/userModel");
+
 const bcrypt = require("bcrypt");
  
 //show the login page
@@ -29,12 +30,16 @@ const loadUsers = async (req, res) => {
     const userdata = await User.find();
 
     res.render("users",{title:"Users List", user : userdata });
+    // res.send({title:"Users List", data : userdata });
 
   }
   catch (error) {
     console.log(error.message);
   }
 }
+
+
+
 
 
 //verifying the admin
@@ -234,6 +239,8 @@ const deleteUser = async (req, res) =>
       console.log(error.message);
     }
 };
+
+
   
   const insertAdmin = async (req, res) => {
     try {
@@ -290,5 +297,6 @@ module.exports = {
   deleteUser,
   loadChart,
   loadUsers,
-  blockUser
+  blockUser,
+
 }
