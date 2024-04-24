@@ -91,8 +91,9 @@ const loadCat = async (req, res) => {
       const catdata = await Catagory.find({status:true});
   
     //   res.render("catagory",{title:"Catagory List", catdata : catdata });
+
        res.render("catagory",{title:"Catagory List" });
-      res.send({catdata : catdata }).json();
+       res.send({catdata : catdata }).json();
     //   return catdata
   
     }

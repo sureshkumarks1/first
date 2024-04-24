@@ -217,7 +217,7 @@ function editrow(id){
 }
 
  
-document.querySelector('#addcat').addEventListener('click', ()=>{
+document.getElementById('addcat').addEventListener('click', ()=>{
     addNewRow();
 
 });

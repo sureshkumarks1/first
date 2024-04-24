@@ -1,28 +1,59 @@
 const express = require("express");
+
 const admin_route = express();
+
 require('dotenv').config()
+
 const session = require("express-session");
+
+const path = require('path')
+
+const multer  = require('multer')
+
 const nocache = require("nocache");
+
 const auth = require("../middleware/adminauth");
 
 const catroute = require('../routes/catRoute')
 
+const product_route = require('../routes/productRoute')
+
 const admin= require("../controllers/adminController");
+
 const catagory= require("../controllers/catagoryController");
 
 admin_route.use(express.json());
+
 admin_route.use(express.urlencoded({ extended: true }));
 
 admin_route.use(nocache());
 
-
 admin_route.use("/catagory",  catroute);
+
+admin_route.use("/products",  product_route);
 
 admin_route.use(express.static("public"));
 
 admin_route.set("view engine", "ejs");
 
 admin_route.set("views", "./views/admin");
+
+
+admin_route.use('/uploads', express.static(path.join(__dirname,'..','/uploads')))
+
+ console.log(path.join(__dirname,'..','/uploads'))
+
+const fileStorage = multer.diskStorage({
+  destination:(req, file, callback)=>{
+    callback(null, './uploads')
+  },
+  filename:(req, file, callback)=>{
+    callback(null, new Date().toISOString()+"_"+ file.originalname)
+  }
+})
+
+admin_route.use(multer({dest:'./uploads'}).single('image'))
+
 
 // admin_route.set('views', __dirname + '/views/admin');
 
@@ -52,8 +83,6 @@ admin_route.post("/verify", admin.verifyLogin);
 //admin_route.get("/home",auth.isLogin, admin.adminDashboard);
 admin_route.get("/home",auth.isLogin, admin.adminDashboard);
 
-
-
 admin_route.get("/logout", auth.isLogin, admin.adminLogout);
 
 admin_route.get("/adduser", auth.isLogin, admin.newUserload);
@@ -71,8 +100,6 @@ admin_route.post("/edit-user", admin.updateUser);
 admin_route.get("/delete-user", admin.deleteUser);
 
 admin_route.post("/block-user", auth.isLogin, admin.blockUser);
-
-
 
 admin_route.get("*", (req, res) => {
 
