@@ -44,7 +44,6 @@ if(email && password){
         console.log("not working")
     }
 
-
    } catch (error) {
     
    }

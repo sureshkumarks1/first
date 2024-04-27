@@ -9,7 +9,7 @@
     />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Login -</title>
+    <title>Login - User</title>
     <link href="/login/css/styles.css" rel="stylesheet" />
     <script
       src="https://use.fontawesome.com/releases/v6.3.0/js/all.js"
@@ -25,7 +25,9 @@
               <div class="col-lg-5">
                 <div class="card shadow-lg border-0 rounded-lg mt-5">
                   <div class="card-header">
-                    <h3 class="text-center font-weight-light my-4">Login</h3>
+                    <h3 class="text-center font-weight-light my-4">
+                      User Login
+                    </h3>
                   </div>
                   <div class="card-body">
                     <form
@@ -34,7 +36,7 @@
                       method="post"
                       action="/login"
                     >
-                      <p class="text-warning">
+                      <p class="text-danger">
                         <% if(locals.errors){%> <%=errors %> <%}%>
                       </p>
                       <div class="form-floating mb-3">
@@ -44,8 +46,13 @@
                           type="email"
                           placeholder="name@example.com"
                           name="email"
+                          value="<% if(locals.evalue){%> <%=evalue %> <%}%>"
                         />
+
                         <label for="inputEmail">Email address</label>
+                        <span class="text-danger"
+                          ><% if(locals.email){%> <%=email %> <%}%></span
+                        >
                       </div>
                       <div class="form-floating mb-3">
                         <input
@@ -55,8 +62,11 @@
                           placeholder="Password"
                           name="password"
                         />
-                        <% if(locals.email){%> <%=email %> <%}%>
+
                         <label for="inputPassword">Password</label>
+                        <span class="text-danger"
+                          ><% if(locals.password){%> <%=password %> <%}%></span
+                        >
                       </div>
                       <!-- <div class="form-check mb-3">
                         <input
@@ -117,7 +127,9 @@
         </footer>
       </div>
     </div>
+
+    <script src="/login/js/jquery.min.js"></script>
     <script src="/login/js/bootstrap.min.js"></script>
-    <script src="js/scripts.js"></script>
+    <!-- <script src="/login/js/scripts.js"></script> -->
   </body>
 </html>

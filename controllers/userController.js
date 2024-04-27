@@ -1,4 +1,6 @@
 const {User,  validateUser  } = require("../models/userModel");
+const { Product } = require("../models/productModel");
+const { Catagory } = require("../models/catagoryModel");
 const bcrypt = require("bcrypt");
 const { validationResult } = require('express-validator');
 const url = require('url');    
@@ -71,7 +73,6 @@ const checkvalues = async (req, res) =>{
 
 const insertUser = async (req) => {
 
-
   try {
 
     //console.log(user)
@@ -117,85 +118,113 @@ const insertUser = async (req) => {
 };
 
 const loginLoad = async (req, res) => {
+
   try {
     // res.render("login-old");
-    console.log(req.cookies.un)
+    // console.log(req.cookies.un)
+    // res.redirect("/");
     res.render("login");
+
   } catch (error) {
+
     console.log(error.message);
+
   }
 };
 
 const verifyLogin = async (req, res) => {
-  try {
-    
-     const {email, password} = req.body;
+
+  const {email, password} = req.body;
+
+  if(!email){
+  res.render("login", { email: "Email is required"});
+  }else if(!password){
+    res.render("login", { password: "Password is required",evalue:email  });
+  } else{
+    try {     
      
-     console.log(`password ${password} email is : ${email}`)
-     
-     const errors = validationResult(req.body);
-     if (errors.isEmpty()) {    
-       const userData = await User.findOne({ email, role:'user' });       
-      if (userData) {
-              
-      const passwordMatch = await bcrypt.compare(password, userData.password);
-
-      if (passwordMatch) {
-
-        req.session.user_id = userData._id;
-        req.session.uname = userData.name
-        res.cookie('un',userData.name)
-
-        res.redirect("/");
-
-        //console.log(userData)
-
-        // res.redirect("/home",{username:userData.name});       
-         
-
-      } else {
-        if(email=="")
-          res.render("login", { email: "Email is required" });
-      }
-    } else {
-      res.render("login", { errors: "incorrect Username/Password" });      
+      const errors = validationResult(req.body);
+      if (errors.isEmpty()) {    
+        const userData = await User.findOne({ email, role:'user' });       
+        if(userData.status=='Deactive'){
+          res.render("login", { errors: "Your account has been blocked. Contact administrator" }); 
+        }else{
+       if (userData) {               
+       const passwordMatch = await bcrypt.compare(password, userData.password);
+ 
+       if (passwordMatch) {
+ 
+         req.session.user_id = userData._id;
+         req.session.uname = userData.name
+         res.cookie('un',userData.name)
+ 
+         res.redirect("/");
+ 
+         //console.log(userData)
+ 
+         // res.redirect("/home",{username:userData.name});       
+          
+ 
+       } else {
+         if(email=="")
+           res.render("login", { email: "Email is required" });
+         }
+     } else {
+       res.render("login", { errors: "User doesn't exist Please register" });      
+     }
     }
-
-  }else{
-
-    res.render("login", { errors: errors.array()[0].msg, old:{
-      email:email
-    } });
-  }
+   }else{
+ 
+     res.render("login", { errors: errors.array()[0].msg, old:{
+       email:email
+     } });
+   }
   
-
-  } catch (error) {
-    console.log(error.message); 
+   
+ 
+   } catch (error) {
+     console.log(error.message); 
+   }
   }
+ 
+  
+  
 };
 const loadHome = async (req, res) => {
-  try {
-    let word;
-    // res.render("home")
-
+  let word = "Guest";  
     if(req.cookies.un){
+      
       word = req.cookies.un
       const capitalized = word.charAt(0).toUpperCase()+ word.slice(1)
       res.render("home", {name:capitalized});
-    }else{
-      word = "guest";
-      const capitalized = word.charAt(0).toUpperCase()+ word.slice(1)
-      res.render("home", {name:capitalized});
+      return;
+    }else{           
+      // const capitalized = word.charAt(0).toUpperCase()+ word.slice(1)
+      res.render("home",{name:word});
+      //res.render("home", {name:capitalized});
+      return;
+    } 
+  
+  };
+
+const productDetails = async (req, res) => {
+
+
+  const id = req.params.id
+
+    const prod = await Product.findOne({_id:id}).populate('category', 'name')
+
+    // console.log(prod)
+    // return
+
+    if(!prod){
+      res.send({success:false}).json()
     }
-    
 
-  } catch (error) {
-    console.log(error.message);
-  }
-};
+    res.render("product-details",{name:"Guest", proddata:prod})
 
-const productDetails = (req, res) => {
-  res.render("product-details",{name:"suresh"})
+  //res.render("product-details",{name:"guest"})
+  // res.render("product-details",{name:"suresh"})
 }
 
 const notfound = (req, res)=>{

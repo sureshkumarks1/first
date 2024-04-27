@@ -16,21 +16,23 @@ const catagorySchema = new mongoose.Schema({
 },{ timestamps: true })
 
 async function validateCat(Cat){
+
     const schema = Joi.object({
-      name:Joi.string().min(3).required()      
-    })
-    
+      name:Joi.string().min(3).required(),  
+      
+    })    
   
     try {
       let value = '';
        value = await schema.validateAsync(Cat);
-      return value;
+      return true;
   }
   catch (err) {
     return err.message
    }
   
   }
+
 
 const Catagory = new mongoose.model('Catagory', catagorySchema)
 

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 require('../db/mongo')
 const Joi = require('joi')
+const { Catagory } = require("../models/catagoryModel");
 
 const productSchema = new mongoose.Schema({
     name:{
@@ -32,7 +33,8 @@ const productSchema = new mongoose.Schema({
     }],
     category:{
       type:mongoose.Schema.Types.ObjectId,
-      required:true
+      required:true,
+      ref:"Catagory"
     },
     status:{
         type:Boolean,

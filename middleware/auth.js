@@ -3,7 +3,7 @@ const isLogin = async (req, res,next) => {
   try {
 
     if (req.cookies.un) {
-      res.redirect("/")
+      // res.redirect("/")
       next();
     }
     else {

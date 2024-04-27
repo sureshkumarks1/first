@@ -1,5 +1,5 @@
 const { status } = require("ejs");
-const {Catagory} = require("../models/catagoryModel");
+const {Catagory , validateCat } = require("../models/catagoryModel");
 
 
 
@@ -61,6 +61,14 @@ const edt_cat = async (req, res) => {
 }
 
 
+//check the name alreadry in use
+async function checkNameInUse(name){
+
+  let result = await Catagory.findOne({ name: name }).select("_id");    
+  //console.log(result)
+  return result
+}
+
 //insert new catagory to database
 
 const insertCat = async (req, res)=>{
@@ -68,17 +76,40 @@ const insertCat = async (req, res)=>{
     const name = req.body.name
     const status = req.body.status
 
-    const catagory = new Catagory({
-        name,
-        status:status       
-    })
+    const checkName = await checkNameInUse(name)
 
-    await catagory.save().then((result)=>{
-        res.send({'message':"success",id:result._id})
-        // console.log(result)
-    }).catch((err)=>{
-        res.send({'message':"Failed"})
-    })  
+    if(checkName){
+      res.send({'message':"Name already existed",success:false})
+      return;
+    }
+
+    const values = {
+      name
+    }
+
+    const result = await validateCat(values);
+
+
+    console.log(result)
+
+
+    if(result){
+
+      const catagory = new Catagory({
+          name,
+          status:status       
+      })
+
+      await catagory.save().then((result)=>{
+        res.send({'message':"success",id:result._id, success:true})
+        
+      }).catch((err)=>{
+          res.send({'message':"Failed"})
+      }) 
+     }else {
+        res.send({'message':"Something Wrong"})
+      }
+
     
 
 

@@ -101,10 +101,10 @@ admin_route.get("/delete-user", admin.deleteUser);
 
 admin_route.post("/block-user", auth.isLogin, admin.blockUser);
 
-admin_route.get("*", (req, res) => {
+// admin_route.get("*", (req, res) => {
 
-  res.redirect("/admin/login");
+//   res.redirect("/admin/login");
 
-})
+// })
 
 module.exports = admin_route;

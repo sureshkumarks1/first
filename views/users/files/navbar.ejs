@@ -25,19 +25,15 @@
           <div class="p-2">Contact Us</div>
         </div>
       </div>
-      <div class="col-lg-2 col-xxl-2 text-end col-md-6 col-7"></div>
+
       <div class="col-lg-2 col-xxl-2 text-end col-md-6 col-7 list-inline">
         <% if (name=="Guest") { %>
         <div class="list-inline-item">
           Hello Guest, <a href="/login">Login</a>
         </div>
         <% } else { %>
-        <div class="list-inline-item">
-          Welcoem <%= name %>&nbsp;&nbsp;<a href="/logout">Logout</a>
-        </div>
-        <% }%>
-
-        <!-- <div class="list-inline">
+        <!-- STARTS HERE -->
+        <div class="list-inline">
           <div class="list-inline-item me-5">
             <a
               href="./pages/shop-wishlist.html"
@@ -116,7 +112,6 @@
             </a>
           </div>
           <div class="list-inline-item d-inline-block d-lg-none">
-           
             <button
               class="navbar-toggler collapsed"
               type="button"
@@ -139,7 +134,14 @@
               </svg>
             </button>
           </div>
-        </div> -->
+        </div>
+        <!-- ENDS HERE -->
+      </div>
+      <div class="col-lg-2 col-xxl-2 text-end col-md-6 col-7 list-inline">
+        <div class="list-inline-item">
+          Welcoem <%= name %>&nbsp;&nbsp;<a href="/logout">Logout</a>
+        </div>
+        <% }%>
       </div>
     </div>
   </div>

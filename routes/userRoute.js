@@ -62,19 +62,19 @@ user_route.get("/", userController.loadHome);
 
 //user_route.get("/home",  userController.loadHome);
 
-user_route.get("/login" , auth.isLogout , userController.loginLoad); 
+user_route.get("/login" , auth.isLogout, userController.loginLoad); 
 // user_route.get("/login" , auth.isLogin, userController.loadHome); 
 
 //user_route.get("/login" , auth.isLogout, userController.loginLoad); 
 
-user_route.post("/login",body('email').isEmail().withMessage('Please Enter a valid Email address'),body('password').isLength({min:5}).withMessage('Please enter the password'), userController.verifyLogin);
+user_route.post("/login", userController.verifyLogin);
 
 //user_route.get("/home", auth.isLogin,userController.loadHome);
 // user_route.get("/home", userController.loadHome);
 //user_route.get("/home", userController.loadHome);
 
-user_route.get("/logout",  userController.userLogout)
-user_route.get("/product-details",  userController.productDetails)
+user_route.get("/logout", auth.isLogin, userController.userLogout)
+user_route.get("/product-details/:id",  userController.productDetails)
 // user_route.get("/logout",  userController.userLogout)
 
 // user_route.get("/*", userController.notfound)

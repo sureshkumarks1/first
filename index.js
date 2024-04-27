@@ -22,6 +22,7 @@ app.use(cors())
 //set path to public
 app.set('/public', path.join(__dirname,'/public'))
 app.set('/nodefile', path.join(__dirname,'/node_modules'))
+app.use('/uploads',express.static('uploads'))
 
 
 

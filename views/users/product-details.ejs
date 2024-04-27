@@ -3,4 +3,22 @@
   <% if (name) { %> <%- include('files/navbar.ejs', {name}) %> <% } else { %>
   <%- include('files/navbar.ejs', {name:""}) %> <% } %> <%-
   include('files/product.ejs') %> <%-include('files/footer.ejs') %>
+  
+  
+  <script>
+    let img = document.getElementById("img-container");
+
+    let options1 = {
+      width: 400,
+      zoomWidth: 500,
+      offset: { vertical: 0, horizontal: 10 },
+    };
+
+    // If the width and height of the image are not known or to adjust the image to the container of it
+    let options2 = {
+      fillContainer: true,
+      offset: { vertical: 0, horizontal: 10 },
+    };
+    new ImageZoom(img, options1);
+  </script>
 </body>
