@@ -1,4 +1,5 @@
 const {User,  validateUser  } = require("../models/userModel");
+
 const { Product } = require("../models/productModel");
 const { Catagory } = require("../models/catagoryModel");
 const bcrypt = require("bcrypt");
@@ -192,15 +193,21 @@ const verifyLogin = async (req, res) => {
 };
 const loadHome = async (req, res) => {
   let word = "Guest";  
+
+  const prod_list = await Product.find({status:true})
+
+ // console.log(prod_list)
+
     if(req.cookies.un){
       
       word = req.cookies.un
       const capitalized = word.charAt(0).toUpperCase()+ word.slice(1)
-      res.render("home", {name:capitalized});
+
+      res.render("home", {name:capitalized, products:prod_list});
       return;
     }else{           
       // const capitalized = word.charAt(0).toUpperCase()+ word.slice(1)
-      res.render("home",{name:word});
+      res.render("home",{name:word,products:prod_list});
       //res.render("home", {name:capitalized});
       return;
     } 

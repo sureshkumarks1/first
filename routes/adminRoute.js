@@ -1,5 +1,7 @@
 const express = require("express");
 
+const os = require('os')
+
 const admin_route = express();
 
 require('dotenv').config()
@@ -28,9 +30,17 @@ admin_route.use(express.urlencoded({ extended: true }));
 
 admin_route.use(nocache());
 
+// admin_route.use('uploads', express.static(path.join(__dirname,'..','/uploads')))
+
+// admin_route.use('/uploads',express.static(path.join(__dirname,'..','/uploads')))
+admin_route.use(express.static('uploads'));
+
 admin_route.use("/catagory",  catroute);
 
+
 admin_route.use("/products",  product_route);
+
+
 
 admin_route.use(express.static("public"));
 
@@ -38,10 +48,16 @@ admin_route.set("view engine", "ejs");
 
 admin_route.set("views", "./views/admin");
 
+// admin_route.use('uploads',express.static('/uploads'))
 
-admin_route.use('/uploads', express.static(path.join(__dirname,'..','/uploads')))
+//console.log(path.join(__dirname,'..','/uploads'))
 
- console.log(path.join(__dirname,'..','/uploads'))
+// admin_route.use('uploads', express.static('/uploads'))
+
+// const fi = path.join(__dirname,'..', '/uploads')
+
+// console.log(fi)
+ //console.log(path.join(__dirname,'..','/uploads'))
 
 const fileStorage = multer.diskStorage({
   destination:(req, file, callback)=>{

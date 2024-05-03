@@ -1,8 +1,13 @@
 <%- include('files/header.ejs') %>
 <body>
   <% if (name) { %> <%- include('files/navbar.ejs', {name}) %> <% } else { %>
-  <%- include('files/navbar.ejs', {name:""}) %> <% } %> <%-
-  include('files/banner.ejs') %> <%- include('files/features.ejs') %>
+  <%- include('files/navbar.ejs', {name:""}) %> <% } %>
+  
+ <% if (products) { %> <%- include('files/prodlist.ejs', {products}) %> <% } else { %>
+    <%- include('files/prodlist.ejs') %> <% } %>
+
+  
+  <%- include('files/features.ejs') %>
   <%-include('files/middle.ejs') %> <%-include('files/popular.ejs') %> <%-
   include('files/footer.ejs') %>
 </body>

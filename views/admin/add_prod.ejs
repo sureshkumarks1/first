@@ -1,0 +1,202 @@
+<%-include("../layouts/header.ejs")-%>
+<div id="layoutSidenav_content mtp-5">
+  <main>
+    <div class="container-fluid px-4" id="divtable">
+      <h1 class="mt-4">Add Product</h1>
+      <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/admin/home">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="/admin/products">Products</a></li>
+        <li class="breadcrumb-item active">Add Product</li>
+      </ol>
+      <div class="container">
+        <% if(errors) {%>
+        <div
+          class="alert alert-danger alert-dismissible fade show"
+          role="alert"
+        >
+          <strong> Uploaded File type not allowed </strong
+          ><button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Close"
+          ></button>
+        </div>
+        <%}%>
+
+        <form
+          id="prodform"
+          name="productform"
+          method="post"
+          action="/admin/products/insertprod"
+          enctype="multipart/form-data"
+          class="needs-validation"
+          novalidate
+        >
+          <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label"
+              >Product Name</label
+            >
+            <input
+              type="text"
+              minlength="3"
+              class="form-control"
+              id="pname"
+              name="pname"
+              placeholder="Enter Product Name"
+              required
+            />
+            <div class="invalid-feedback">Please Enter the Product Name.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Product Catagory</label>
+            <select
+              class="form-select"
+              aria-label="Default select"
+              id="pcategory"
+              name="pcategory"
+              required
+            >
+              <option value="">select category</option>
+              <% if(category) { category.forEach(cat => {%>
+              <option value="<%= cat._id %>"><%= cat.name %></option>
+              <%});%> <% } %>
+            </select>
+            <div class="invalid-feedback">Please select a valid Category.</div>
+          </div>
+
+          <div class="mb-3">
+            <label for="formFile" class="form-label"
+              >Product Image 1
+              <input
+                required
+                class="form-control"
+                name="images"
+                type="file"
+                id="input1"
+                accept="image/png, image/jpeg"
+              />
+              <div class="invalid-feedback">Please select Product Image.</div>
+            </label>
+          </div>
+          <div class="mb-3">
+            <label for="formFile" class="form-label"
+              >Product Image 2
+              <input
+                class="form-control"
+                name="images"
+                type="file"
+                id="input2"
+                required
+                accept="image/png, image/jpeg"
+              />
+              <div class="invalid-feedback">Please select Product Image.</div>
+            </label>
+          </div>
+          <div class="mb-3">
+            <label for="formFile" class="form-label"
+              >Product Image 3
+              <input
+                class="form-control"
+                name="images"
+                type="file"
+                id="input3"
+                required
+                accept="image/png, image/jpeg"
+              />
+              <div class="invalid-feedback">Please select Product Image.</div>
+            </label>
+          </div>
+          <div
+            class="modal fade"
+            id="modal"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="modalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="modalLabel">Crop the image</h5>
+                  <button
+                    type="button"
+                    class="close"
+                    data-dismiss="modal"
+                    aria-label="Close"
+                  >
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="img-container">
+                    <img
+                      id="image"
+                      src="/user/images/shoes_images/shoe_1.jpg"
+                    />
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-dismiss="modal"
+                  >
+                    Cancel
+                  </button>
+                  <button type="button" class="btn btn-primary" id="crop">
+                    Crop
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="formFile" class="form-label">Product Price</label>
+            <input
+              name="productprice"
+              id="productPrice"
+              type="tel"
+              class="form-control"
+              min="100"
+              placeholder="Product Price"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="formFile" class="form-label">Product Stock</label>
+            <input
+              name="productstock"
+              id="productStock"
+              type="tel"
+              class="form-control"
+              min="0"
+              placeholder="Product Stock"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label"
+              >Product's Description</label
+            >
+            <textarea
+              class="form-control"
+              id="pdescription"
+              name="pdescription"
+              rows="3"
+              placeholder="Product Description"
+              required
+            ></textarea>
+          </div>
+          <div class="mb-3">
+            <button class="btn btn-primary" id="submit">Submit</button
+            ><input class="btn btn-primary" type="reset" value="Reset" />
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+</div>
+
+<%-include("../layouts/footer.ejs")-%>
