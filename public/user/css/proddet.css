@@ -1,0 +1,70 @@
+.zoomcontainer {
+  width: 940px;
+  margin: 50px auto 0;
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 5px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.description {
+  margin-right: 50px;
+  text-align: justify;
+  color: #8a8888;
+}
+
+.description h1 {
+  margin: 50px 0px 10px 0px;
+  font-weight: 300;
+}
+.description p {
+  font-size: 15px;
+}
+
+.description span {
+  margin-top: 15px;
+  display: inline-block;
+  font-weight: 600;
+  font-size: 30px;
+  color: #353535;
+}
+.description button {
+  font-size: 18px;
+  padding: 15px 50px;
+  margin-top: 15px;
+  cursor: pointer;
+  border: 0;
+  outline: none;
+  color: #fff;
+}
+.description .buy {
+  background-color: #ff9f00;
+}
+
+.description .cart {
+  background-color: #fb641b;
+}
+.xzoom-thumbs img {
+  margin-top: 15px;
+  display: inline-block;
+  height: 80px;
+  width: 80px;
+  border: 1px solid #bbbbbb;
+}
+
+.xzoom-thumbs a {
+  text-decoration: none;
+}
+.xzoom-preview {
+  border: 1px solid #e0e0e0;
+}
+.active {
+  border: 1px solid #bbbbbb;
+  box-shadow: 0 0 3px 0 #4aaad2;
+}
+.product-rating span {
+  font-size: 15px;
+}
+.proddesc p {
+  margin-top: 15px;
+}

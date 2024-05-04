@@ -1,0 +1,81 @@
+<!-- Content -->
+<div class="container">
+  <% if (proddata) { %>
+  <nav aria-label="breadcrum">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Home</a></li>
+      <li class="breadcrumb-item"><a href="/products">Products</a></li>
+      <li class="breadcrumb-item">
+        <a href="/products/"><%= proddata.category.name%></a>
+      </li>
+      <li class="breadcrumb-item"><%= proddata.name%></li>
+    </ol>
+  </nav>
+  <% } %>
+</div>
+<div class="zoomcontainer">
+  <!-- zoom container start -->
+
+  <div class="x-zoom-container">
+    <img
+      src="http://localhost:3000/uploads/images/1-min.jpg"
+      alt=""
+      class="xzoom"
+      xoriginal="http://localhost:3000/uploads/images/1-min.jpg"
+    />
+    <div class="xzoom-thumbs">
+      <a href="http://localhost:3000/uploads/images/1.jpg" id="one">
+        <img
+          src="http://localhost:3000/uploads/images/1-min.jpg"
+          class="xzoom-gallery"
+          alt=""
+          xpreview="http://localhost:3000/uploads/images/1-min.jpg"
+        />
+      </a>
+      <a href="http://localhost:3000/uploads/images/2.jpg">
+        <img
+          src="http://localhost:3000/uploads/images/2-min.jpg"
+          class="xzoom-gallery"
+          alt=""
+        />
+      </a>
+      <a href="http://localhost:3000/uploads/images/3.jpg">
+        <img
+          src="http://localhost:3000/uploads/images/3-min.jpg"
+          class="xzoom-gallery"
+          alt=""
+        />
+      </a>
+      <a href="http://localhost:3000/uploads/images/4.jpg">
+        <img
+          src="http://localhost:3000/uploads/images/4-min.jpg"
+          class="xzoom-gallery"
+          alt=""
+        />
+      </a>
+    </div>
+  </div>
+
+  <!-- zoom container end -->
+  <!-- description  start -->
+  <div class="description">
+    <h1 class="product-title"><%= proddata.name%></h1>
+    <div class="product-rating">
+      <i class="fa fa-star"></i>
+      <i class="fa fa-star"></i>
+      <i class="fa fa-star"></i>
+      <i class="fa fa-star"></i>
+      <i class="fa fa-star-half-alt"></i>
+      <span>4.7(21)</span>
+    </div>
+    <div class="proddesc">
+      <p><%= proddata.description%></p>
+    </div>
+    <span>Price : $<%= proddata.price%></span>
+    <div>
+      <button class="buy">Buy Now</button>
+      <button class="cart">Add to cart</button>
+    </div>
+  </div>
+  <!-- description  end -->
+</div>
