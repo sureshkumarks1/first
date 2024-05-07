@@ -33,7 +33,7 @@ let table = new DataTable('#showproduct', {
         {   data: null,
             className: 'unlist-list',
 
-            render:(data)=>{ return (data.status==true)?'<button class="btn btn-danger" id="btn-unlist"  >Unlist</button>':'<button class="btn btn-primary" id="btn-list"  >List</button>' }
+            render:(data)=>{ return (data.status==true)?'<button class="btn btn-danger" id="btn-unlist"  >Unlist</button>':'<button class="btn btn-primary" id="btn-list" >List</button>' }
         },
         
         {
@@ -65,7 +65,7 @@ table.on('click','td.unlist-list',function (e){
    
 
     $.confirm({
-        title: 'Unlist Product!',
+        title: 'List or Unlist Product!',
         content: 'Are You Sure!',
         buttons: {
 
@@ -73,11 +73,11 @@ table.on('click','td.unlist-list',function (e){
             confirm: function () {
 
                 if($("#btn-unlist").text() == 'Unlist'){
-                    status = false                  
+                    status = true                  
                     $("#btn-unlist").attr({'class':'btn btn-primary', 'id':'btn-list'}).text('List');
                 } 
-                else{
-                    status = true
+                if($("#btn-list").text() == 'List'){
+                    status = false
                     $("#btn-list").attr({'class':'btn btn-danger', 'id':'btn-unlist'}).text('Unlist');
                 }
                 const data={
@@ -85,7 +85,7 @@ table.on('click','td.unlist-list',function (e){
                     status:status
                 }
 
-                console.log(data)
+                // console.log(data)
                 
                 var self = this;
                 return $.ajax({
@@ -94,13 +94,16 @@ table.on('click','td.unlist-list',function (e){
                     method: 'post',
                     data:data
                 }).done(function (response) {  
-                    
+
+                    console.log(response)
+
+                    /*
                     if(response.message == 'success'){
-                        $.alert(" Unlisted Successfully");  
+                        $.alert("Successfully Updated");  
                         
                     }else {
                         $.alert(response.message);  
-                    }
+                    }*/
                     //$.alert("Successfully added : "+ response.message);
                     // location.reload(true);
                     //   table.row($row)
@@ -312,14 +315,11 @@ function editrow(id){
 
    
 }
-
  
 // document.querySelector('#addcat').addEventListener('click', ()=>{
 //     addNewRow();
 
 // });
-
-
  
     // Edit record
 // table.on('click', 'td.editor-edit ', function (e) {

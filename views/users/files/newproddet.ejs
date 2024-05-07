@@ -16,41 +16,46 @@
 <div class="zoomcontainer">
   <!-- zoom container start -->
 
-  <div class="x-zoom-container">
+  <div class="xzoom-container">
     <img
-      src="http://localhost:3000/uploads/images/1-min.jpg"
-      alt=""
+      height="400px"
+      width="400px"
+      src="<%= proddata.images[0].replace('.jpg', '-resized-400.jpg') %>"
       class="xzoom"
-      xoriginal="http://localhost:3000/uploads/images/1-min.jpg"
     />
+
     <div class="xzoom-thumbs">
-      <a href="http://localhost:3000/uploads/images/1.jpg" id="one">
+      <a
+        href="<%= proddata.images[0].replace('.jpg', '-resized-1024.jpg')%>"
+        id="one"
+      >
         <img
-          src="http://localhost:3000/uploads/images/1-min.jpg"
+          src="<%= proddata.images[0].replace('.jpg', '-resized-400.jpg') %>"
           class="xzoom-gallery"
-          alt=""
-          xpreview="http://localhost:3000/uploads/images/1-min.jpg"
+          alt="<%= proddata.images[0].replace('.jpg', '-resized-400.jpg') %>"
         />
       </a>
-      <a href="http://localhost:3000/uploads/images/2.jpg">
+      <!-- image 2 -->
+      <a
+        href="<%= proddata.images[1].replace('.jpg', '-resized-1024.jpg')%>"
+        id="one"
+      >
         <img
-          src="http://localhost:3000/uploads/images/2-min.jpg"
+          src="<%= proddata.images[1].replace('.jpg', '-resized-400.jpg') %>"
           class="xzoom-gallery"
-          alt=""
+          alt="<%= proddata.images[1].replace('.jpg', '-resized-400.jpg') %>"
         />
       </a>
-      <a href="http://localhost:3000/uploads/images/3.jpg">
+
+      <!-- image 3 -->
+      <a
+        href="<%= proddata.images[2].replace('.jpg', '-resized-1024.jpg')%>"
+        id="one"
+      >
         <img
-          src="http://localhost:3000/uploads/images/3-min.jpg"
+          src="<%= proddata.images[2].replace('.jpg', '-resized-400.jpg') %>"
           class="xzoom-gallery"
-          alt=""
-        />
-      </a>
-      <a href="http://localhost:3000/uploads/images/4.jpg">
-        <img
-          src="http://localhost:3000/uploads/images/4-min.jpg"
-          class="xzoom-gallery"
-          alt=""
+          alt="<%= proddata.images[2].replace('.jpg', '-resized-400.jpg') %>"
         />
       </a>
     </div>

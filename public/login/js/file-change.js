@@ -17,6 +17,7 @@ function viewImage2(e){
     const img1 = document.getElementById('img1');
 
     img1.src = URL.createObjectURL(e.target.files[0])
+
     $("#img1").attr("value","changedtwo");
 
 }

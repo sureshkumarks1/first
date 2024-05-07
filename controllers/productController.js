@@ -2,7 +2,7 @@ const { Product } = require('../models/productModel')
 const { Catagory } = require('../models/catagoryModel')
 const upload = require('../middleware/upload')
 const sharp = require('sharp');
-
+sharp.cache(false);
 const loadProd = (req, res)=>{
     //const prod = product.find()
     res.render('product',{"title":"products"})
@@ -22,6 +22,9 @@ const updt_prod = async (req,res) =>{
 
     let image1, image2, image3;
 
+    let imgname = "";
+    let newimgname = "";
+
     const { pname, pdescription, pcategory, productprice, productstock  } = req.body
 
     let product = {}
@@ -39,10 +42,8 @@ const updt_prod = async (req,res) =>{
             category:pcategory
         }
 
-
     }
     else{
-      
 
         const filetypeerr = req.files.map((file)=>{
             return file.mimetype!='image/jpeg'?false :true
@@ -58,23 +59,42 @@ const updt_prod = async (req,res) =>{
 
          }else{
 
-           
-            
-            
-
-            if(req.body.img0 == 'changedone'){
+           if(req.body.img0 == 'changedone'){
                  image1 = "http://localhost:3000/uploads/"+req.files[0].filename
+
+                 imgname =req.files[0].filename
+                 newimgname = imgname.replace('.jpg','')
+            
+            // let imgname = Date.now()            
+            resizeimage(req.files[0], newimgname);
+            resizeimagefour(req.files[0], newimgname);
+
             }else{
                 image1 = req.body.img0
             }
             
             if(req.body.img1 == 'changedtwo'){
                 image2 = "http://localhost:3000/uploads/"+req.files[0].filename
+
+                imgname =req.files[0].filename
+                    newimgname = imgname.replace('.jpg','')
+
+                resizeimage(req.files[0],newimgname);
+                resizeimagefour(req.files[0], newimgname);
+
+
            }else{
             image2 = req.body.img1
            }
            if(req.body.img2 == 'changedthree'){
                 image3 = "http://localhost:3000/uploads/"+req.files[0].filename
+
+                imgname =req.files[0].filename
+                    newimgname = imgname.replace('.jpg','')
+
+                resizeimage(req.files[0], newimgname);
+                resizeimagefour(req.files[0], newimgname);
+
             }else{
                 image3 = req.body.img2
             }
@@ -83,47 +103,34 @@ const updt_prod = async (req,res) =>{
                 
                  image1 = "http://localhost:3000/uploads/"+req.files[0].filename
                  image2 = "http://localhost:3000/uploads/"+req.files[1].filename
+                
+
+
+                 for(let i=0;i<2;i++){
+                    imgname =req.files[i].filename
+                    newimgname = imgname.replace('.jpg','')       
+                    resizeimage(req.files[i], newimgname);
+                    resizeimagefour(req.files[i], newimgname);
+                 }
+                 
             }
 
             if(req.body.img2 == 'changedthree'&&req.body.img1 == 'changedtwo'&&req.body.img0 == 'changedone'){
                  image1 = "http://localhost:3000/uploads/"+req.files[0].filename
                  image2 = "http://localhost:3000/uploads/"+req.files[1].filename
                  image3 = "http://localhost:3000/uploads/"+req.files[2].filename
-            }
-            
-            // try{
 
-            //     let newimg = 'http://localhost:3000/uploads/'+ Date.now()+"-resized.jpg";
-                
-            //     if(req.body.img0 == 'changedone'){
+                 for(let i=0;i<3;i++){
+                    imgname =req.files[i].filename
+                    newimgname = imgname.replace('.jpg','')
+                    resizeimage(req.files[i], newimgname);
+                    resizeimagefour(req.files[i], newimgname);
+                 }
+        }
 
-            //         image1 =req.files[0].path;
-
-            //         // console.log(image1)
-
-
-            //         await sharp(image1).resize({
-            //             width: 634,
-            //             height: 811,
-            //             fit: 'fill',
-            //           }).toFile(newimg);
-            //    }  
-
-            //         product = {
-            //             name : pname,
-            //             description : pdescription,
-            //             stock:productstock,
-            //             price:productprice,
-            //             image:newimg,
-            //             images:[image1,image2,image3],
-            //             category:pcategory
-            //         }
-                
-            // }catch(err){
-            //     console.log("the image name is ", image1)
-            //     console.log("There is some issue", err )
-            // }
-              
+            // let imgname = Date.now()
+            // resizeimage(req.files, imgname);
+            // resizeimagefour(req.files, imgname);
 
             product = {
                 name : pname,
@@ -131,29 +138,67 @@ const updt_prod = async (req,res) =>{
                 stock:productstock,
                 price:productprice,
                 image:image1,
-                images:[image1,image2,image3],
+                images:[image1, image2, image3],
                 category:pcategory
             }
          
      
     //  console.log(product)
 
-        const rest = await Product.updateOne(filter, product);
+            const rest = await Product.updateOne(filter, product);
 
-        //console.log(rest)
-        if(rest.acknowledged == true){
-           res.redirect('/admin/products')
-        }else{
-            res.redirect('/admin/products').json({success:false})
-        }
+            console.log(rest)
+            if(rest.acknowledged == true){
+            res.redirect('/admin/products')
+            }else{
+                res.redirect('/admin/products').json({success:false})
+            }
         //     // res.status(500).json({error:err, success:false})
          }
-   
-
 
     }
 
 }
+
+async function resizeimage(files, imgn){
+
+    try{
+            let newimg = "";       
+                
+            newimg = "uploads/"+imgn + '-resized-1024.jpg'
+            await sharp(files.path).resize({
+                width: 1024,
+                height: 1024,
+                fit: 'fill',
+              }).toFile(newimg);
+        
+     
+    }catch(err){
+        console.log("the error coming from file update", err)
+    }
+}
+
+async function resizeimagefour(files, imgnn){
+
+    try{
+        
+        let newimg400 = "";
+
+                  
+            newimg400 = "uploads/"+ imgnn + '-resized-400.jpg'
+              await sharp(files.path).resize({
+                 width: 400,
+                 height: 400,
+                 fit: 'fill',
+               }).toFile(newimg400);
+        
+     
+    }catch(err){
+        console.log("the error coming from file update", err)
+    }
+}
+
+
 
 const getProd = async (req, res) => {
 
@@ -172,25 +217,25 @@ const getProd = async (req, res) => {
 const del_prod = async(req, res) =>{
         
     const filter =  {_id : req.body.id} ;
+    
+    let doc = await Product.findOne({ _id: req.body.id }).select('status');    
+    
+    // console.log("The result is :",doc?.status)
 
-    const status =  req.body.status 
-
+    const status =  doc.status?false:true
+    
     const update = {status:status};
+    
+    await Product.updateOne(filter, {status:status});
 
-    let doc = await Product.findOne({ _id: req.body.id });    
-
-    console.log("This is status", status)
-
-    // Document changed in MongoDB, but not in Mongoose
-     await Product.updateOne(filter, {status:status});
-
-    // This will update `status`  to `false`, even though the doc changed.
+    
     doc.status = update.status;
     await doc.save().then(()=>{
-        res.send({'message':"success",status:true})
+        res.send({'message':"success",status:status})
     }).catch((err)=>{
         res.send({'message':"Failed"})
     });
+
 }
 
 
@@ -257,22 +302,18 @@ const insertProd = async (req, res)=>{
     }else{
 
 
-        const image1 = "http://localhost:3000/uploads/"+req.files[0].path
-        const image2 = "http://localhost:3000/uploads/"+req.files[1].path
-        const image3 = "http://localhost:3000/uploads/"+req.files[2].path
 
-        const newimg = 'http://localhost:3000/uploads/'+ Date.now()+"-resized.jpg";
+        const image1 = "http://localhost:3000/uploads/"+req.files[0].filename
+        const image2 = "http://localhost:3000/uploads/"+req.files[1].filename
+        const image3 = "http://localhost:3000/uploads/"+req.files[2].filename
+
+        // console.log(req.files)
+        resizeimage(req.files)
+
+        // console.log(arrres)
+
+        //const newimg = 'http://localhost:3000/uploads/'+ Date.now()+"-resized.jpg";
         
-        await sharp(image1).resize({
-            width: 150,
-            height: 150,
-            fit: 'fill',
-          }).toFile(newimg);
-
-
-        // console.log(image)
-        // return
-    
         const { pname, pdescription, pcategory, productprice, productstock  } = req.body
     
         const product = new Product({
@@ -280,12 +321,13 @@ const insertProd = async (req, res)=>{
             description : pdescription,
             stock:productstock,
             price:productprice,
-            image:newimg,
+            image:image1,
             images:[image1,image2,image3] ,
             category:pcategory
         })
-    
-        const psaved = await product.updateOne();
+
+       const psaved = await product.save();
+
         if(psaved){
            res.redirect('/admin/products')
         }else{
