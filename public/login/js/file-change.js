@@ -14,16 +14,17 @@ function viewImage(e){
 
 function viewImage2(e){
 
-    const img1 = document.getElementById('img1');
+    const img1 = document.getElementById('imgone');
 
-    img1.src = URL.createObjectURL(e.target.files[0])
+    console.log("image changed",e.target.files[0])
+     img1.src = URL.createObjectURL(e.target.files[0])
 
     $("#img1").attr("value","changedtwo");
 
 }
 function viewImage3(e){
 
-    const img2 = document.getElementById('img2');
+    const img2 = document.getElementById('imgtwo');
 
     img2.src = URL.createObjectURL(e.target.files[0])
 

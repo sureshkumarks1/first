@@ -58,11 +58,15 @@ const verifyLogin = async (req, res) => {
      
         if (adminData.role == 'admin') {
           req.session.admin_id = adminData._id;
+          console.log("The admin session id : ",req.session.admin_id)
           res.cookie('adn',adminData.name)
           //res.redirect("/admin/home");
           res.send({ message: "success",title:"login" }).json();
         } 
         
+      }else{
+        //console.log("error showing ")
+        res.render("login",{message:"Invalid Credentials",title:"login"})
       }
     } else{
       res.send({message:"nouser"})
@@ -125,6 +129,7 @@ const adminLogout = async (req,res) => {
   try {
     req.session.destroy();
     res.clearCookie('adn')
+    // console.log("The admin session id at the logout: ",req.session.admin_id)
     res.redirect("/admin");
   }
   catch (error) {

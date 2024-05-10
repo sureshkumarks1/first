@@ -137,14 +137,18 @@ const verifyLogin = async (req, res) => {
 
   const {email, password} = req.body;
 
+  
+
   if(!email){
   res.render("login", { email: "Email is required"});
   }else if(!password){
     res.render("login", { password: "Password is required",evalue:email  });
   } else{
+    
     try {     
-     
+       
       const errors = validationResult(req.body);
+
       if (errors.isEmpty()) {    
         const userData = await User.findOne({ email, role:'user' });       
         if(userData.status=='Deactive'){
@@ -167,12 +171,13 @@ const verifyLogin = async (req, res) => {
           
  
        } else {
+        
          if(email=="")
            res.render("login", { email: "Email is required" });
          }
-     } else {
-       res.render("login", { errors: "User doesn't exist Please register" });      
-     }
+        } else {
+          res.render("login", { errors: "User doesn't exist Please register" });      
+        }
     }
    }else{
  
@@ -198,9 +203,9 @@ const loadHome = async (req, res) => {
 
  // console.log(prod_list)
 
-    if(req.cookies.un){
+    if(req.session.uname){
       
-      word = req.cookies.un
+      word = req.session.uname
       const capitalized = word.charAt(0).toUpperCase()+ word.slice(1)
 
       res.render("home", {name:capitalized, products:prod_list});
@@ -217,6 +222,7 @@ const loadHome = async (req, res) => {
 const productDetails = async (req, res) => {
 
 
+  
   const id = req.params.id
 
     const prod = await Product.findOne({_id:id}).populate('category', 'name')
@@ -224,11 +230,20 @@ const productDetails = async (req, res) => {
     // console.log(prod)
     // return
 
+
     if(!prod){
       res.send({success:false}).json()
     }
+    let name = "Guest";
+    if(req.session.uname){
 
-    res.render("product-details",{name:"Guest", proddata:prod})
+       name = req.session.uname
+  
+    }else{
+       name = "Guest"
+    }
+    // console.log("The user name is :", name)
+    res.render("product-details",{name:name, proddata:prod})
 
   //res.render("product-details",{name:"guest"})
   // res.render("product-details",{name:"suresh"})

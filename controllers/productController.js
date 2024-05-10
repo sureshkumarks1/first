@@ -303,12 +303,20 @@ const insertProd = async (req, res)=>{
 
 
 
+
+
         const image1 = "http://localhost:3000/uploads/"+req.files[0].filename
         const image2 = "http://localhost:3000/uploads/"+req.files[1].filename
         const image3 = "http://localhost:3000/uploads/"+req.files[2].filename
 
         // console.log(req.files)
-        resizeimage(req.files)
+        // resizeimage(req.files)
+        for(let i=0;i<3;i++){
+            imgname =req.files[i].filename
+            newimgname = imgname.replace('.jpg','')
+            resizeimage(req.files[i], newimgname);
+            resizeimagefour(req.files[i], newimgname);
+         }
 
         // console.log(arrres)
 

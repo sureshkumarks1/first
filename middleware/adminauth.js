@@ -1,7 +1,7 @@
 
 const isLogin = async (req, res,next) => {
   try {
-    if (req.cookies.adn) {
+    if (req.session.admin_id) {
       next();
     }
     else {
@@ -17,7 +17,7 @@ const isLogin = async (req, res,next) => {
 
 const isLogout = async (req, res,next) => {
   try {
-    if (req.cookies.adn) {
+    if (req.session.admin_id) {
       //req.cookies.un = ''
       res.redirect("/admin/home")
     } else {

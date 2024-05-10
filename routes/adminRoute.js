@@ -38,7 +38,7 @@ admin_route.use(express.static('uploads'));
 admin_route.use("/catagory",  catroute);
 
 
-admin_route.use("/products",  product_route);
+admin_route.use("/products", auth.isLogin,  product_route);
 
 
 
@@ -97,6 +97,7 @@ admin_route.get("/users",auth.isLogin, admin.loadUsers);
 admin_route.post("/verify", admin.verifyLogin);
 
 //admin_route.get("/home",auth.isLogin, admin.adminDashboard);
+
 admin_route.get("/home",auth.isLogin, admin.adminDashboard);
 
 admin_route.get("/logout", auth.isLogin, admin.adminLogout);
@@ -105,15 +106,15 @@ admin_route.get("/adduser", auth.isLogin, admin.newUserload);
 
 admin_route.get("/addadmin", auth.isLogin, admin.newAdminload);
 
-admin_route.get("/edit-user", auth.isLogin,admin.editUserLoads);
+admin_route.get("/edit-user", auth.isLogin, admin.editUserLoads);
 
-admin_route.post("/add-user", admin.insertAdmin);
+admin_route.post("/add-user", auth.isLogin, admin.insertAdmin);
 
-admin_route.post("/add-admin", admin.insertNewAdmin);
+admin_route.post("/add-admin",auth.isLogin, admin.insertNewAdmin);
 
-admin_route.post("/edit-user", admin.updateUser);
+admin_route.post("/edit-user", auth.isLogin,admin.updateUser);
 
-admin_route.get("/delete-user", admin.deleteUser);
+admin_route.get("/delete-user",auth.isLogin, admin.deleteUser);
 
 admin_route.post("/block-user", auth.isLogin, admin.blockUser);
 
