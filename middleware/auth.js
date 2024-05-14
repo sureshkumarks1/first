@@ -1,36 +1,27 @@
-
-const isLogin = async (req, res,next) => {
+const isLogin = async (req, res, next) => {
   try {
-
-    if (req.cookies.un) {
+    if (req.cookies.un || req.session.uname) {
       // res.redirect("/")
       next();
-    }
-    else {
-    
+    } else {
       res.redirect("/login");
     }
-    
-  }
-  catch (error) {
+  } catch (error) {
     console.log(error.message);
-}  
-}
+  }
+};
 
-
-const isLogout = async (req, res,next) => {
+const isLogout = async (req, res, next) => {
   try {
-    if (req.cookies.un) {     
+    if (req.cookies.un || req.session.uname) {
       //req.session.user_id = ''
-      res.redirect("/")
-      
+      res.redirect("/");
     } else {
       next();
     }
-  }
-  catch (error) {
+  } catch (error) {
     console.log(error.message);
-}  
-}
+  }
+};
 
-module.exports={isLogin,isLogout}
+module.exports = { isLogin, isLogout };

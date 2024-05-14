@@ -77,9 +77,16 @@
       <p><%= proddata.description%></p>
     </div>
     <span>Price : $<%= proddata.price%></span>
+    <span>Qty : </span>
     <div>
       <button class="buy">Buy Now</button>
-      <button class="cart">Add to cart</button>
+      <a
+        href="/cart/<%= proddata._id %>"
+        class="button"
+        onclick="addToCart()"
+        class="cart"
+        ><button class="cart">Add to cart</button></a
+      >
     </div>
   </div>
   <!-- description  end -->
