@@ -104,7 +104,7 @@ const loginLoad = async (req, res) => {
   try {
     // res.render("login-old");
     // console.log(req.cookies.un)
-    // res.redirect("/");
+    // res.redirect("/login");
     res.render("login");
   } catch (error) {
     console.log(error.message);

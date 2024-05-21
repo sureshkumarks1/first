@@ -1,0 +1,161 @@
+<%- include('files/header.ejs') %>
+<body>
+  <% if (name) { %> <%- include('files/navbar.ejs', {name}) %> <% } else { %>
+  <%- include('files/navbar.ejs', {name:""}) %> <% } %>
+
+  <!-- styles needed by footable  -->
+  <link href="assets/css/footable-0.1.css" rel="stylesheet" type="text/css" />
+  <link
+    href="assets/css/footable.sortable-0.1.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+  <div class="container main-container headerOffset">
+    <div class="row">
+      <div class="col-lg-9 col-md-9 col-sm-7">
+        <h1 class="section-title-inner">
+          <span><i class="fa fa-unlock-alt"></i> My account </span>
+        </h1>
+
+        <div class="row userInfo">
+          <div class="col-xs-12 col-sm-12">
+            <h2 class="block-title-2">
+              <span
+                >Welcome to your account. Here you can manage all of your
+                personal information and orders.</span
+              >
+            </h2>
+            <ul class="myAccountList row">
+              <li class="col-lg-2 col-md-2 col-sm-3 col-xs-4 text-center">
+                <div class="thumbnail">
+                  <a title="Orders" href="/account/orderList"
+                    ><i class="fa fa-calendar"></i> Order history
+                  </a>
+                </div>
+              </li>
+              <li class="col-lg-2 col-md-2 col-sm-3 col-xs-4 text-center">
+                <div class="thumbnail">
+                  <a title="My addresses" href="/account/myAddress"
+                    ><i class="fa fa-map-marker"></i> My addresses</a
+                  >
+                </div>
+              </li>
+              <li class="col-lg-2 col-md-2 col-sm-3 col-xs-4 text-center">
+                <div class="thumbnail">
+                  <a title="Add address" href="/account/addAddress">
+                    <i class="fa fa-edit"> </i> Add address</a
+                  >
+                </div>
+              </li>
+              <li class="col-lg-2 col-md-2 col-sm-3 col-xs-4 text-center">
+                <div class="thumbnail">
+                  <a title="Change Password" href="/account/changePassword"
+                    ><i class="fa fa-cog"></i> Change Password</a
+                  >
+                </div>
+              </li>
+            </ul>
+            <div class="clear clearfix"></div>
+          </div>
+        </div>
+       
+        </div>
+
+        <!--/row end-->
+      </div>
+    </div>
+
+    <div style="clear: both"></div>
+
+    <div class="gap"></div>
+
+
+  </div>
+
+  <!--/row-->
+
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    let copyReferralCode = document.getElementById("copyReferralCode");
+    let copyText = document.getElementById("copyText");
+    copyReferralCode.addEventListener("click", () => {
+      // Select the text field
+      copyText.select();
+      copyText.setSelectionRange(0, 99999); //For mobile devices
+
+      // Copy the text inside the text field
+      navigator.clipboard.writeText(copyText.value);
+
+      Swal.fire("Copied your referral code");
+    });
+  </script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const walletBtn = document.getElementById("walletbtn");
+      walletBtn.addEventListener("click", walletAmountClickFunction);
+    });
+
+    async function walletAmountClickFunction(event) {
+      try {
+        event.preventDefault();
+        const walletAmountInput = document.getElementById("walletAmountInput");
+        const walletAmount = walletAmountInput.value;
+
+        if (walletAmount) {
+          const orderResponse = await fetch(
+            "/account/razorpay/create/orderId",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ amount: walletAmount }),
+            }
+          );
+          const order = await orderResponse.json();
+          await openRazorpay(order.amount, order.id);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    async function openRazorpay(amount, creditId) {
+      try {
+        var options = {
+          key: "rzp_test_LSVsVjKJgjMK1G",
+          amount: "" + amount,
+          currency: "INR",
+          name: "SMART STORE",
+          description: "Test Transaction",
+          callback_url: "/account/razoropay/end",
+          image: "/images/logo-dark.png",
+          credit_id: creditId,
+          theme: {
+            color: "#3399cc",
+          },
+        };
+        var razorpay = new Razorpay(options);
+        razorpay.open();
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  </script>
+
+  <%- include('files/footer.ejs') %>
+</body>

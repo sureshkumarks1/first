@@ -6,6 +6,7 @@ require("dotenv").config();
 const nocache = require("nocache");
 const userController = require("../controllers/userController");
 const cartController = require("../controllers/cartController.js");
+const profileController = require("../controllers/profileController.js");
 const auth = require("../middleware/auth");
 // const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
@@ -81,7 +82,7 @@ user_route.post("/login", userController.verifyLogin);
 user_route.get("/logout", auth.isLogin, userController.userLogout);
 user_route.get("/product-details/:id", userController.productDetails);
 
-/*---------cart route starts here---------*/
+/*==================cart route starts here=======================*/
 // user_route.get("/cart", auth.isLogin, blockedUserCheck, cartController.cart);
 user_route.get("/cart", cartController.cart);
 user_route.get(
@@ -108,9 +109,31 @@ user_route.put(
   blockedUserCheck,
   cartController.incQty
 );
-/*---------cart route ends here---------*/
+/*==================cart route ends here=======================*/
 
-// user_route.get("/logout",  userController.userLogout)
+/*========================user profile code starts here=============================== */
+// user_route.get("/profile", auth.isLogin, userController.loginLoad);
+user_route.get("/profile", auth.isLogin, profileController.accountPage);
+user_route.patch(
+  "/profile/chgpass",
+  auth.isLogin,
+  profileController.changePasswordPatch
+);
+user_route.get(
+  "/profile/orderhistory",
+  auth.isLogin,
+  profileController.orderHistory
+);
+user_route.post(
+  "/profile/addAddress",
+  auth.isLogin,
+  profileController.addAddressPost
+);
+/*========================user profile code ends here=============================== */
+
+user_route.get("/profile/getaddress/:id", profileController.singleAddress);
+user_route.get("/profile/deladdress/:id", profileController.deleteAddress);
+user_route.post("/profile/editAddress", profileController.editAddressPost);
 
 // user_route.get("/*", userController.notfound);
 

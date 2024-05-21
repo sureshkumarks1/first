@@ -37,7 +37,13 @@
               >
             </h3>
             <div class="price">$<%= product.price%></div>
-            <button class="btn btn-primary">ADD TO CART</button>
+            <a
+              href="/cart/<%= product._id %>"
+              class="button"
+              onclick="addToCart()"
+              class="cart"
+              ><button class="btn btn-primary">Add to cart</button></a
+            >
           </div>
         </div>
       </div>

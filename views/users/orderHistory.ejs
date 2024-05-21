@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My-Profile</title>
+    <!-- <link rel="stylesheet" href="/user/css/profile.css" /> -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <section class="py-5 bg-light">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-3 col-xl-3">
+            <nav class="nav flex-lg-column w-100 d-flex nav-pills mb-4">
+              <a class="nav-link my-0 bg-light" href="/profile"
+                ><p class="pb-0 mb-0" style="width: 100px">Account main</p></a
+              >
+              <a class="nav-link my-0 active" href="/orderList"
+                ><p class="pb-0 mb-0" style="width: 100px">Orders history</p></a
+              >
+            </nav>
+          </div>
+          <main class="col-lg-9 col-xl-9">
+            <div class="card p-4 mb-0 shadow-0 border">
+              <div class="content-body">
+                <!-- Order Management table -->
+                <div class="container m-1">
+                  <table class="table" id="productTable" style="width: 100%">
+                    <thead>
+                      <tr style="font-size: 14px">
+                        <th>Order No</th>
+                        <th>Order Date</th>
+                        <th>Payment</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                        <th>Cancel/Return</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {{#each orderData}}
+                      <tr
+                        style="font-size: 13px"
+                        data-order-id="{{ this._id }}"
+                      >
+                        <td>{{ this.orderNumber }}</td>
+                        <td>{{ this.orderDateFormatted }}</td>
+                        <td>{{ this.paymentType }}</td>
+                        <td>₹ {{ this.grandTotalCost }}</td>
+                        <td
+                          id="orderStatus"
+                          data-status="{{ this.orderStatus }}"
+                        >
+                          {{ this.orderStatus }}
+                        </td>
+                        <td>
+                          {{!-- view details modal starts --}}
+                          <div>
+                            <a href="/orderDetails/{{ this._id }}">
+                              <button
+                                type="button"
+                                class="btn btn-primary btn-sm"
+                                data-bs-toggle="modal"
+                                data-bs-target="#exampleModal"
+                              >
+                                View Details
+                              </button></a
+                            >
+                          </div>
+                        </td>
+                        <td>
+                          <a
+                            href="#"
+                            class="btn btn-sm btn-danger"
+                            onclick="cancelOrder('{{ this._id }}')"
+                            >Cancel
+                          </a>
+                          <a
+                            id="cancelBtn"
+                            class="btn btn-warning btn-sm"
+                            onclick="returnOrder('{{ this._id }}')"
+                            >Return</a
+                          >
+                        </td>
+                      </tr>
+                      {{/each}}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
+    </section>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script>
+      async function cancelOrder(orderId) {
+        Swal.fire({
+          title: "Are you sure?",
+          text: "You won't be able to revert this!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, Cancel the order",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            fetch("/cancelOrder/" + orderId, { method: "PUT" }).then((d) =>
+              console.log(d)
+            );
+            /*let cancelBtnElement = document.getElementById('cancelBtn')
+                    let cancelledBtnElement = document.getElementById('597a5bdf082df5a383c94b')
+
+                    cancelBtnElement.style.display = 'none'
+                    cancelledBtnElement.style.display = 'block'*/
+            Swal.fire({
+              title: "Cancelled!",
+              text: "Your order has been cancelled.",
+              icon: "success",
+            });
+          }
+        });
+      }
+    </script>
+
+    <script>
+      async function returnOrder(orderId) {
+        Swal.fire({
+          text: "Do you want to return this order?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, Return the order",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            fetch("/returnOrder/" + orderId, { method: "PUT" }).then((d) =>
+              console.log(d)
+            );
+            /*let cancelBtnElement = document.getElementById('cancelBtn')
+                    let cancelledBtnElement = document.getElementById('597a5bdf082df5a383c94b')
+
+                    cancelBtnElement.style.display = 'none'
+                    cancelledBtnElement.style.display = 'block'*/
+            Swal.fire({
+              text: "Return request sent.",
+              icon: "success",
+            });
+          }
+        });
+      }
+    </script>
+
+    <script>
+      // JavaScript
+      document.addEventListener("DOMContentLoaded", function () {
+        // Get all elements with the "orderStatus" ID
+        const orderStatusElements = document.querySelectorAll("#orderStatus");
+
+        // Loop through each element
+        orderStatusElements.forEach(function (element) {
+          // Get the status value from the data-status attribute
+          const status = element.getAttribute("data-status");
+
+          // Assign a class based on the status value
+          switch (status) {
+            case "Pending":
+              element.classList.add("text-danger"); // Add a class for Pending status
+              break;
+            case "Shipped":
+              element.classList.add("text-warning"); // Add a class for Shipped status
+              break;
+            case "Delivered":
+              element.classList.add("text-success"); // Add a class for Delivered status
+              break;
+            case "Return":
+              element.classList.add("text-danger"); // Add a class for Delivered status
+              break;
+            case "Return Pending":
+              element.classList.add("text-warning"); // Add a class for Delivered status
+              break;
+            case "Cancelled":
+              element.classList.add("text-danger"); // Add a class for Delivered status
+              break;
+            default:
+              // Add a default class for other statuses
+              element.classList.add("text-dark");
+          }
+        });
+      });
+    </script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Get the table element
+        const orderTable = document.getElementById("orderTable");
+
+        // Attach click event listener to table rows
+        orderTable.addEventListener("click", function (event) {
+          // Check if the clicked element is a table row
+          if (event.target.tagName === "TR") {
+            // Retrieve the order ID from the data-order-id attribute
+            const orderId = event.target.dataset.orderId;
+
+            // Redirect to the order details page
+            window.location.href = "/orders/" + orderId;
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

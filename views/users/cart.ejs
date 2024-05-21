@@ -362,10 +362,10 @@
                 console.log(data)
               );
               Swal.fire({
-                title: "Deleted!",
-                text: "Your file has been deleted.",
-                icon: "success",
-              }).then(() => location.reload());
+                icon: "error",
+                title: "Oops...",
+                text: "Something went wrong!",
+              });
             }
           });
         } catch (error) {
