@@ -18,11 +18,44 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    <style>
+
+      is-valid {
+        border: 1px solid green;
+      }
+
+      is-invalid {    
+        border: 1px solid red;
+      }
+      input {
+    padding:5px;
+}
+input.error {
+    border:1px solid #99182c;
+}
+span.arrow {
+    height:17px;
+    background: url('http://i45.tinypic.com/f9ifz6.png') no-repeat center left;
+    top:4px;
+}
+label.error {
+    border-top:1px solid #99182c;
+    border-bottom:1px solid #99182c;
+    border-right:1px solid #99182c;    
+    color:black;
+    padding:1px 5px 1px 5px;
+    font-size:small;
+
+}
+    </style>
   </head>
 
   <body>
-    <section class="py-5 bg-light">
+    <% if (name) { %> <%- include('files/navbar.ejs', {name}) %> <% } else { %>
+      <%- include('files/navbar.ejs', {name:""}) %> <% } %>
+    <section class="bg-light">
       <div class="container">
+        <h3 class="text-center py-2">My profile</h3>
         <div class="row">
           <div class="col-lg-3 col-xl-3">
             <nav class="nav flex-lg-column w-100 d-flex nav-pills mb-4">
@@ -31,6 +64,10 @@
               >
               <a class="nav-link my-0 bg-light" href="/profile/orderhistory"
                 ><p class="pb-0 mb-0" style="width: 100px">Orders history</p></a
+              >
+              <!-- chgpass -->
+              <a class="nav-link my-0 bg-light" href="/profile/chgpass"
+                ><p class="pb-0 mb-0" style="width: 100px">Change Password</p></a
               >
             </nav>
           </div>
@@ -73,11 +110,11 @@
                 </p>
                 <div class="collapse" id="collapseExample">
                   <div class="card card-body">
-                    <h5 class="modal-title" id="exampleModalLabel">
+                    <h5 class="modal-title text-center mb-3" id="exampleModalLabel">
                       Add New Address
                     </h5>
                     <form
-                      action="/addAddress"
+                      name="addAddressForm"
                       method="POST"
                       role="form"
                       id="addAddressForm"
@@ -90,9 +127,11 @@
                             name="addressTitle"
                             class="form-control"
                             placeholder="Address Title"
-                            required
-                          />
+                            
+                          />                        
                         </div>
+                        
+                        <div class="text-danger mb-3" id="addressTitle-error"></div>                        
                         <div class="input-group mb-3">
                           <input
                             type="text"
@@ -100,9 +139,11 @@
                             name="firstName"
                             class="form-control"
                             placeholder="First Name"
-                            required
+                            
                           />
+                          
                         </div>
+                        <div class="text-danger mb-3" id="firstName-error"></div>
 
                         <div class="input-group mb-3">
                           <input
@@ -111,9 +152,10 @@
                             name="lastName"
                             class="form-control"
                             placeholder="Last Name"
-                            required
+                            
                           />
                         </div>
+                        <div class="text-danger mb2" id="lastName-error"></div>
                         <div class="input-group mb-3">
                           <input
                             type="text"
@@ -121,9 +163,10 @@
                             name="addressLine1"
                             class="form-control"
                             placeholder="Address Line 1"
-                            required
+                            
                           />
                         </div>
+                        <div class="text-danger mb-3" id="addressLine1-error"></div>
                         <div class="input-group mb-3">
                           <input
                             type="text"
@@ -133,7 +176,7 @@
                             placeholder="Address Line 2"
                           />
                         </div>
-
+                        <div class="text-danger mb-3" id="addressLine2-error"></div>
                         <div class="input-group mb-3">
                           <input
                             type="text"
@@ -141,19 +184,21 @@
                             name="state"
                             class="form-control"
                             placeholder="State"
-                            required
+                            
                           />
                         </div>
+                        <div class="text-danger mb-3" id="state-error"></div>
                         <div class="input-group mb-3">
                           <input
                             type="text"
                             id="phone"
-                            name="phone"
+                            name="phone"                           
                             class="form-control"
                             placeholder="Phone Number"
-                            required
+                            
                           />
                         </div>
+                        <div class="text-danger mb-3" id="phone-error"></div>
                       </div>
                       <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">
@@ -244,7 +289,7 @@
                   name="firstName"
                   class="form-control"
                   value=""
-                  required
+                  
                 />
               </div>
 
@@ -255,7 +300,7 @@
                   name="lastName"
                   class="form-control"
                   value=""
-                  required
+                  
                 />
               </div>
               <div class="input-group mb-3">
@@ -265,7 +310,7 @@
                   name="addressLine1"
                   class="form-control"
                   value=""
-                  required
+                  
                 />
               </div>
               <div class="input-group mb-3">
@@ -285,19 +330,19 @@
                   name="state"
                   class="form-control"
                   value=""
-                  required
+                  
                 />
               </div>
               <div class="input-group mb-3">
                 <input
                   type="text"
                   id="phone"
-                  name="phone"
-                  class="form-control"
-                  value=""
-                  required
+                  name="phone"                  
+                  class="form-control"                  
+                  
                 />
               </div>
+              
             </div>
             <div class="modal-footer">
               <button type="submit" class="btn btn-primary">
@@ -315,9 +360,11 @@
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"
     ></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+  <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
+  
     <script>
 
 
@@ -370,14 +417,14 @@ if (exampleModal) {
     const phone = exampleModal.querySelector('#phone')
     phone.value = address.phone;
 
-    }
+    }//else end bracket
     // addressTitle
 
     // If necessary, you could initiate an Ajax request here
     // and then do the updating in a callback.
 
 
-  })
+  });
 }
 
       $("button.btn-filter-expand").html("Add New Address");
@@ -440,15 +487,66 @@ if (exampleModal) {
         });
       }
 
+    function checkPhone(frmData){
+      let pattern = /[0-9]{10}/ig;
 
+const tagId = ("#"+frmData.id).toString()
+const disp = frmData.id+"-error"
+
+
+  if (pattern.test(frmData.value)) {      
+    
+    $(tagId).removeClass("is-invalid");
+    $(tagId).addClass("is-valid");  
+    document.getElementById(disp).innerText ="";
+    return true
+  }else{          
+    $(tagId).addClass("is-invalid");
+    document.getElementById(disp).innerText = "This field is required";
+  return false
+  }
+  }
+      
+
+      function checkValue(frmData){
+        let pattern = /[a-z]/ig;
+
+        const tagId = ("#"+frmData.id).toString()
+        const disp = frmData.id+"-error"
+        
+       
+        if (pattern.test(frmData.value)) {      
+          
+          $(tagId).removeClass("is-invalid");
+          $(tagId).addClass("is-valid");  
+          document.getElementById(disp).innerText ="";
+          return true
+        }else{          
+          $(tagId).addClass("is-invalid");
+          document.getElementById(disp).innerText = "This field is required";
+         return false
+        }
+      }
+     
+      function whiteSpace(data) {
+        let result = false;
+        for(let i=0;i<data.length-2;i++ ){
+          result =  checkValue(data[i]);
+        }
+        result = checkPhone(data[6])
+        
+        return result
+      }
       // Handle form submission
       $(document).on("submit", "#addAddressForm", function (e) {
         e.preventDefault(); // Prevent the form from submitting normally
+        const form = document.getElementById("addAddressForm");
 
         // Gather form data
         const formData = $(this).serialize();
-
-        // AJAX request to submit form data to the server
+        
+        if(whiteSpace(form)){
+          // AJAX request to submit form data to the server
         $.ajax({
           url: "/profile/addAddress",
           method: "POST",
@@ -473,6 +571,8 @@ if (exampleModal) {
             console.error(error);
           },
         });
+        }
+        
       });
 
       //edit form update values in back end
@@ -482,6 +582,7 @@ if (exampleModal) {
 
         // Gather form data
         const formData = $(this).serialize();
+ 
 
         // AJAX request to submit form data to the server
         $.ajax({
@@ -510,6 +611,7 @@ if (exampleModal) {
             console.error(error);
           },
         });
+      
       });
 
     </script>

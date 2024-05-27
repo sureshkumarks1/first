@@ -4,15 +4,19 @@ const orderSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Types.ObjectId,
     required: true,
+    ref: "users",
   },
   orderNumber: { type: Number, required: true },
-  orderDate: { type: Date, required: true, default: new Date() },
+  orderDate: {
+    type: Date,
+    required: true,
+    default: function () {
+      // Get current date and format it to 'YYYY-MM-DD'
+      return new Date().toISOString().slice(0, 10);
+    },
+  },
   paymentType: { type: String, default: "toBeChosen" },
   orderStatus: { type: String, default: "Pending" },
-  returnApproval: {
-    type: Boolean,
-    default: false,
-  },
   addressChosen: {
     type: mongoose.Types.ObjectId,
     required: true,
@@ -21,14 +25,6 @@ const orderSchema = new mongoose.Schema({
   cartData: { type: Array },
   grandTotalCost: { type: Number },
   paymentId: { type: String },
-  totalOrders: { type: Number, default: 0 },
-  totalDiscount: { type: Number, default: 0 },
-  totalCouponDeduction: { type: Number, default: 0 },
-
-  productOffers: [{ type: mongoose.Schema.Types.ObjectId, ref: "products" }],
-  couponOffers: [{ type: mongoose.Schema.Types.ObjectId, ref: "coupons" }],
-  cancelReason: { type: String, default: null },
-  ReturnReason: { type: String, default: null },
 });
 
 const orderCollection = mongoose.model("orders", orderSchema);

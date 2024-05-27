@@ -73,7 +73,7 @@ user_route.get("/login", auth.isLogout, userController.loginLoad);
 
 //user_route.get("/login" , auth.isLogout, userController.loginLoad);
 
-user_route.post("/login", userController.verifyLogin);
+user_route.post("/login", auth.isLogout, userController.verifyLogin);
 
 //user_route.get("/home", auth.isLogin,userController.loadHome);
 // user_route.get("/home", userController.loadHome);
@@ -120,6 +120,17 @@ user_route.patch(
   profileController.changePasswordPatch
 );
 user_route.get(
+  "/profile/chgpass",
+  auth.isLogin,
+  profileController.changePassword
+);
+user_route.post(
+  "/profile/getPassword",
+  auth.isLogin,
+  profileController.getPassword
+);
+
+user_route.get(
   "/profile/orderhistory",
   auth.isLogin,
   profileController.orderHistory
@@ -134,6 +145,22 @@ user_route.post(
 user_route.get("/profile/getaddress/:id", profileController.singleAddress);
 user_route.get("/profile/deladdress/:id", profileController.deleteAddress);
 user_route.post("/profile/editAddress", profileController.editAddressPost);
+
+/****************cart section*****************/
+user_route.get("/checkout/:id", auth.isLogin, cartController.checkoutPage);
+user_route.post("/orderplaced", auth.isLogin, cartController.orderPlaced);
+user_route.get(
+  "/orderplacedend/:oid/:pm",
+  auth.isLogin,
+  cartController.orderPlacedEnd
+);
+user_route.put("/cancelorder/:id", auth.isLogin, profileController.cancelOrder);
+user_route.get(
+  "/order/getorderdetails/:id",
+  auth.isLogin,
+  profileController.getOrderDetails
+);
+/****************cart section*****************/
 
 // user_route.get("/*", userController.notfound);
 

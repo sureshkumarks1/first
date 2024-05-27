@@ -55,7 +55,7 @@ module.exports = {
   },
 
   addAddressPost: async (req, res) => {
-    // console.log(req.body);
+    //console.log(req.body);
 
     try {
       const address = {
@@ -107,11 +107,39 @@ module.exports = {
     }
   },
 
+  getPassword: async (req, res) => {
+    try {
+      //console.log(req.body.password);
+
+      const cpassword = await User.findOne({
+        _id: req.session.user_id,
+      }).select("password");
+
+      // console.log(req.session.currentUser);
+
+      const compareCurrentPass = bcrypt.compareSync(
+        req.body.password,
+        cpassword.password
+      );
+
+      //console.log(compareCurrentPass);
+
+      res.json({ success: compareCurrentPass });
+    } catch (error) {
+      console.error(error);
+    }
+  },
+
   changePassword: async (req, res) => {
     try {
-      res.render("users/changePassword", {
-        invalidCurrentPassword: req.session.invalidCurrentPassword,
+      const cpassword = await User.findOne({
+        _id: req.session.user_id,
+      }).select("password");
+
+      res.render("changePassword", {
+        currentPassword: cpassword,
         currentUser: req.session.currentUser,
+        name: req.session.currentUser,
       });
     } catch (error) {
       console.error(error);
@@ -119,16 +147,15 @@ module.exports = {
   },
 
   changePasswordPatch: async (req, res) => {
-    console.log("hi i am from password change", req.session.currentUser);
-
     const cpassword = await User.findOne({
       _id: req.body.userId,
     }).select("password");
     // console.log("The current password", cpassword);
 
+    /*
     try {
       const compareCurrentPass = bcrypt.compareSync(
-        req.body.currentPassword,
+        req.body.password,
         cpassword.password
       );
 
@@ -147,6 +174,8 @@ module.exports = {
     } catch (error) {
       console.error(error);
     }
+    */
+    res.json({ success: true });
   },
 
   orderHistory: async (req, res) => {
@@ -158,13 +187,14 @@ module.exports = {
         (order) => order.paymentType !== "toBeChosen"
       );
 
-      orderData = orderData.map((v) => {
-        v.orderDateFormatted = formatDate(v.orderDate);
-        return v;
+      orderData = orderData.map((ordata) => {
+        ordata.orderDateFormatted = formatDate(ordata.orderDate);
+        return ordata;
       });
 
       res.render("orderHistory", {
         currentUser: req.session.currentUser,
+        name: req.session.currentUser,
         orderData,
       });
     } catch (error) {
@@ -191,62 +221,28 @@ module.exports = {
 
   cancelOrder: async (req, res) => {
     try {
-      const { cancelReason } = req.body;
-
-      const orderData = await orderCollection.findOne({ _id: req.params.id });
-
-      await orderCollection.findByIdAndUpdate(
+      const result = await orderCollection.findByIdAndUpdate(
         { _id: req.params.id },
-        { $set: { orderStatus: "Cancelled", cancelReason } }
+        { $set: { orderStatus: "Cancelled" } }
       );
 
-      let walletTransaction = {
-        transactionDate: new Date(),
-        transactionAmount: orderData.grandTotalCost,
-        transactionType: "Refund from cancelled Order",
-      };
-
-      await walletCollection.findOneAndUpdate(
-        { userId: req.session.user_id },
-        {
-          $inc: { walletBalance: orderData.grandTotalCost },
-          $push: { walletTransaction },
-        }
-      );
-
-      res.json({ success: true });
+      res.send({ success: true });
     } catch (error) {
       console.error(error);
       res.status(500).json({ success: false, error: "Internal server error" });
     }
   },
 
-  returnRequest: async (req, res) => {
+  getOrderDetails: async (req, res) => {
     try {
-      const { ReturnReason } = req.body;
-
-      const orderData = await orderCollection.findOne({ _id: req.params.id });
-
-      await orderCollection.findByIdAndUpdate(
-        { _id: req.params.id },
-        { $set: { orderStatus: "Return", ReturnReason } }
-      );
-
-      let walletTransaction = {
-        transactionDate: new Date(),
-        transactionAmount: orderData.grandTotalCost,
-        transactionType: "Refund from cancelled Order",
-      };
-
-      await walletCollection.findOneAndUpdate(
-        { userId: req.session.user_id },
-        {
-          $inc: { walletBalance: orderData.grandTotalCost },
-          $push: { walletTransaction },
-        }
-      );
-
-      res.json({ success: true });
+      let orderData = await orderCollection
+        .find({
+          _id: req.params.id,
+          userId: req.session.user_id,
+        })
+        .populate("addressChosen");
+      res.send({ data: orderData });
+      console.log(orderData);
     } catch (error) {
       console.error(error);
     }

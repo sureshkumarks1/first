@@ -2,7 +2,14 @@
 <body>
   <% if (name) { %> <%- include('files/navbar.ejs', {name}) %> <% } else { %>
   <%- include('files/navbar.ejs', {name:""}) %> <% } %>
-
+  <div class="container">
+    <nav aria-label="breadcrum">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item"><a href="/cart">cart</a></li>
+      </ol>
+    </nav>
+  </div>
   <div class="container main-container headerOffset">
     <!--/.row-->
 
@@ -56,12 +63,18 @@
                             width="100px"
                             height="100px"
                         /></a>
+                        <input
+                          type="hidden"
+                          name="cartId"
+                          id="cartId"
+                          value="<%= item._id %>"
+                        />
                       </div>
                     </td>
                     <td>
                       <div class="CartDescription">
                         <h5>
-                          <a href="/productDetails/<%= item.productId._id %>"
+                          <a href="/product-details/<%= item.productId._id %>"
                             ><%= item.productId.name %></a
                           >
                         </h5>
@@ -165,10 +178,11 @@
                     <tr>
                       <td colspan="2" align="center">
                         <% if (userCartData.length) { %>
+
                         <a
-                          class="btn btn-primary btn-lg btn-block"
+                          class="btn btn-primary btn-lg btn-block chkBtn"
                           title="checkout"
-                          href="/checkout"
+                          href="#"
                         >
                           checkout &nbsp;
                         </a>
@@ -184,11 +198,6 @@
               class="empty-cart-message"
               style="text-align: center; padding: 20px"
             >
-              <img
-                src="images/product/giphy.gif"
-                alt="Empty Cart Image"
-                style="width: 400px; height: 400px; margin-bottom: 10px"
-              />
               <h3
                 style="
                   font-family: 'Lucida Sans', 'Lucida Sans Regular',
@@ -372,6 +381,15 @@
           console.error(error);
         }
       }
+
+      const checkOutBtn = document.querySelector(".chkBtn");
+      const cartId = document.querySelector("#cartId");
+
+      checkOutBtn.addEventListener("click", () => {
+        const link = "/checkout/" + cartId.value;
+        // console.log(link);
+        window.location.href = link;
+      });
     </script>
 
     <%- include('files/footer.ejs') %>

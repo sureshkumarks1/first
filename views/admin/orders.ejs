@@ -1,0 +1,48 @@
+<%-include("../layouts/header.ejs")-%>
+<div id="layoutSidenav_content">
+  <main>
+    <div class="container-fluid px-4" id="divtable">
+      <h1 class="mt-4">Products</h1>
+      <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/admin/home">Dashboard</a></li>
+        <li class="breadcrumb-item active">Orders</li>
+      </ol>
+
+      <div class="card mb-4">
+        <div class="card-header">
+          <i class="fas fa-table me-1"></i>
+          Products
+        </div>
+        <div class="card-body">
+          <div>
+            <a href="/admin/products/add" class="btn btn-success" id="addprod"
+              >Add</a
+            >
+          </div>
+          <table
+            id="showorders"
+            class="table table-striped"
+            style="width: 100%"
+          >
+            <thead>
+              <tr>
+                <th>Name</th>
+                <!-- <th>Price</th>
+                <th>Description</th>
+                <th>Images</th>
+                <th>Image</th>
+                <th>Stock</th>
+                <th>Status</th> -->
+                <!-- <th>List</th> -->
+                <!-- <th>Edit</th> -->
+                <!-- <th>Delete</th> -->
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<%-include("../layouts/footer-order.ejs")-%>
