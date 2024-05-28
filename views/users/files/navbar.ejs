@@ -19,8 +19,8 @@
       </div>
       <div class="col-xxl-5 col-lg-5 d-none d-lg-block">
         <div class="d-flex justify-content-center">
-          <div class="p-2">Home</div>
-          <div class="p-2">Shop</div>
+          <div class="p-2"><a style="" href="/">Home</a></div>
+          <div class="p-2" ><a href="/products">Products</a></div>
           <div class="p-2">Blog</div>
           <div class="p-2">Contact Us</div>
         </div>
@@ -29,7 +29,7 @@
       <div class="col-lg-2 col-xxl-2 text-end col-md-6 col-7 list-inline">
         <% if (name=="Guest") { %>
         <div class="list-inline-item">
-          Hello Guest, <a href="/login">Login</a>
+          Hello Guest, <a class="btn btn-primary" href="/login">Login</a>
         </div>
         <% } else { %>
         <!-- STARTS HERE -->
@@ -141,7 +141,7 @@
       </div>
       <div class="col-lg-2 col-xxl-2 text-end col-md-6 col-7 list-inline">
         <div class="list-inline-item">
-          Welcoem <%= name %>&nbsp;&nbsp;<a href="/logout">Logout</a>
+          Welcoem <%= name %>&nbsp;&nbsp;<a class="btn btn-danger" href="/logout">Logout</a>
         </div>
         <% }%>
       </div>

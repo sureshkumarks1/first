@@ -17,7 +17,7 @@ module.exports = {
 
       res.render("profile", {
         currentUser: req.session.currentUser,
-        name: req.session.currentUser,
+        name: req.session.currentUser.name,
         userData,
         addressData,
         userId: req.session.user_id,
@@ -139,7 +139,7 @@ module.exports = {
       res.render("changePassword", {
         currentPassword: cpassword,
         currentUser: req.session.currentUser,
-        name: req.session.currentUser,
+        name: req.session.currentUser.name,
       });
     } catch (error) {
       console.error(error);
@@ -152,7 +152,6 @@ module.exports = {
     }).select("password");
     // console.log("The current password", cpassword);
 
-    /*
     try {
       const compareCurrentPass = bcrypt.compareSync(
         req.body.password,
@@ -160,11 +159,11 @@ module.exports = {
       );
 
       if (compareCurrentPass) {
-        const encryptedNewPassword = bcrypt.hashSync(req.body.confirmPass, 10);
-        await User.updateOne(
-          { _id: req.session.user_id },
-          { $set: { password: encryptedNewPassword } }
-        );
+        // const encryptedNewPassword = bcrypt.hashSync(req.body.password, 10);
+        // await User.updateOne(
+        //   { _id: req.session.user_id },
+        //   { $set: { password: encryptedNewPassword } }
+        // );
         // req.session.currentPassword=await User.find({_id: req.session.user_id})
         res.json({ success: true });
       } else {
@@ -174,8 +173,6 @@ module.exports = {
     } catch (error) {
       console.error(error);
     }
-    */
-    res.json({ success: true });
   },
 
   orderHistory: async (req, res) => {
@@ -194,7 +191,7 @@ module.exports = {
 
       res.render("orderHistory", {
         currentUser: req.session.currentUser,
-        name: req.session.currentUser,
+        name: req.session.currentUser.name,
         orderData,
       });
     } catch (error) {

@@ -1,11 +1,11 @@
 const { User, validateUser } = require("../models/userModel");
-
+const profileController = require("../controllers/profileController.js");
 const { Product } = require("../models/productModel");
 const { Catagory } = require("../models/catagoryModel");
 const bcrypt = require("bcrypt");
 const { validationResult } = require("express-validator");
 const url = require("url");
-
+const productController = require("../controllers/productController.js");
 const { sendEmail } = require("../services/sendEmail");
 
 //console.log(app.locals.age)
@@ -111,6 +111,14 @@ const loginLoad = async (req, res) => {
   }
 };
 
+const forgotPassword = async (req, res) => {
+  try {
+    res.render("forgotPassword");
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
 const verifyLogin = async (req, res) => {
   const { email, password } = req.body;
 
@@ -194,6 +202,26 @@ const loadHome = async (req, res) => {
   }
 };
 
+const productPage = async (req, res) => {
+  // console.log(prod)
+  // return
+
+  let name = "Guest";
+  if (req.session.uname) {
+    name = req.session.uname;
+  } else {
+    name = "Guest";
+  }
+
+  const p_list = profileController.getAllPorducts();
+
+  // console.log("The user name is :", name)
+  res.render("producthome", { name: name, products: p_list });
+
+  //res.render("product-details",{name:"guest"})
+  // res.render("product-details",{name:"suresh"})
+};
+
 const productDetails = async (req, res) => {
   const id = req.params.id;
 
@@ -243,4 +271,6 @@ module.exports = {
   checkvalues,
   notfound,
   productDetails,
+  forgotPassword,
+  productPage,
 };

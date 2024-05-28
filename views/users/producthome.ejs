@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My-Profile</title>
+    <!-- <link rel="stylesheet" href="/user/css/profile.css" /> -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <style>
+      a {
+        text-decoration: none;
+      }
+      #overlay{	
+  position: fixed;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  height:100%;
+  display: none;
+  background: rgba(0,0,0,0.6);
+}
+.cv-spinner {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;  
+}
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px #ddd solid;
+  border-top: 4px #2e93e6 solid;
+  border-radius: 50%;
+  animation: sp-anime 0.8s infinite linear;
+}
+@keyframes sp-anime {
+  100% { 
+    transform: rotate(360deg); 
+  }
+}
+.is-hide{
+  display:none;
+}
+    </style>
+  </head>
+
+  <body>
+    <% if (name) { %> <%- include('files/navbar.ejs', {name}) %> <% } else { %>
+    <%- include('files/navbar.ejs', {name:""}) %> <% } %>
+    <!-- body starts here -->
+    <div class="container py-3">
+      <div class="row">
+        <div class="col-sm-2">
+          <!-- Category -->
+          <div class="single category">
+            <h3 class="side-title">Sort By</h3>
+            <ul class="list-unstyled" id="sortby">
+              <li>
+                <a href="" title="">New Arrival </a>
+              </li>
+              <li>
+                <a href="" title="">Popularity </a>
+              </li>
+              <li>
+                <a href="" title="">Featured</a>
+              </li>
+              <li>
+                <a href="" title="">A-Z</a>
+              </li>
+              <li>
+                <a href="" title="">Z-A</a>
+              </li>
+            </ul>
+          </div>
+          <div class="single category" id="category">
+            <h3 class="side-title">Category</h3>
+            <ul class="list-unstyled">
+              <li>
+                <a href="" title="">Business </a>
+              </li>
+            </ul>
+          </div>
+          <div class="single category">
+            <h3 class="side-title">Price Range</h3>
+            <ul class="list-unstyled" id="pricerange">
+              <li value="0-100">
+                <a href="#" title="">High - Low</a>
+              </li>
+              <li value="0-100">
+                <a href="#" title="">Low - High</a>
+              </li>
+              <li value="0-100">
+                <a href="#" title="">0-100</a>
+              </li>
+              <li value="101-200">
+                <a href="#" title="">101-200 </a>
+              </li>
+              <li value="201-300">
+                <a href="#" title="">201-300 </a>
+              </li>
+              <li value="301-400">
+                <a href="#" title="">301-400</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-sm-10" >
+          <div id="overlay">
+            <div class="cv-spinner">
+              <span class="spinner"></span>
+            </div>
+          </div>
+          <div class="alert alert-success" role="alert" id="dispAlert">
+            Total 0 items found
+          </div>
+          <div class="row row-cols-1 row-cols-md-3 g-4 d-flex justify-content-center" id="productsSpace" >   
+                  <div class="text-center">
+                      <h4 >No Products Found</h4>
+                  </div>
+              
+          </div>       
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- body ends here -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script>
+      const productsSpace = document.getElementById("productsSpace");
+      const dispAlert = document.getElementById("dispAlert");
+      function displayData(data) {
+        
+        if(data.length>0){
+
+        data.forEach((product) => {
+          const productTemplate = ` <div class="col-md-4 col-sm-6">
+              <div class="card">
+                <a class="card-img-tiles" href="#" data-abc="true">
+                  <div class="inner">
+                    <div class="main-img text-center">
+                      <img
+                        src="https://i.imgur.com/O0GMYuw.jpg"
+                        alt="Category"
+                      />
+                    </div></div
+                ></a>
+                <div class="card-body text-center">
+                  <h4 class="card-title">${product.name}</h4>
+                  <p class="text-muted">Price :${product.price}</p>
+                  <a
+                    class="btn btn-outline-primary btn-sm"
+                    href="#"
+                    data-abc="true"
+                    >View Products
+                  </a>
+                </div>
+              </div>
+            </div>`;
+
+           productsSpace.insertAdjacentHTML("beforeend", productTemplate);
+          
+        });
+      
+    }else{
+      $("#productsSpace").addClass("d-flex justify-content-center")
+      const productTemplate = `<div class="text-center">
+                      <h4 >No Products Found</h4>
+                  </div>`
+      productsSpace.insertAdjacentHTML("beforeend", productTemplate);
+    }
+  }
+
+      // const priceRangeUl = document.getElementById("pricerange");
+    
+    
+//getting all product on load
+      $(document).ready(function() {
+        const formData = {
+        range: "all",
+      };
+        $.ajax({
+        url: "/products/range",
+        method: "POST",
+        data: formData,
+        success: function (response) {
+          
+            if (response.success == true) {
+              $("#productsSpace").html("")//d-flex justify-content-center
+              $("#productsSpace").removeClass("d-flex justify-content-center")
+              $("#dispAlert").html(`Total ${response.count} items found`);
+              displayData(response.products);
+            }
+        },
+        error: function (xhr, status, error) {
+          // Handle error response
+          console.error(error);
+        },
+      });
+    });
+      
+
+    // function sortBy(){
+
+    
+      
+    $("#pricerange li").click(async function (i) {
+
+      const productsSpace = document.getElementById("productsSpace");
+      var index = $(this).index();
+      var text = $(this).text();
+      var value = $(this).attr("value");
+
+      const formData = {
+        range: value,
+      };
+
+    
+      // AJAX request to submit form data to the server
+      $.ajax({
+        url: "/products/range",
+        method: "POST",
+        data: formData,
+        success: function (response) {
+          
+            if (response.success == true) {
+              $("#productsSpace").html("")//d-flex justify-content-center
+              $("#productsSpace").removeClass("d-flex justify-content-center")
+              $("#dispAlert").html(`Total ${response.count} items found`);
+              displayData(response.products);
+            }
+        },
+        error: function (xhr, status, error) {
+          // Handle error response
+          console.error(error);
+        },
+      });
+    });
+  
+    </script>
+  </body>
+</html>

@@ -7,6 +7,8 @@ const nocache = require("nocache");
 const userController = require("../controllers/userController");
 const cartController = require("../controllers/cartController.js");
 const profileController = require("../controllers/profileController.js");
+const productController = require("../controllers/productController.js");
+
 const auth = require("../middleware/auth");
 // const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
@@ -69,6 +71,11 @@ user_route.get("/", userController.loadHome);
 //user_route.get("/home",  userController.loadHome);
 
 user_route.get("/login", auth.isLogout, userController.loginLoad);
+user_route.get(
+  "/profile/fogotPassword",
+  auth.isLogout,
+  userController.forgotPassword
+);
 // user_route.get("/login" , auth.isLogin, userController.loadHome);
 
 //user_route.get("/login" , auth.isLogout, userController.loginLoad);
@@ -80,6 +87,11 @@ user_route.post("/login", auth.isLogout, userController.verifyLogin);
 //user_route.get("/home", userController.loadHome);
 
 user_route.get("/logout", auth.isLogin, userController.userLogout);
+user_route.get("/products", productController.productPage);
+user_route.post(
+  "/products/range",
+  productController.getAllPorductsByPriceRange
+);
 user_route.get("/product-details/:id", userController.productDetails);
 
 /*==================cart route starts here=======================*/

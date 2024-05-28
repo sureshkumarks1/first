@@ -1,6 +1,7 @@
 const { Product } = require("../models/productModel");
 const { Catagory } = require("../models/catagoryModel");
 const { orderCollection } = require("../models/orderModel");
+
 const upload = require("../middleware/upload");
 const sharp = require("sharp");
 sharp.cache(false);
@@ -203,6 +204,76 @@ const getOrders = async (req, res) => {
 
   res.send({ data: orders_list }).json();
 };
+
+// product get all
+
+const productPage = async (req, res) => {
+  // console.log(prod)
+  // return
+
+  let name = "Guest";
+  if (req.session.uname) {
+    name = req.session.uname;
+  } else {
+    name = "Guest";
+  }
+
+  const p_list = await getAllPorducts();
+
+  // console.log(p_list.products);
+
+  // console.log("The user name is :", name)
+  res.render("producthome", { name: name, products: p_list.products });
+
+  //res.render("product-details",{name:"guest"})
+  // res.render("product-details",{name:"suresh"})
+};
+
+const getAllPorducts = async (req, res) => {
+  const prod_list = await Product.find({ status: true });
+  return { products: prod_list };
+};
+
+const getAllPorductsByCategory = async (req, res) => {
+  const prod_list = await Product.find({
+    status: true,
+    category: req.body.category,
+  });
+  return { products: prod_list };
+};
+
+const getAllPorductsByPriceRange = async (req, res) => {
+  // console.log("The range value is :", req.body.range);
+  if (req.body.range == "all") {
+    const prod_list = await Product.find({
+      status: true,
+    });
+    const count = prod_list.length;
+    res.send({ products: prod_list, count, success: true });
+  }
+  const range = req.body.range.split("-");
+
+  const minPrice = range[0];
+  const maxPrice = range[1];
+
+  try {
+    const prod_list = await Product.find({
+      status: true,
+      price: { $gte: minPrice, $lte: maxPrice },
+    });
+
+    const count = prod_list.length;
+
+    res.send({ products: prod_list, count, success: true });
+  } catch (error) {
+    console.log(error);
+  }
+
+  //res.send({ success: true });
+};
+
+//ends here
+
 const getProd = async (req, res) => {
   const product_list = await Product.find();
 
@@ -347,4 +418,7 @@ module.exports = {
   updt_prod,
   getOrders,
   loadOrders,
+  productPage,
+  getAllPorductsByPriceRange,
+  getAllPorductsByCategory,
 };
