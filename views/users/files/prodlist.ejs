@@ -3,54 +3,35 @@
     <div class="row">
       <% if(products) { products.forEach(product=>{ %>
 
-      <!-- product 1 -->
       <div class="col-md-3 col-sm-6">
         <div class="product-grid">
           <div class="product-image">
+            <% if(product.stock == 0){ %>
+            <a href="/product-details/<%= product.id%>" class="image">
+              <img class="pic-1" src="/assets/img/pngegg.png" alt="images" />
+            </a>
+            <%} else { %>
             <a href="/product-details/<%= product.id%>" class="image">
               <img class="pic-1" src="<%= product.image%>" alt="images" />
-              <!-- <img class="pic-2" src="/uploads/img-2.jpg" /> -->
             </a>
-            <!-- <a href="#" class="product-like-icon" data-tip="Add to Wishlist">
-              <i class="far fa-heart"></i>
-            </a> -->
-
-            <!-- <ul class="product-links">
-              <li>
-                <a href="#"><i class="fa fa-search"></i></a>
-              </li>
-
-              <li>
-                <a href="#"><i class="fas fa-shopping-cart"></i></a>
-              </li>
-
-              <li>
-                <a href="#"><i class="fa fa-random"></i></a>
-              </li>
-            </ul> -->
+            <% }%>
           </div>
 
           <div class="product-content">
-            <h3 class="title">
-              <a href="/product-details/<%= product.id%>"
-                ><%= product.name %></a
-              >
-            </h3>
+            <h3 class="title"><%= product.name %></h3>
             <div class="price">₹<%= product.price%></div>
+
             <a
-              href="/cart/<%= product._id %>"
               class="button"
-              onclick="addToCart()"
               class="cart"
-              ><button class="btn btn-primary">Add to cart</button></a
+              href="/product-details/<%= product.id%>"
+              ><button class="btn btn-primary">View Details</button></a
             >
           </div>
         </div>
       </div>
 
-      <!--  -->
       <%}) }%>
-      <!--  -->
     </div>
   </div>
 </section>

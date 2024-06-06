@@ -293,6 +293,8 @@
 
                     cancelBtnElement.style.display = 'none'
                     cancelledBtnElement.style.display = 'block'*/
+
+            $("#productTable").load(" #productTable > *");
             Swal.fire({
               title: "Cancelled!",
               text: "Your order has been cancelled.",

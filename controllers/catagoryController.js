@@ -40,8 +40,8 @@ const edt_cat = async (req, res) => {
   const checkName = await checkNameInUse(update.name);
 
   if (checkName) {
-    //console.log(checkName);
-    res.send({ message: "Failed" });
+    console.log(checkName);
+    res.send({ message: "failed" });
 
     //return;
   } else {

@@ -36,6 +36,13 @@ const productSchema = new mongoose.Schema({
       required:true,
       ref:"Catagory"
     },
+    tags: String,
+    ratings: [
+      {
+        star: Number,      
+        postedby: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      },
+    ],
     status:{
         type:Boolean,
         required:true,

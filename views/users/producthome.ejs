@@ -11,6 +11,7 @@
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/paginationjs/2.6.0/pagination.css" integrity="sha512-TH+vnrhByFI2RzNvaHSqt6EwoJ9Bp+yGAGTWp84qTuTx315ebnypxtyGHpli55Rm4N4J+N/0W9xAL2b5RZ2ZSA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
       a {
         text-decoration: none;
@@ -58,41 +59,33 @@
         <div class="col-sm-2">
           <!-- Category -->
           <div class="single category">
-            <h3 class="side-title">Sort By</h3>
-            <ul class="list-unstyled" id="sortby">
-              <li>
-                <a href="" title="">New Arrival </a>
-              </li>
-              <li>
-                <a href="" title="">Popularity </a>
-              </li>
-              <li>
-                <a href="" title="">Featured</a>
-              </li>
-              <li>
-                <a href="" title="">A-Z</a>
-              </li>
-              <li>
-                <a href="" title="">Z-A</a>
-              </li>
-            </ul>
-          </div>
-          <div class="single category" id="category">
-            <h3 class="side-title">Category</h3>
-            <ul class="list-unstyled">
-              <li>
-                <a href="" title="">Business </a>
-              </li>
-            </ul>
-          </div>
-          <div class="single category">
-            <h3 class="side-title">Price Range</h3>
+            <h5 class="side-title">Sort By</h5>
             <ul class="list-unstyled" id="pricerange">
-              <li value="0-100">
-                <a href="#" title="">High - Low</a>
+              <li value="newarrival">
+                <a href="#" title="">New Arrival </a>
               </li>
-              <li value="0-100">
-                <a href="#" title="">Low - High</a>
+              <li value="popularity">
+                <a href="#" title="">Popularity </a>
+              </li>
+              <li value="featured">
+                <a href="#" title="">Featured</a>
+              </li>
+              <li value="az">
+                <a href="#" title="">A-Z</a>
+              </li>
+              <li value="za">
+                <a href="#" title="">Z-A</a>
+              </li>
+              <!-- <h5 class="side-title">Brand</h5>
+              <li value="">
+                <a href="#" title="">Business</a>
+              </li> -->
+              <h5 class="side-title">Price</h5>
+              <li value="high">
+                <a href="#" title="">High-Low</a>
+              </li>
+              <li value="low">
+                <a href="#" title="">Low-High</a>
               </li>
               <li value="0-100">
                 <a href="#" title="">0-100</a>
@@ -115,28 +108,39 @@
               <span class="spinner"></span>
             </div>
           </div>
-          <div class="alert alert-success" role="alert" id="dispAlert">
+          <div class="d-flex justify-content-between  my-3">
+          <div class="" id="dispAlert">
             Total 0 items found
           </div>
+            <div class="">
+              <input placeholder="Search..." id="searchBar" name="searchBar" type="text">
+              <i class="fa-solid fa-magnifying-glass glass" id="btn"></i>
+          </div>
+      </div>
           <div class="row row-cols-1 row-cols-md-3 g-4 d-flex justify-content-center" id="productsSpace" >   
                   <div class="text-center">
                       <h4 >No Products Found</h4>
                   </div>
-              
-          </div>       
+          </div>  
+          
+          
             </div>
           </div>
         </div>
       </div>
     </div>
+    <%-
+    include('files/footer.ejs') %>
     <!-- body ends here -->
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"
     ></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="/user/js/pagination.js"></script>
     <script>
       const productsSpace = document.getElementById("productsSpace");
       const dispAlert = document.getElementById("dispAlert");
@@ -151,17 +155,18 @@
                   <div class="inner">
                     <div class="main-img text-center">
                       <img
-                        src="https://i.imgur.com/O0GMYuw.jpg"
-                        alt="Category"
+                        src="${product.image}" width ="200px" height="234px"
+                        alt="${product.image}"
                       />
                     </div></div
                 ></a>
                 <div class="card-body text-center">
                   <h4 class="card-title">${product.name}</h4>
                   <p class="text-muted">Price :${product.price}</p>
+                 
                   <a
                     class="btn btn-outline-primary btn-sm"
-                    href="#"
+                    href="/product-details/${product._id}"
                     data-abc="true"
                     >View Products
                   </a>
@@ -182,11 +187,13 @@
     }
   }
 
-      // const priceRangeUl = document.getElementById("pricerange");
-    
-    
 //getting all product on load
       $(document).ready(function() {
+
+       
+
+        let productItems;
+
         const formData = {
         range: "all",
       };
@@ -200,33 +207,118 @@
               $("#productsSpace").html("")//d-flex justify-content-center
               $("#productsSpace").removeClass("d-flex justify-content-center")
               $("#dispAlert").html(`Total ${response.count} items found`);
-              displayData(response.products);
+              productItems = response.products;
+              // console.log(typeof(productItems))
+              displayData(productItems);
+              const totalNumber = productItems.length;
+            console.log(totalNumber)
+            const record_per_page = 1;
+            const page_number = 1;
+            const total_page = Math.ceil(totalNumber/record_per_page)
+            // console.log(total_page)
+            // const total_page = 3
+            // generatePage();
+            // dispalyRecords();            
+            
+            function dispalyRecords(){
+              const arr = Array.from(productItems)
+              // console.log(arr[0])
+              let start_index = (page_number-1)*record_per_page;
+              
+              let end_index = start_index + (record_per_page-1)
+              for(let i=start_index;i<=end_index;i++){
+                // console.log(arr.slice(i,1))
+                displayData(arr.slice(i,1))
+              }
             }
+            
+            
+
+            function generatePage(){
+              function nextBtn(){
+              alert('hi')
+            }  
+              let buttons = '';
+              let prevPage = `<li class="page-item disabled">
+                <a class="page-link">Previous</a>
+              </li>`
+             
+              let nextPage = `<li class="page-item" >
+                <a class="page-link">Next</a>
+              </li>`
+              for(let i=1;i<=totalNumber;i++){
+              buttons +=`<li class="page-item"><a class="page-link" href="#">${i}</a></li>`
+              }
+              document.getElementById('paginationli').innerHTML =`${prevPage} ${buttons} ${nextPage}`
+            }
+
+            
+
+            }
+
+            
         },
         error: function (xhr, status, error) {
           // Handle error response
           console.error(error);
         },
+
+        
+
+
       });
+
+         
+      /*search code starts here*/
+      document.getElementById('searchBar').addEventListener('keyup', (e) => {
+            const searchData = e.target.value.toLowerCase();
+            // console.log(productItems)
+            $("#productsSpace").html("")
+            let filteredData = productItems.filter((item) => {
+                return (
+                    item.name.toLowerCase().includes(searchData)
+                )
+            })
+            $("#dispAlert").html(`Total ${filteredData.length} items found`);
+            // console.log(filteredData)
+            // productItems = filteredData;
+            displayData(filteredData)
+        });
+      /*search code ends here */
+        /*pagination starts here*/
+        $('#demo').pagination({
+    dataSource: 'https://api.flickr.com/services/feeds/photos_public.gne?tags=cat&tagmode=any&format=json&jsoncallback=?',
+    locator: 'items',
+    totalNumberLocator: function(response) {
+        // you can return totalNumber by analyzing response content
+        return Math.floor(Math.random() * (1000 - 100)) + 100;
+    },
+    pageSize: 20,
+    ajax: {
+        beforeSend: function() {
+            dataContainer.html('Loading data from flickr.com ...');
+        }
+    },
+    callback: function(data, pagination) {
+        // template method of yourself
+        var html = template(data);
+        dataContainer.html(html);
+    }
+})
+        /*pagination ends here*/
+
     });
       
 
-    // function sortBy(){
-
-    
-      
-    $("#pricerange li").click(async function (i) {
+     function sortBy(cont){
 
       const productsSpace = document.getElementById("productsSpace");
-      var index = $(this).index();
-      var text = $(this).text();
-      var value = $(this).attr("value");
-
+      
       const formData = {
-        range: value,
+        range: cont,
       };
+      console.log(formData)
 
-    
       // AJAX request to submit form data to the server
       $.ajax({
         url: "/products/range",
@@ -246,7 +338,14 @@
           console.error(error);
         },
       });
-    });
+    // });
+      
+  }
+  $("#pricerange li").click(function(){    
+    const val = $(this).attr("value");   
+     sortBy(val)
+  });
+      
   
     </script>
   </body>

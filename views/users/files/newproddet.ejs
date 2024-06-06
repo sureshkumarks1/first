@@ -76,18 +76,42 @@
     <div class="proddesc">
       <p><%= proddata.description%></p>
     </div>
+    <input type="hidden" id="pid" value="<%= proddata._id %>" />
     <span>Price : ₹<%= proddata.price%></span>
 
     <div>
       <button class="buy">Buy Now</button>
-      <a
-        href="/cart/<%= proddata._id %>"
-        class="button"
-        onclick="addToCart()"
-        class="cart"
+      <a href="#" class="button" onclick="addToCart()" class="cart"
         ><button class="cart">Add to cart</button></a
       >
     </div>
   </div>
   <!-- description  end -->
 </div>
+<script>
+  try {
+    const pid = $("#pid").val();
+    const frmData = {
+      id: pid,
+    };
+    function addToCart() {
+      //console.log("asdfad");
+      $.ajax({
+        url: `http://localhost:3000/products/getitemcount`,
+        data: frmData,
+        method: "POST",
+        success: function (response) {
+          console.log(response);
+        },
+      });
+      // Swal.fire({
+      //     icon: 'success',
+      //     title: 'Item Added to Cart',
+      //     showConfirmButton: false,
+      //     timer: 1500
+      // });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+</script>

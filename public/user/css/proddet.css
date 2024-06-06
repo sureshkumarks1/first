@@ -433,3 +433,13 @@
 .proddesc p {
   margin-top: 15px;
 }
+.sold-out {
+  position: relative;
+}
+.sold-out::before {
+  content: url(../images/sold_out_stamp.png);
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 0;
+}

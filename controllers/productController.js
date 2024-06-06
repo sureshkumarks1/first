@@ -4,6 +4,7 @@ const { orderCollection } = require("../models/orderModel");
 
 const upload = require("../middleware/upload");
 const sharp = require("sharp");
+const { name } = require("ejs");
 sharp.cache(false);
 const loadProd = (req, res) => {
   //const prod = product.find()
@@ -194,23 +195,25 @@ async function resizeimagefour(files, imgnn) {
 }
 
 const getOrders = async (req, res) => {
-  const orders_list = await orderCollection.find();
+  try {
+    const orders_list = [{ orderNumber: 101 }, { orderNumber: 102 }];
+    // const orders_list = await orderCollection.find();
 
-  // console.log(orders_list)
+    console.log(orders_list);
 
-  if (!orders_list) {
-    res.status(501).json({ success: false }).send();
+    if (!orders_list) {
+      res.status(501).json({ success: false }).send();
+    }
+
+    res.send({ data: orders_list }).json();
+  } catch (err) {
+    console.log("The error is : ", err);
   }
-
-  res.send({ data: orders_list }).json();
 };
 
 // product get all
 
 const productPage = async (req, res) => {
-  // console.log(prod)
-  // return
-
   let name = "Guest";
   if (req.session.uname) {
     name = req.session.uname;
@@ -219,14 +222,7 @@ const productPage = async (req, res) => {
   }
 
   const p_list = await getAllPorducts();
-
-  // console.log(p_list.products);
-
-  // console.log("The user name is :", name)
   res.render("producthome", { name: name, products: p_list.products });
-
-  //res.render("product-details",{name:"guest"})
-  // res.render("product-details",{name:"suresh"})
 };
 
 const getAllPorducts = async (req, res) => {
@@ -242,33 +238,113 @@ const getAllPorductsByCategory = async (req, res) => {
   return { products: prod_list };
 };
 
+async function getprod(arg) {
+  if (arg == "all") {
+    const prod_list = await Product.find({
+      status: true,
+    });
+    const count = prod_list.length;
+    return { count, prod_list };
+  } else if (arg == "high") {
+    const prod_list = await Product.find({
+      status: true,
+    }).sort({ price: -1 });
+    const count = prod_list.length;
+    return { count, prod_list };
+  } else if (arg == "low") {
+    const prod_list = await Product.find({
+      status: true,
+    }).sort({ price: 1 });
+    const count = prod_list.length;
+    return { count, prod_list };
+  } else if (arg == "az") {
+    const prod_list = await Product.find({
+      status: true,
+    }).sort({ name: 1 });
+    const count = prod_list.length;
+    return { count, prod_list };
+  } else if (arg == "za") {
+    const prod_list = await Product.find({
+      status: true,
+    }).sort({ name: -1 });
+    const count = prod_list.length;
+    return { count, prod_list };
+  } else if (arg == "featured") {
+    const prod_list = await Product.find({
+      status: true,
+      tags: "featured",
+    }).sort({ name: -1 });
+    const count = prod_list.length;
+    return { count, prod_list };
+  } else if (arg == "popularity") {
+    console.log("The argument is :", arg);
+    const prod_list = await Product.find({
+      status: true,
+      tags: "popularity",
+    }).sort({ name: -1 });
+    const count = prod_list.length;
+    return { count, prod_list };
+  } else if (arg == "newarrival") {
+    const prod_list = await Product.find({
+      status: true,
+      tags: "newarrival",
+    }).sort({ name: -1 });
+    const count = prod_list.length;
+    return { count, prod_list };
+  } else {
+    const prod_list = {};
+    const count = 0;
+    return { count, prod_list };
+  }
+}
+
 const getAllPorductsByPriceRange = async (req, res) => {
   // console.log("The range value is :", req.body.range);
   if (req.body.range == "all") {
-    const prod_list = await Product.find({
-      status: true,
-    });
-    const count = prod_list.length;
-    res.send({ products: prod_list, count, success: true });
-  }
-  const range = req.body.range.split("-");
-
-  const minPrice = range[0];
-  const maxPrice = range[1];
-
-  try {
-    const prod_list = await Product.find({
-      status: true,
-      price: { $gte: minPrice, $lte: maxPrice },
-    });
-
-    const count = prod_list.length;
+    // console.log(await getprod());
+    const { count, prod_list } = await getprod("all");
 
     res.send({ products: prod_list, count, success: true });
-  } catch (error) {
-    console.log(error);
-  }
+  } else if (req.body.range == "high") {
+    const { count, prod_list } = await getprod("high");
+    res.send({ products: prod_list, count, success: true });
+  } else if (req.body.range == "low") {
+    const { count, prod_list } = await getprod("low");
+    res.send({ products: prod_list, count, success: true });
+  } else if (req.body.range == "az") {
+    const { count, prod_list } = await getprod("az");
+    res.send({ products: prod_list, count, success: true });
+  } else if (req.body.range == "za") {
+    const { count, prod_list } = await getprod("za");
+    res.send({ products: prod_list, count, success: true });
+  } else if (req.body.range == "featured") {
+    const { count, prod_list } = await getprod("featured");
+    res.send({ products: prod_list, count, success: true });
+  } else if (req.body.range == "popularity") {
+    const { count, prod_list } = await getprod("popularity");
+    res.send({ products: prod_list, count, success: true });
+  } else if (req.body.range == "newarrival") {
+    const { count, prod_list } = await getprod("newarrival");
+    res.send({ products: prod_list, count, success: true });
+  } else {
+    const range = req.body.range.split("-");
 
+    const minPrice = range[0];
+    const maxPrice = range[1];
+
+    try {
+      const prod_list = await Product.find({
+        status: true,
+        price: { $gte: minPrice, $lte: maxPrice },
+      });
+
+      const count = prod_list.length;
+
+      res.send({ products: prod_list, count, success: true });
+    } catch (error) {
+      console.log(error);
+    }
+  }
   //res.send({ success: true });
 };
 
@@ -311,6 +387,7 @@ const del_prod = async (req, res) => {
 };
 
 const getProdById = async (req, res) => {
+  
   try {
     const proddata = await Product.findOne({ _id: req.body.id });
     //   console.log(catdata.name)

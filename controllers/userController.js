@@ -35,14 +35,25 @@ const loadRegister = async (req, res) => {
 
 const verifyOTP = (req, res) => {
   // res.render("verification", {title:"VerifyOTP"});
-  // console.log(req.body)
   const { otp } = req.body;
+  console.log(otp);
 
   if (req.session.otp == otp) {
     res.status(200).send({ otp: otp, message: "success" }).json();
   } else {
     res.status(200).send({ otp: otp, message: "failure" }).json();
   }
+};
+
+const verifyOtpResetPassword = (req, res) => {
+  // res.render("verification", {title:"VerifyOTP"});
+  //const { otp } = req.body;
+
+  //if (req.session.otp == otp) {
+  // res.json({ success: true });
+  //} else {
+  res.json({ success: false, error: "OTP is not correct" });
+  //}
 };
 
 // create a new user
@@ -56,7 +67,6 @@ const checkvalues = async (req, res) => {
     req.session.otp = checkmail;
 
     if (req.session.otp) {
-      console.log("the otp is ", req.session.otp);
       res.status(200).send({ message: "success", otp: req.session.otp }).json();
     }
   }
@@ -89,7 +99,7 @@ const insertUser = async (req) => {
         const userData = await user.save();
 
         if (userData) {
-          return { message: "successf" };
+          return { message: "success" };
         } else return { message: "Registration failed" };
       }
     } else {
@@ -102,12 +112,32 @@ const insertUser = async (req) => {
 
 const loginLoad = async (req, res) => {
   try {
-    // res.render("login-old");
-    // console.log(req.cookies.un)
-    // res.redirect("/login");
     res.render("login");
   } catch (error) {
     console.log(error.message);
+  }
+};
+const sendOtp = async (req, res) => {
+  const { email } = req.body;
+
+  const userData = await User.findOne({ email, role: "user" });
+  if (!userData) {
+    res.json({
+      success: false,
+      errors: "The Email address is not registered with us",
+    });
+    return;
+  }
+
+  if (userData.status == "Deactive") {
+    res.json({
+      success: false,
+      errors: "Your account has been blocked. Contact administrator",
+    });
+  } else {
+    const checkmail = sendEmail(email);
+    req.session.otp = checkmail;
+    res.json({ success: true });
   }
 };
 
@@ -117,6 +147,44 @@ const forgotPassword = async (req, res) => {
   } catch (error) {
     console.log(error.message);
   }
+};
+
+const googleLogin = async (req, res) => {
+  
+  console.log(req.body);
+
+  /*
+
+  try {
+    //console.log(user)
+
+    const { name, email } = req.body;
+    const password = "user@123";
+
+    if (name !== "" && email !== "") {
+      //console.log(name)
+
+      const spassword = await securePassword(password);
+
+      const user = new User({
+        name,
+        email,
+        password: spassword,
+        role: "user",
+        create: new Date(),
+      });
+
+      const userData = await user.save();
+
+      if (userData) {
+        return { message: "success" };
+      }
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+
+  */
 };
 
 const verifyLogin = async (req, res) => {
@@ -181,6 +249,7 @@ const verifyLogin = async (req, res) => {
     }
   }
 };
+
 const loadHome = async (req, res) => {
   let word = "Guest";
 
@@ -250,6 +319,17 @@ const notfound = (req, res) => {
   res.render("404");
 };
 
+const verifyOtpPassword = (req, res) => {
+  res.render("verifyotppassword");
+  // res.json({ success: true });
+};
+
+const otpForgotPassword = (req, res) => {
+  console.log(req.body);
+
+  // res.json({ success: true });
+};
+
 const userLogout = async (req, res) => {
   try {
     req.session.destroy();
@@ -273,4 +353,9 @@ module.exports = {
   productDetails,
   forgotPassword,
   productPage,
+  sendOtp,
+  verifyOtpPassword,
+  otpForgotPassword,
+  verifyOtpResetPassword,
+  googleLogin,
 };

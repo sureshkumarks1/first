@@ -23,6 +23,7 @@ const product_route = require("../routes/productRoute");
 const admin = require("../controllers/adminController");
 
 const catagory = require("../controllers/catagoryController");
+const orderController = require("../controllers/orderController");
 
 admin_route.use(express.json());
 
@@ -114,6 +115,20 @@ admin_route.post("/edit-user", auth.isLogin, admin.updateUser);
 admin_route.get("/delete-user", auth.isLogin, admin.deleteUser);
 
 admin_route.post("/block-user", auth.isLogin, admin.blockUser);
+
+admin_route.get("/orders/getorders", auth.isLogin, orderController.getOrders);
+
+admin_route.post(
+  "/order/chgstatus",
+  auth.isLogin,
+  orderController.updateStatus
+);
+
+admin_route.get(
+  "/orderDetailsPage/:id",
+  auth.isLogin,
+  orderController.orderDetailspage
+);
 
 // admin_route.get("*", (req, res) => {
 

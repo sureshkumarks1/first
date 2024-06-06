@@ -26,18 +26,23 @@
                 <div class="card shadow-lg border-0 rounded-lg mt-5">
                   <div class="card-header">
                     <h3 class="text-center font-weight-light my-4">
-                      Forgot Password
+                      User Login
                     </h3>
                   </div>
                   <div class="card-body">
-                    <form name="loginform" id="loginfrm">
+                    <form
+                      name="loginfrm"
+                      id="loginfrm"
+                      method="post"
+                      action="/login"
+                    >
                       <p class="text-danger">
                         <% if(locals.errors){%> <%=errors %> <%}%>
                       </p>
                       <div class="form-floating mb-3">
                         <input
                           class="form-control"
-                          id="inputemail"
+                          id="inputEmail"
                           type="email"
                           placeholder="name@example.com"
                           name="email"
@@ -49,7 +54,33 @@
                           ><% if(locals.email){%> <%=email %> <%}%></span
                         >
                       </div>
-                      <div class="text-danger" id="errmsg"></div>
+                      <div class="form-floating mb-3">
+                        <input
+                          class="form-control"
+                          id="inputPassword"
+                          type="password"
+                          placeholder="Password"
+                          name="password"
+                        />
+
+                        <label for="inputPassword">Password</label>
+                        <span class="text-danger"
+                          ><% if(locals.password){%> <%=password %> <%}%></span
+                        >
+                      </div>
+                      <!-- <div class="form-check mb-3">
+                        <input
+                          class="form-check-input"
+                          id="inputRememberPassword"
+                          type="checkbox"
+                          value=""
+                        />
+                        <label
+                          class="form-check-label"
+                          for="inputRememberPassword"
+                          >Remember Password</label
+                        >
+                      </div> -->
                       <div
                         class="d-flex align-items-center justify-content-center mt-4 mb-0"
                       >
@@ -61,16 +92,19 @@
                           class="btn btn-primary"
                           id="btn-signin"
                           name="login"
-                          value="save"
                         >
-                          Reset Password
+                          Sign in
                         </button>
+                        <a href="/" class="btn btn-danger mx-3">Cancel</a>
                       </div>
                     </form>
                   </div>
                   <div class="card-footer text-center py-3">
                     <div class="small">
-                      <a href="/login">Login </a>
+                      <a href="/register">Need an account? Sign up!</a>
+                    </div>
+                    <div class="small">
+                      <a href="/profile/fogotPassword">Forgot Password ?</a>
                     </div>
                   </div>
                 </div>
@@ -99,73 +133,6 @@
 
     <script src="/login/js/jquery.min.js"></script>
     <script src="/login/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- <script src="/login/js/scripts.js"></script> -->
-    <script>
-      const form = document.getElementById("loginfrm");
-      // $("#inputemail").focus();
-      // const submitter = document.querySelector("button[value=save]");
-
-      $("#inputemail").blur((e) => {
-        if (e.target.value) {
-          this.removeClass("is-invalid");
-          this.addClass("is-valid");
-        }
-      });
-
-      form.addEventListener("submit", (e) => {
-        e.preventDefault();
-
-        const email = document.getElementById("inputemail").value;
-
-        if (!email) {
-          $("#inputemail").addClass("is-invalid");
-          $("#errmsg").html("Enter email address");
-          return false;
-        }
-
-        const formData = new FormData(form);
-        let sendData;
-        formData.forEach((data) => {
-          sendData = {
-            email: data,
-          };
-        });
-
-        $("#inputemail").removeClass("is-invalid");
-        $("#inputemail").focus();
-        $("#errmsg").html("");
-        $("#inputemail").val("");
-
-        axios
-          .post("/profile/fogotPassword", sendData)
-          .then((res) => {
-            if (res.data.success == true) {
-              $("#errmsg").html("");
-
-              /**/
-              Swal.fire({
-                title: "OTP send to the Email address",
-                text: "",
-                icon: "success",
-                showCancelButton: false,
-                confirmButtonColor: "#3085d6",
-                // cancelButtonColor: "#d33",
-                confirmButtonText: "Ok",
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  window.location.href = "/verifyotppassword";
-                }
-              });
-              /**/
-            } else {
-              $("#errmsg").html("");
-              $("#errmsg").html(res.data.errors);
-            }
-          })
-          .catch((err) => console.error(err));
-      });
-    </script>
   </body>
 </html>

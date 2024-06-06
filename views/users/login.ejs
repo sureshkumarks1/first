@@ -15,8 +15,9 @@
       src="https://use.fontawesome.com/releases/v6.3.0/js/all.js"
       crossorigin="anonymous"
     ></script>
+    <script src="/login/js/firebase.js" type="module" defer></script>
   </head>
-  <body class="bg-primary">
+  <body class="">
     <div id="layoutAuthentication">
       <div id="layoutAuthentication_content">
         <main>
@@ -100,6 +101,14 @@
                     </form>
                   </div>
                   <div class="card-footer text-center py-3">
+                    <button
+                      type="button"
+                      class="btn btn-primary"
+                      id="btnGoogleSignin"
+                      name="loginGoogle"
+                    >
+                      Login with google account
+                    </button>
                     <div class="small">
                       <a href="/register">Need an account? Sign up!</a>
                     </div>
@@ -133,6 +142,7 @@
 
     <script src="/login/js/jquery.min.js"></script>
     <script src="/login/js/bootstrap.min.js"></script>
+
     <!-- <script src="/login/js/scripts.js"></script> -->
   </body>
 </html>

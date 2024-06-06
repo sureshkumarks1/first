@@ -21,6 +21,7 @@ product_route.post("/insertprod", upload.any(), product.insertProd);
 product_route.get("/add", product.add_prod);
 product_route.post("/del", product.del_prod);
 product_route.get("/prodedt/:id", product.edt_prod);
+product_route.post("/products/getitemcount", product.getProdById);
 product_route.post("/produpdtn", upload.any(), product.updt_prod);
 
 module.exports = product_route;

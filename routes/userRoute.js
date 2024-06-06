@@ -59,6 +59,10 @@ user_route.post("/register", userController.checkvalues);
 user_route.post("/insert", userController.insertUser);
 
 user_route.post("/verifyotp", userController.verifyOTP);
+user_route.post(
+  "/verifyOtpResetPassword",
+  userController.verifyOtpResetPassword
+);
 
 // user_route.get("/register", (req, res)=>{
 //  res.send({message:"working"})
@@ -72,15 +76,34 @@ user_route.get("/", userController.loadHome);
 
 user_route.get("/login", auth.isLogout, userController.loginLoad);
 user_route.get(
+  "/verifyotppassword",
+  auth.isLogout,
+  userController.verifyOtpPassword
+);
+
+user_route.get(
   "/profile/fogotPassword",
   auth.isLogout,
   userController.forgotPassword
+);
+user_route.post(
+  "/otpfogotPassword",
+  auth.isLogout,
+  userController.otpForgotPassword
+);
+
+user_route.post(
+  "/profile/fogotPassword",
+  auth.isLogout,
+  userController.sendOtp
 );
 // user_route.get("/login" , auth.isLogin, userController.loadHome);
 
 //user_route.get("/login" , auth.isLogout, userController.loginLoad);
 
 user_route.post("/login", auth.isLogout, userController.verifyLogin);
+
+user_route.get("/googleLogin", userController.googleLogin);
 
 //user_route.get("/home", auth.isLogin,userController.loadHome);
 // user_route.get("/home", userController.loadHome);
