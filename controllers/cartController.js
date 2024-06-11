@@ -206,7 +206,7 @@ const verifyPayment = (req, res) => {
   const { createHmac } = require("node:crypto");
 
   const secret = process.env.SESSION_SECRET;
-  console.log("Secret", secret)
+  console.log("Secret", secret);
   const hash = createHmac("sha256", secret).update(toBeHash).digest("hex");
   console.log(hash);
 
@@ -262,7 +262,6 @@ const orderPlacedEnd = async (req, res) => {
 
   const totAmt = dataObj.grandTotalCost * 100;
   const odresult = await orderCollection.create(dataObj);
-  
 
   res.json({
     success: true,
@@ -270,17 +269,25 @@ const orderPlacedEnd = async (req, res) => {
     totalAmount: totAmt,
   });
 
-  // const options = {
-  //   amount: 199, // amount in the smallest currency unit
-  //   currency: "INR",
-  //   receipt: odresult._id.toString(),
-  // };
-  // instance.orders.create(options, function (err, order) {
-  //   if (err) {
-  //     console.log("The error is =>>>>", err);
-  //   }
-  //   console.log("The order =>>>", order);
-  // });
+  const options = {
+    amount: totAmt, // amount in the smallest currency unit
+    currency: "INR",
+    receipt: odresult._id.toString(),
+  };
+  instance.orders.create(options, function (err, order) {
+    if (err) {
+      console.log("The error is =>>>>", err);
+    }
+
+    // res.json({
+    //   success: true,
+    //   oid: odresult._id.toString(),
+    //   totalAmount: totAmt,
+    //   order
+    // });
+
+    console.log(order);
+  });
 
   // console.log(dataObj);
   // console.log(odresult);
