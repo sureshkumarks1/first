@@ -51,6 +51,8 @@ user_route.use(
 
 // user_route.get("/register", auth.isLogout,userController.loadRegister);
 user_route.get("/register", userController.loadRegister);
+user_route.get("/resetpasswd", userController.resetpasswd);
+
 //user_route.post("/register",body('email').isEmail().withMessage('Please Enter a valid Email address'),body('password').isLength({min:5}).withMessage('Please enter the password'),body('mobile').isLength({min:10}).withMessage("Enter 10 Digit Mobile Number"), userController.insertUser);
 //user_route.post("/register",body('email').isEmail().withMessage('Please Enter a valid Email address'), userController.insertUser);
 
@@ -59,6 +61,7 @@ user_route.post("/register", userController.checkvalues);
 user_route.post("/insert", userController.insertUser);
 
 user_route.post("/verifyotp", userController.verifyOTP);
+
 user_route.post(
   "/verifyOtpResetPassword",
   userController.verifyOtpResetPassword
@@ -70,7 +73,7 @@ user_route.post(
 
 //user_route.get("/" , auth.isLogout, userController.loginLoad);
 
-user_route.get("/", userController.loadHome);
+// user_route.get("/", userController.loadHome);
 
 //user_route.get("/home",  userController.loadHome);
 
@@ -110,6 +113,7 @@ user_route.get("/googleLogin", userController.googleLogin);
 //user_route.get("/home", userController.loadHome);
 
 user_route.get("/logout", auth.isLogin, userController.userLogout);
+user_route.get("/", productController.productPage);
 user_route.get("/products", productController.productPage);
 user_route.post(
   "/products/range",
@@ -120,7 +124,10 @@ user_route.get("/product-details/:id", userController.productDetails);
 /*==================cart route starts here=======================*/
 // user_route.get("/cart", auth.isLogin, blockedUserCheck, cartController.cart);
 user_route.get("/cart", cartController.cart);
-user_route.get(
+
+user_route.post("/product/test", auth.isLogin, cartController.addToCart);
+
+user_route.post(
   "/cart/:id",
   auth.isLogin,
   blockedUserCheck,
@@ -149,15 +156,23 @@ user_route.put(
 /*========================user profile code starts here=============================== */
 // user_route.get("/profile", auth.isLogin, userController.loginLoad);
 user_route.get("/profile", auth.isLogin, profileController.accountPage);
+
+user_route.get(
+  "/profile/chgpass",
+  auth.isLogin,
+  profileController.changePassword
+);
+
 user_route.patch(
   "/profile/chgpass",
   auth.isLogin,
   profileController.changePasswordPatch
 );
-user_route.get(
-  "/profile/chgpass",
-  auth.isLogin,
-  profileController.changePassword
+
+user_route.patch(
+  "/profile/chgresetpass",
+
+  profileController.chgresetpass
 );
 user_route.post(
   "/profile/getPassword",
@@ -184,6 +199,10 @@ user_route.post("/profile/editAddress", profileController.editAddressPost);
 /****************cart section*****************/
 user_route.get("/checkout/:id", auth.isLogin, cartController.checkoutPage);
 user_route.post("/orderplaced", auth.isLogin, cartController.orderPlaced);
+user_route.post("/payment", auth.isLogin, cartController.orderPlacedEnd);
+
+user_route.post("/verify-payment", auth.isLogin, cartController.verifyPayment);
+
 user_route.get(
   "/orderplacedend/:oid/:pm",
   auth.isLogin,

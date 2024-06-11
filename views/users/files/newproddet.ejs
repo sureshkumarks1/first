@@ -95,15 +95,17 @@
       id: pid,
     };
     function addToCart() {
-      //console.log("asdfad");
+      console.log(frmData);
       $.ajax({
-        url: `http://localhost:3000/products/getitemcount`,
+        // url: `http://localhost:3000/product/cart/`,
+        url: `http://localhost:3000/product/test`,
         data: frmData,
         method: "POST",
         success: function (response) {
           console.log(response);
         },
       });
+
       // Swal.fire({
       //     icon: 'success',
       //     title: 'Item Added to Cart',

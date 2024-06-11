@@ -26,6 +26,7 @@ const add_prod = async (req, res) => {
 };
 
 const updt_prod = async (req, res) => {
+  console.log("this is working");
   const filter = { _id: req.body._id };
 
   let image1, image2, image3;
@@ -387,7 +388,6 @@ const del_prod = async (req, res) => {
 };
 
 const getProdById = async (req, res) => {
-  
   try {
     const proddata = await Product.findOne({ _id: req.body.id });
     //   console.log(catdata.name)

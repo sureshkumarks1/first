@@ -12,15 +12,15 @@ module.exports = {
       });
 
       const addressData = await addressCollection.find({
-        userId: req.session.user_id,
+        userId: req.session?.user_id,
       });
 
       res.render("profile", {
-        currentUser: req.session.currentUser,
-        name: req.session.currentUser.name,
+        currentUser: req.session?.currentUser,
+        name: req.session?.currentUser,
         userData,
         addressData,
-        userId: req.session.user_id,
+        userId: req.session?.user_id,
       });
     } catch (error) {
       console.error(error);
@@ -159,12 +159,14 @@ module.exports = {
       );
 
       if (compareCurrentPass) {
-        // const encryptedNewPassword = bcrypt.hashSync(req.body.password, 10);
-        // await User.updateOne(
-        //   { _id: req.session.user_id },
-        //   { $set: { password: encryptedNewPassword } }
-        // );
-        // req.session.currentPassword=await User.find({_id: req.session.user_id})
+        const encryptedNewPassword = bcrypt.hashSync(req.body.password, 10);
+        await User.updateOne(
+          { _id: req.session.user_id },
+          { $set: { password: encryptedNewPassword } }
+        );
+        req.session.currentPassword = await User.find({
+          _id: req.session.user_id,
+        });
         res.json({ success: true });
       } else {
         req.session.invalidCurrentPassword = true;
@@ -175,6 +177,19 @@ module.exports = {
     }
   },
 
+  chgresetpass: async (req, res) => {
+    try {
+      const encryptedNewPassword = bcrypt.hashSync(req.body.password, 10);
+      await User.updateOne(
+        { email: req.session.email },
+        { $set: { password: encryptedNewPassword } }
+      );
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error(error);
+    }
+  },
   orderHistory: async (req, res) => {
     try {
       let orderData = await orderCollection.find({

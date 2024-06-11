@@ -26,30 +26,28 @@
                 <div class="card shadow-lg border-0 rounded-lg mt-5">
                   <div class="card-header">
                     <h3 class="text-center font-weight-light my-4">
-                      User Login
+                      Reset Your Password
                     </h3>
                   </div>
                   <div class="card-body">
-                    <form
-                      name="loginfrm"
-                      id="loginfrm"
-                      method="post"
-                      action="/login"
-                    >
+                    <form name="resetPasswordForm" id="resetPasswordForm">
                       <p class="text-danger">
                         <% if(locals.errors){%> <%=errors %> <%}%>
                       </p>
                       <div class="form-floating mb-3">
                         <input
                           class="form-control"
-                          id="inputEmail"
-                          type="email"
-                          placeholder="name@example.com"
-                          name="email"
-                          value="<% if(locals.evalue){%> <%=evalue %> <%}%>"
+                          id="nPassword"
+                          type="password"
+                          placeholder="Password"
+                          name="nPassword"
                         />
 
-                        <label for="inputEmail">Email address</label>
+                        <label for="inputEmail">Password</label>
+                        <div
+                          id="nPassword-error"
+                          class="text-danger width-auto"
+                        ></div>
                         <span class="text-danger"
                           ><% if(locals.email){%> <%=email %> <%}%></span
                         >
@@ -57,13 +55,17 @@
                       <div class="form-floating mb-3">
                         <input
                           class="form-control"
-                          id="inputPassword"
+                          id="nrPassword"
                           type="password"
                           placeholder="Password"
-                          name="password"
+                          name="rPassword"
                         />
 
-                        <label for="inputPassword">Password</label>
+                        <label for="inputPassword">Re-Type Password</label>
+                        <div
+                          id="rPassword-error"
+                          class="text-danger width-auto"
+                        ></div>
                         <span class="text-danger"
                           ><% if(locals.password){%> <%=password %> <%}%></span
                         >
@@ -93,19 +95,12 @@
                           id="btn-signin"
                           name="login"
                         >
-                          Sign in
+                          Reset
                         </button>
                         <a href="/" class="btn btn-danger mx-3">Cancel</a>
+                        <input type="hidden" id="check" value="" />
                       </div>
                     </form>
-                  </div>
-                  <div class="card-footer text-center py-3">
-                    <div class="small">
-                      <a href="/register">Need an account? Sign up!</a>
-                    </div>
-                    <div class="small">
-                      <a href="/profile/fogotPassword">Forgot Password ?</a>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -134,5 +129,109 @@
     <script src="/login/js/jquery.min.js"></script>
     <script src="/login/js/bootstrap.min.js"></script>
     <!-- <script src="/login/js/scripts.js"></script> -->
+    <script>
+      async function checkValue(frmData) {
+        let pattern = /[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]/g;
+
+        const tagId = ("#" + frmData.id).toString();
+        const disp = frmData.id + "-error";
+
+        if (pattern.test(frmData.value)) {
+          $(tagId).removeClass("is-invalid");
+          $(tagId).addClass("is-valid");
+
+          return true;
+        } else {
+          $(tagId).addClass("is-invalid");
+          document.getElementById(disp).innerText = "This field is required";
+          return false;
+        }
+      }
+
+      function whiteSpace(data) {
+        let result = false;
+        for (let i = 0; i < data.length; i++) {
+          result = checkValue(data[i]);
+        }
+
+        return result;
+      }
+
+      // Handle form submission
+      $("#resetPasswordForm").on("submit", async function (e) {
+        e.preventDefault(); // Prevent the form from submitting normally
+        const form = document.getElementsByName("resetPasswordForm");
+
+        const nPassword = form[0][0].value;
+        const rPassword = form[0][1].value;
+
+        console.log("The current password check is : ", rPassword);
+
+        if (!nPassword) {
+          $("#nPassword").addClass("is-invalid");
+          $("#nPassword-error").html("<p>This field is required</p>");
+        } else {
+          $("#nPassword").removeClass("is-invalid");
+          $("#nPassword").addClass("is-valid");
+          $("#nPassword-error").html("<p></p>");
+        }
+        if (!rPassword) {
+          $("#rPassword").addClass("is-invalid");
+          $("#rPassword-error").html("<p>This field is required</p>");
+        }
+
+        if (nPassword && rPassword) {
+          $("#rPassword-error").html("<p></p>");
+          $("#nPassword-error").html("<p></p>");
+
+          if (nPassword !== rPassword) {
+            $("#rPassword-error").html("password does not match");
+
+            $("#check").attr("value", "false");
+          } else {
+            $("#check").attr("value", "true");
+
+            $("#nPassword").removeClass("is-invalid");
+            $("#nPassword").addClass("is-valid");
+            $("#nPassword-error").html("<p></p>");
+            $("#rPassword").removeClass("is-invalid");
+            $("#rPassword").addClass("is-valid");
+            $("#rPassword-error").html("<p></p>");
+          }
+        }
+
+        if ($("#check").val() == "true") {
+          const formData = {
+            password: form[0][1].value,
+          };
+
+          // AJAX request to submit form data to the server
+          $.ajax({
+            url: "/profile/chgresetpass",
+            method: "PATCH",
+            data: formData,
+            success: function (response) {
+              // Handle success response
+              if (response.success == true) {
+                Swal.fire({
+                  title: "Password",
+                  text: "Password Changed Successfully Succesfully",
+                  icon: "success",
+                });
+                $("#resetPasswordForm")[0].reset();
+                $("#check").attr("value", "false");
+                window.location.href = "http://localhost:3000/login/";
+              }
+            },
+            error: function (xhr, status, error) {
+              // Handle error response
+              console.error(error);
+            },
+          });
+        } else {
+          console.log("i am from else submit form ");
+        }
+      });
+    </script>
   </body>
 </html>

@@ -18,6 +18,7 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   </head>
 
   <body>
@@ -70,6 +71,16 @@
                   type="radio"
                   style="margin-right: 20px"
                 />Cash On Delivery
+              </label>
+              <br />
+              <label class="radio-inline" for="CashOnDelivery">
+                <input
+                  name="paymentselect"
+                  id="RP"
+                  value="RP"
+                  type="radio"
+                  style="margin-right: 20px"
+                />Razor Pay
               </label>
             </div>
           </div>
@@ -241,6 +252,9 @@
     ></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+    <script></script>
+
     <script>
       const orderBtnElement = document.getElementById("orderBtn");
       orderBtnElement.addEventListener("click", orderBtnClickFunction);
@@ -272,6 +286,7 @@
       async function orderBtnClickFunction(event) {
         try {
           event.preventDefault();
+          let data = {};
 
           const addressOk = getSelectedRadio(
             "address",
@@ -284,28 +299,88 @@
             "Please choose Payment method"
           );
 
+          console.log(addressOk, paymentOk);
+
           if (addressOk && paymentOk) {
-            const link = `/orderplacedend/${addressOk}/${paymentOk}`;
-            window.location.href = link;
-            // console.log(link);
-          }
-          /*
-            //cash on delivery
-            let response = await fetch("/orderplaced", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({}),
-            });
-            response = await response.json();
-            console.log(response);
-            if (response.success) {
-              window.location.href = "/orderplacedend/";
+            data = {
+              address: addressOk,
+              payment: paymentOk,
+            };
+
+            if (paymentOk == "RP") {
+              $.ajax({
+                url: "/payment",
+                method: "POST",
+                data: data,
+                success: async function (response) {
+                  // Handle success response
+                  if (response.success == true) {
+                    // console.log(typeof parseInt(response.totalAmount));
+                    await initiatePayment(
+                      parseInt(response.totalAmount),
+                      response.oid
+                    );
+                  }
+                },
+                error: function (xhr, status, error) {
+                  // Handle error response
+                  console.error(error);
+                },
+              });
+            }
+            if (paymentOk == "COD") {
+              const link = `/orderplacedend/${addressOk}/${paymentOk}`;
+              window.location.href = link;
             }
           }
+        } catch (error) {
+          console.error(error);
+        }
+      }
 
-          */
+      function verifyPayment(payment, oid) {
+        $.ajax({
+          url: "/verify-payment",
+          method: "POST",
+          data: {
+            payment,
+            oid,
+          },
+          success: function (response) {},
+          error: function (xhr, status, error) {
+            console.log("The error is : ", error);
+          },
+        });
+      }
+
+      async function initiatePayment(amt, oid) {
+        try {
+          const options = {
+            key: "rzp_test_xOXAdtJXlJAoaN", // Enter the Key ID generated from the Dashboard
+            amount: amt, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+            currency: "INR",
+            name: "SHOECASE",
+            description: "Test Transaction",
+            callback_url: "/orderPlaced",
+            image: "/images/logo-dark.png",
+            id: oid, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+            theme: {
+              color: "#3399cc",
+            },
+            handler: function (response) {
+              verifyPayment(response, oid);
+            },
+            prefill: {
+              name: "Gaurav Kumar",
+              email: "gaurav.kumar@example.com",
+              contact: "9000090000",
+            },
+            notes: {
+              address: "Razorpay Corporate Office",
+            },
+          };
+          const razorpay = new Razorpay(options);
+          razorpay.open();
         } catch (error) {
           console.error(error);
         }
@@ -343,7 +418,7 @@
           },
           error: function (xhr, status, error) {
             // Handle error response
-            console.error(error);
+            console.error(status, error);
           },
         });
       });

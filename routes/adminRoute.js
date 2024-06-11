@@ -88,7 +88,12 @@ admin_route.get("/login", auth.isLogout, admin.loadLogin);
 
 admin_route.get("/chart", admin.loadChart);
 
-admin_route.get("/users", auth.isLogin, admin.loadUsers);
+// admin_route.get("/users", auth.isLogin, admin.loadUsers);
+admin_route.get("/users", auth.isLogin, admin.loadUsersNew);
+
+admin_route.get("/usernew", auth.isLogin, admin.loadUsersNew);
+
+admin_route.get("/users/getall", auth.isLogin, admin.loadUserData);
 
 // admin_route.get("/catagory",auth.isLogin, catagory.loadCat);
 

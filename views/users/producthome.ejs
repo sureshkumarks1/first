@@ -48,6 +48,7 @@
   display:none;
 }
     </style>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/ldrs/dist/auto/tailspin.js"></script>
   </head>
 
   <body>
@@ -118,11 +119,15 @@
           </div>
       </div>
           <div class="row row-cols-1 row-cols-md-3 g-4 d-flex justify-content-center" id="productsSpace" >   
-                  <div class="text-center">
-                      <h4 >No Products Found</h4>
+                  <div class="text-center align-middle">
+                        <l-tailspin
+                        size="40"
+                        stroke="5"
+                        speed="0.9"
+                        color="black" 
+                        ></l-tailspin>
                   </div>
           </div>  
-          
           
             </div>
           </div>
@@ -144,6 +149,8 @@
     <script>
       const productsSpace = document.getElementById("productsSpace");
       const dispAlert = document.getElementById("dispAlert");
+
+      
       function displayData(data) {
         
         if(data.length>0){
@@ -154,15 +161,15 @@
                 <a class="card-img-tiles" href="#" data-abc="true">
                   <div class="inner">
                     <div class="main-img text-center">
-                      <img
+                      <img class="mt-3 rounded"
                         src="${product.image}" width ="200px" height="234px"
                         alt="${product.image}"
                       />
                     </div></div
                 ></a>
                 <div class="card-body text-center">
-                  <h4 class="card-title">${product.name}</h4>
-                  <p class="text-muted">Price :${product.price}</p>
+                  <h6 class="card-title">${product.name}</h6>
+                  <p class="text-muted">Price : ₹${product.price}</p>
                  
                   <a
                     class="btn btn-outline-primary btn-sm"
@@ -190,13 +197,13 @@
 //getting all product on load
       $(document).ready(function() {
 
-       
+
 
         let productItems;
-
         const formData = {
         range: "all",
       };
+
         $.ajax({
         url: "/products/range",
         method: "POST",
@@ -209,6 +216,7 @@
               $("#dispAlert").html(`Total ${response.count} items found`);
               productItems = response.products;
               // console.log(typeof(productItems))
+              
               displayData(productItems);
               const totalNumber = productItems.length;
             console.log(totalNumber)
@@ -262,8 +270,6 @@
           // Handle error response
           console.error(error);
         },
-
-        
 
 
       });

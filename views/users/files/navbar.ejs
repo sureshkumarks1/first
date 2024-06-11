@@ -1,12 +1,13 @@
-<div class="py-5">
+<div class="py-2">
   <div class="container">
     <div class="row w-100 align-items-center gx-lg-2 gx-0">
       <div class="col-xxl-2 col-lg-3 col-md-6 col-5">
         <a class="navbar-brand d-none d-lg-block" href="/">
-          <img
+          <!-- <img
             src="/user/images/logo/freshcart-logo.svg"
             alt="eCommerce HTML Template"
-          />
+          /> -->
+          <h2 class="logo">Shoecase</h2>
         </a>
         <!-- <div class="d-flex justify-content-between w-100 d-lg-none">
           <a class="navbar-brand" href="/">
@@ -26,17 +27,18 @@
         </div>
       </div>
 
-      <div class="col-lg-2 col-xxl-2 text-end col-md-6 col-7 list-inline" style="margin-left: auto;">
+      <div class="col-lg-2 col-xxl-2 text-end col-md-6 col-7 list-inline" style="margin-left: auto;" >
+        
         <% if (name=="Guest") { %>
         <div class="list-inline-item">
           Hello Guest, <a class="btn btn-primary"  href="/login">Login</a>
         </div>
         <% } else { %>
         <!-- STARTS HERE -->
-        <div class="list-inline">
-          <div class="list-inline-item me-5">
+        <div class="list-inline  d-flex justify-content-start ">
+          <div class="list-inline-item me-3">
             <a
-              href="./pages/shop-wishlist.html"
+              href="#"
               class="text-muted position-relative"
             >
               <svg
@@ -57,12 +59,11 @@
               </svg>
             </a>
           </div>
-          <div class="list-inline-item me-5">
+          <div class="list-inline-item me-3">
             <a
               href="/profile"
               class="text-muted"
-              data-bs-toggle="modal"
-              data-bs-target="#userModal"
+             
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -82,7 +83,7 @@
             </a>
           </div>
 
-          <div class="list-inline-item me-5 me-lg-0">
+          <div class="list-inline-item me-3 me-lg-0">
             <a
               class="text-muted position-relative"
               data-bs-toggle="offcanvas"
@@ -111,6 +112,10 @@
                 <line x1="3" y1="6" x2="21" y2="6"></line>
                 <path d="M16 10a4 4 0 0 1-8 0"></path>
               </svg>
+              <span class="position-relative top-0 start-200 translate-middle badge rounded-pill bg-danger">
+                9
+                <span class="visually-hidden">unread messages</span>
+              </span>
             </a>
           </div>
           <div class="list-inline-item d-inline-block d-lg-none">
@@ -141,7 +146,7 @@
       </div>
       <div class="col-lg-2 col-xxl-2 text-end col-md-6 col-7 list-inline">
         <div class="list-inline-item">
-          Welcoem <%= name %>&nbsp;&nbsp;<a class="btn btn-danger" href="/logout">Logout</a>
+          Welcome <%= name %>&nbsp;&nbsp;<a class="btn btn-danger" href="/logout">Logout</a>
         </div>
         <% }%>
       </div>

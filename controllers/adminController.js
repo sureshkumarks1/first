@@ -20,6 +20,28 @@ const loadChart = async (req, res) => {
   }
 };
 
+const loadUserData = async (req, res) => {
+  try {
+    const userdata = await User.find();
+
+    res.json({ data: userdata });
+    // res.send({title:"Users List", data : userdata });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+const loadUsersNew = async (req, res) => {
+  try {
+    const userdata = await User.find();
+
+    res.render("usernew", { title: "Users List", user: userdata });
+    // res.send({title:"Users List", data : userdata });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
 const loadUsers = async (req, res) => {
   try {
     const userdata = await User.find();
@@ -274,4 +296,6 @@ module.exports = {
   loadChart,
   loadUsers,
   blockUser,
+  loadUsersNew,
+  loadUserData,
 };

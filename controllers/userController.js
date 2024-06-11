@@ -50,12 +50,15 @@ const verifyOtpResetPassword = (req, res) => {
   //const { otp } = req.body;
 
   //if (req.session.otp == otp) {
-  // res.json({ success: true });
+  res.json({ success: true });
   //} else {
-  res.json({ success: false, error: "OTP is not correct" });
+  // res.json({ success: false, error: "OTP is not correct" });
   //}
 };
 
+const resetpasswd = (req, res) => {
+  res.render("resetpasswd");
+};
 // create a new user
 
 const checkvalues = async (req, res) => {
@@ -136,6 +139,7 @@ const sendOtp = async (req, res) => {
     });
   } else {
     const checkmail = sendEmail(email);
+    req.session.email = email;
     req.session.otp = checkmail;
     res.json({ success: true });
   }
@@ -150,7 +154,6 @@ const forgotPassword = async (req, res) => {
 };
 
 const googleLogin = async (req, res) => {
-  
   console.log(req.body);
 
   /*
@@ -251,6 +254,7 @@ const verifyLogin = async (req, res) => {
 };
 
 const loadHome = async (req, res) => {
+  
   let word = "Guest";
 
   const prod_list = await Product.find({ status: true });
@@ -358,4 +362,5 @@ module.exports = {
   otpForgotPassword,
   verifyOtpResetPassword,
   googleLogin,
+  resetpasswd,
 };

@@ -1,5 +1,7 @@
+
 const orderCollection = require("../models/orderModel");
 const formatDate = require("../helper/date");
+
 
 //admin side order Management
 
@@ -43,6 +45,8 @@ const orderDetailspage = async (req, res) => {
     .populate("addressChosen");
 
   // console.log(orderData);
+
+
 
   res.render("orderDetailsPage", { id: req.params.id, details: orderData });
 };

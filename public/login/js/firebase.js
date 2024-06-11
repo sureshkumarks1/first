@@ -35,18 +35,43 @@ googleBtn.addEventListener("click", function () {
       const user = result.user;
 
       // console.log(user);
-      // const userData = {
-      //   name: user.displayName,
-      //   email: user.email,
-      // };
-      window.location.href = `http://localhost:3000/googleLogin?name=${user.displayName}&email= ${user.email}`;
+      const userData = {
+        name: user.displayName,
+        email: user.email,
+      };
 
       // console.log(url);
 
-      // inserLogin(userData)
+      inserLogin(userData);
     })
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
     });
 });
+
+function inserLogin(data) {
+  const url = "http://localhost:3000/googleLogin";
+  const options = {
+    method: "GET",
+    Headers: {
+      Accept: "application.json",
+      "Content-Type": "application/json",
+    },
+    Body: data,
+  };
+
+  fetch(url, {
+    method: "GET",
+    Headers: {
+      Accept: "application.json",
+      "Content-Type": "application/json",
+    },
+    Body: data,
+  })
+    .then((response) => response.json())
+    .then((data) => console.log(data))
+    .catch((err) => {
+      console.log(err);
+    });
+}

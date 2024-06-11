@@ -1,0 +1,49 @@
+<%-include("../layouts/header.ejs")-%>
+<div id="layoutSidenav_content">
+  <main>
+    <div class="container-fluid px-4" id="divtable">
+      <h1 class="mt-4">Users</h1>
+      <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/admin/home">Dashboard</a></li>
+        <li class="breadcrumb-item active">Users</li>
+      </ol>
+
+      <div class="card mb-4">
+        <div class="card-header">
+          <i class="fas fa-table me-1"></i>
+          Users
+        </div>
+        <div class="card-body">
+          <table id="userTable" class="table table-striped">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <!-- <tfoot>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Email</th>                
+                <th>Status</th>                
+                <th>Action</th>   
+              </tr> 
+            </tfoot>-->
+
+            <!-- <tr>
+                <th class="tableheading">Name</th>
+                <th class="tableheading">Email</th>
+                <th class="tableheading">Phone.no</th>
+              </tr> -->
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<%-include("../layouts/footer-user.ejs")-%>

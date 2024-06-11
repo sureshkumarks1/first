@@ -4,6 +4,13 @@ const { Product } = require("../models/productModel");
 const profileCollection = require("../models/addressModel.js");
 const cartCollection = require("../models/cartModel.js");
 const ObjectId = require("mongodb").ObjectId;
+require("dotenv").config();
+const Razorpay = require("razorpay");
+
+const instance = new Razorpay({
+  key_id: "rzp_test_xOXAdtJXlJAoaN",
+  key_secret: "eJJHOMYcAnlT15BnxZGrKiVi",
+});
 
 const orderCollection = require("../models/orderModel.js");
 
@@ -67,12 +74,16 @@ const cart = async (req, res) => {
 };
 
 const addToCart = async (req, res) => {
-  console.log(req.session.user_id);
+  // console.log("the product is : ", req.body.id);
+
+  const pid = req.body.id;
+
+  // console.log(req.session.user_id);
 
   try {
     let existingProduct = await cartCollection.findOne({
       userId: req.session.user_id,
-      productId: req.params.id,
+      productId: pid,
     });
 
     if (existingProduct) {
@@ -81,9 +92,10 @@ const addToCart = async (req, res) => {
         { $inc: { productQuantity: 1 } }
       );
     } else {
+      console.log("i am from insert to cart", pid);
       await cartCollection.create({
         userId: req.session.user_id,
-        productId: req.params.id,
+        productId: pid,
         productQuantity: 1,
         currentUser: req.session.currentUser,
         user: req.session.uname,
@@ -186,6 +198,21 @@ const checkoutPage = async (req, res) => {
   }
 };
 
+const verifyPayment = (req, res) => {
+  const { razorpay_payment_id, oid } = req.body;
+
+  const toBeHash = oid + "|" + razorpay_payment_id;
+
+  const { createHmac } = require("node:crypto");
+
+  const secret = process.env.SESSION_SECRET;
+  console.log("Secret", secret)
+  const hash = createHmac("sha256", secret).update(toBeHash).digest("hex");
+  console.log(hash);
+
+  res.json({ success: true });
+};
+
 const orderPlaced = async (req, res) => {
   try {
     //incase of COD
@@ -206,7 +233,19 @@ const orderPlaced = async (req, res) => {
   }
 };
 
+const cartCount = (req, res) => {
+  return new Promise(async (resolve, reject) => {
+    let cartItems = await cartCollection
+      .find({ userId: req.session.user_id })
+      .countDocuments();
+    // console.log(cartItems);
+    resolve(cartItems);
+  });
+};
+
 const orderPlacedEnd = async (req, res) => {
+  const { address, payment } = req.body;
+
   let cartData = await cartCollection
     .find({ userId: req.session.user_id })
     .populate("productId");
@@ -215,18 +254,36 @@ const orderPlacedEnd = async (req, res) => {
     userId: req.session.user_id,
     orderNumber: (await orderCollection.countDocuments()) + 1,
     orderDate: new Date(),
-    addressChosen: new ObjectId(req.params.id),
+    addressChosen: new ObjectId(address),
     cartData: await grandTotal(req),
     grandTotalCost: req.session.grandTotal,
-    paymentType: req.params.pm,
+    paymentType: payment,
   };
 
-  // console.log(dataObj);
-
+  const totAmt = dataObj.grandTotalCost * 100;
   const odresult = await orderCollection.create(dataObj);
+  
 
-  console.log(odresult);
+  res.json({
+    success: true,
+    oid: odresult._id.toString(),
+    totalAmount: totAmt,
+  });
 
+  // const options = {
+  //   amount: 199, // amount in the smallest currency unit
+  //   currency: "INR",
+  //   receipt: odresult._id.toString(),
+  // };
+  // instance.orders.create(options, function (err, order) {
+  //   if (err) {
+  //     console.log("The error is =>>>>", err);
+  //   }
+  //   console.log("The order =>>>", order);
+  // });
+
+  // console.log(dataObj);
+  // console.log(odresult);
   // req.session.currentOrder = await orderCollection.create({
   //   userId: req.session.user_id,
   //   orderNumber: (await orderCollection.countDocuments()) + 1,
@@ -236,7 +293,6 @@ const orderPlacedEnd = async (req, res) => {
   //   grandTotalCost: req.session.grandTotal,
   //   paymentType: req.params.pm
   // });
-
   /*
   for (const item of cartData) {
     item.productId.productStock -= item.productQuantity; // we use for reducing Qyantity
@@ -247,7 +303,6 @@ const orderPlacedEnd = async (req, res) => {
   // let orderData = await orderCollection.findOne({
   //   _id: req.session.currentOrder._id,
   // });
-
   /*
   if (orderData.paymentType == "toBeChosen") {
     orderData.paymentType = "COD";
@@ -257,17 +312,16 @@ const orderPlacedEnd = async (req, res) => {
   let x = await cartCollection
     .findByIdAndUpdate({ _id: req.session.currentOrder._id })
     .populate("productId");*/
-
-  res.render("orderPlaced", {
-    signIn: req.session.signIn,
-    user: req.session.user,
-    name: req.session.user,
-    ordId: odresult._id,
-    orderCartData: cartData,
-    orderData: req.session.currentOrder,
-  });
+  // res.render("orderPlaced", {
+  //   signIn: req.session.signIn,
+  //   user: req.session.user,
+  //   name: req.session.user,
+  //   ordId: odresult._id,
+  //   orderCartData: cartData,
+  //   orderData: req.session.currentOrder,
+  // });
   //delete product from cart since the order is placed
-  await cartCollection.deleteMany({ userId: req.session.user_id });
+  // await cartCollection.deleteMany({ userId: req.session.user_id });
 };
 
 module.exports = {
@@ -279,4 +333,5 @@ module.exports = {
   checkoutPage,
   orderPlaced,
   orderPlacedEnd,
+  verifyPayment,
 };
