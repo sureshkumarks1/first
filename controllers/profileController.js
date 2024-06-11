@@ -206,7 +206,7 @@ module.exports = {
 
       res.render("orderHistory", {
         currentUser: req.session.currentUser,
-        name: req.session.currentUser.name,
+        name: req.session?.currentUser?.name,
         orderData,
       });
     } catch (error) {

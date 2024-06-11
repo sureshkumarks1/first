@@ -8,12 +8,14 @@ let table = new DataTable("#showorders", {
       render: DataTable.render.datetime("DD MMM YYYY"),
     },
     { data: "orderStatus" },
-    { data: "paymentType" },
+    {
+      data: "paymentType",
+    },
     { data: "userId.name" },
     {
       data: "",
       render: (data, type, row) => {
-        console.log(row);
+        // console.log(row);
         return `<a href='/admin/orderDetailsPage/${row._id}'><button class='btn btn-primary'>Details</button></a>`;
       },
     },

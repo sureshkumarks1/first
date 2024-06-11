@@ -8,6 +8,7 @@ const userController = require("../controllers/userController");
 const cartController = require("../controllers/cartController.js");
 const profileController = require("../controllers/profileController.js");
 const productController = require("../controllers/productController.js");
+const orderController = require("../controllers/orderController.js");
 
 const auth = require("../middleware/auth");
 // const bodyParser = require("body-parser");
@@ -200,6 +201,11 @@ user_route.post("/profile/editAddress", profileController.editAddressPost);
 user_route.get("/checkout/:id", auth.isLogin, cartController.checkoutPage);
 user_route.post("/orderplaced", auth.isLogin, cartController.orderPlaced);
 user_route.post("/payment", auth.isLogin, cartController.orderPlacedEnd);
+user_route.patch(
+  "/chgpaymtsts",
+  auth.isLogin,
+  orderController.changeOrderPaymentStatus
+);
 
 user_route.post("/verify-payment", auth.isLogin, cartController.verifyPayment);
 

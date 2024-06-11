@@ -1,7 +1,8 @@
-
 const orderCollection = require("../models/orderModel");
 const formatDate = require("../helper/date");
+const mongoose = require("mongoose");
 
+const ObjectId = new mongoose.Types.ObjectId();
 
 //admin side order Management
 
@@ -43,12 +44,29 @@ const orderDetailspage = async (req, res) => {
     .find({ _id: req.params.id })
     .populate("userId")
     .populate("addressChosen");
-
-  // console.log(orderData);
-
-
-
   res.render("orderDetailsPage", { id: req.params.id, details: orderData });
 };
 
-module.exports = { getOrders, orderDetailspage, updateStatus };
+const changeOrderPaymentStatus = async (req, res) => {
+  const { ordId, razorpay_payment_id, razorpay_order_id } = req.body;
+
+  const obj = {
+    paymentId: razorpay_payment_id,
+    paymentOrdId: razorpay_order_id,
+    orderStatus: "confirm",
+  };
+
+  let orderData = await orderCollection.updateOne({ _id: ordId }, obj);
+  if (orderData) {
+    res.json({ success: true });
+  } else {
+    res.json({ success: false });
+  }
+};
+
+module.exports = {
+  getOrders,
+  orderDetailspage,
+  updateStatus,
+  changeOrderPaymentStatus,
+};

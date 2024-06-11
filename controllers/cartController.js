@@ -5,12 +5,6 @@ const profileCollection = require("../models/addressModel.js");
 const cartCollection = require("../models/cartModel.js");
 const ObjectId = require("mongodb").ObjectId;
 require("dotenv").config();
-const Razorpay = require("razorpay");
-
-const instance = new Razorpay({
-  key_id: "rzp_test_xOXAdtJXlJAoaN",
-  key_secret: "eJJHOMYcAnlT15BnxZGrKiVi",
-});
 
 const orderCollection = require("../models/orderModel.js");
 
@@ -92,7 +86,7 @@ const addToCart = async (req, res) => {
         { $inc: { productQuantity: 1 } }
       );
     } else {
-      console.log("i am from insert to cart", pid);
+      // console.log("i am from insert to cart", pid);
       await cartCollection.create({
         userId: req.session.user_id,
         productId: pid,
@@ -199,18 +193,28 @@ const checkoutPage = async (req, res) => {
 };
 
 const verifyPayment = (req, res) => {
-  const { razorpay_payment_id, oid } = req.body;
+  // console.log(req.body);
 
-  const toBeHash = oid + "|" + razorpay_payment_id;
+  const { rzp, oid } = req.body;
 
-  const { createHmac } = require("node:crypto");
+  const toBeHash = oid + "|" + rzp.razorpay_payment_id;
 
-  const secret = process.env.SESSION_SECRET;
-  console.log("Secret", secret);
+  // console.log("To be convert to hash==> ", toBeHash);
+
+  const { createHmac } = require("crypto");
+
+  const secret = process.env.RAZOR_KEY_SECRET;
+  // console.log("To secret key ==> ", secret);
   const hash = createHmac("sha256", secret).update(toBeHash).digest("hex");
-  console.log(hash);
 
-  res.json({ success: true });
+  // console.log(hash);
+
+  if (rzp.razorpay_signature == hash) {
+    // console.log("hi i am from hash verification section true");
+    res.json({ success: true });
+  } else {
+    res.json({ success: false });
+  }
 };
 
 const orderPlaced = async (req, res) => {
@@ -263,14 +267,17 @@ const orderPlacedEnd = async (req, res) => {
   const totAmt = dataObj.grandTotalCost * 100;
   const odresult = await orderCollection.create(dataObj);
 
-  res.json({
-    success: true,
-    oid: odresult._id.toString(),
-    totalAmount: totAmt,
+  // console.log("The order is generated and id is :", odresult);
+
+  const Razorpay = require("razorpay");
+
+  const instance = new Razorpay({
+    key_id: process.env.RAZOR_KEY_ID,
+    key_secret: process.env.RAZOR_KEY_SECRET,
   });
 
   const options = {
-    amount: totAmt, // amount in the smallest currency unit
+    amount: parseInt(totAmt), // amount in the smallest currency unit
     currency: "INR",
     receipt: odresult._id.toString(),
   };
@@ -278,15 +285,14 @@ const orderPlacedEnd = async (req, res) => {
     if (err) {
       console.log("The error is =>>>>", err);
     }
-
-    // res.json({
-    //   success: true,
-    //   oid: odresult._id.toString(),
-    //   totalAmount: totAmt,
-    //   order
-    // });
-
-    console.log(order);
+    // console.log("The return ", order);
+    res.json({
+      success: true,
+      ord_id: odresult._id.toString(),
+      oid: order.id,
+      totalAmount: parseInt(totAmt),
+      order: order,
+    });
   });
 
   // console.log(dataObj);
