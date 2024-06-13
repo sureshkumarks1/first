@@ -4,7 +4,10 @@ const path = require("path");
 let cors = require("cors");
 const userRoute = require("./routes/userRoute");
 const adminRoute = require("./routes/adminRoute");
+
 const multer = require("multer");
+
+const { notFound, errorHandler } = require("./middleware/errormiddle");
 
 const swal = require("sweetalert");
 require("dotenv").config();
@@ -35,6 +38,19 @@ app.use("/", userRoute);
 //using Logger
 app.use(logger("common"));
 
+// app.use(notFound);
+app.use(errorHandler);
+/*
+app.use((error, req, res, next) => {
+  const line = error.stack.split("\n");
+  const eObj = {
+    name: error.name,
+    message: error.message,
+    Line: line[1],
+  };
+  res.status(500).send(eObj);
+});
+*/
 //for admin routes
 app.use("/admin", adminRoute);
 

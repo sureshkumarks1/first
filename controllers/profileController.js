@@ -5,6 +5,9 @@ const orderCollection = require("../models/orderModel");
 const formatDate = require("../services/formatDateHelper");
 
 module.exports = {
+  myWishList: (req, res) => {
+    res.render("wishlist", { name: req.session?.currentUser?.name });
+  },
   accountPage: async (req, res) => {
     try {
       let userData = await User.find({
@@ -17,7 +20,7 @@ module.exports = {
 
       res.render("profile", {
         currentUser: req.session?.currentUser,
-        name: req.session?.currentUser,
+        name: req.session?.currentUser?.name,
         userData,
         addressData,
         userId: req.session?.user_id,

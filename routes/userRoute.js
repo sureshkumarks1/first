@@ -9,6 +9,7 @@ const cartController = require("../controllers/cartController.js");
 const profileController = require("../controllers/profileController.js");
 const productController = require("../controllers/productController.js");
 const orderController = require("../controllers/orderController.js");
+const wishListController = require("../controllers/wishListController.js");
 
 const auth = require("../middleware/auth");
 // const bodyParser = require("body-parser");
@@ -195,6 +196,7 @@ user_route.post(
 
 user_route.get("/profile/getaddress/:id", profileController.singleAddress);
 user_route.get("/profile/deladdress/:id", profileController.deleteAddress);
+user_route.get("/profile/wishlist", auth.isLogin, profileController.myWishList);
 user_route.post("/profile/editAddress", profileController.editAddressPost);
 
 /****************cart section*****************/
@@ -223,5 +225,16 @@ user_route.get(
 /****************cart section*****************/
 
 // user_route.get("/*", userController.notfound);
+
+/**** not found***** */
+user_route.get("/404", userController.loadNotFound);
+user_route.post("/addtowishlist", wishListController.addToWishlist);
+user_route.get("/getallwishlist/:id", wishListController.getAllWishlist);
+user_route.delete(
+  "/removefromwishlist/:id",
+  wishListController.removeFromWishlist
+);
+
+/**** not found***** */
 
 module.exports = user_route;

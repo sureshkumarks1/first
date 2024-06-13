@@ -22,14 +22,18 @@ const securePassword = async (password) => {
   }
 };
 
-const loadRegister = async (req, res) => {
+const loadNotFound = (req, res) => {
+  res.render("404", { title: "not found" });
+};
+
+const loadRegister = async (req, res, next) => {
   try {
     res.render("registration", {
       layout: "../layouts/login/register",
       title: "register",
     });
   } catch (error) {
-    console.log(error.message);
+    next(error.message);
   }
 };
 
@@ -190,7 +194,7 @@ const googleLogin = async (req, res) => {
   */
 };
 
-const verifyLogin = async (req, res) => {
+const verifyLogin = async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email) {
@@ -248,13 +252,12 @@ const verifyLogin = async (req, res) => {
         });
       }
     } catch (error) {
-      console.log(error.message);
+      return next(error);
     }
   }
 };
 
 const loadHome = async (req, res) => {
-  
   let word = "Guest";
 
   const prod_list = await Product.find({ status: true });
@@ -363,4 +366,5 @@ module.exports = {
   verifyOtpResetPassword,
   googleLogin,
   resetpasswd,
+  loadNotFound,
 };

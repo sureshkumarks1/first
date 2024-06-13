@@ -1,31 +1,58 @@
-const logger = require('./logger')
+const notFound = (req, res, next) => {
+  res.redirect("/404");
+};
 
-const requestLogger = (request, response, next) => {
-  logger.info('Method:', request.method)
-  logger.info('Path:  ', request.path)
-  logger.info('Body:  ', request.body)
-  logger.info('---')
-  next()
-}
+const errorHandler = (err, req, res, next) => {
+  const statusCode = res.statusCode ? res.statusCode : 500;
+  res.status(statusCode).json({
+    message: err?.message,
+    stack: err?.stackTrace,
+    statusCode: err.statusCode,
+    Title: err?.title,
+    // code: statusCode,
+  });
+};
 
-const unknownEndpoint = (request, response) => {
-  response.status(404).send({ error: 'unknown endpoint' })
-}
+const newErrorhandler = (err, req, res, next) => {
+  const statusCode = res.statusCode ? res.statusCode : 500;
 
-const errorHandler = (error, request, response, next) => {
-  logger.error(error.message)
+  res.json({
+    title: "Not Found",
+    message: err.message,
+    stackTrace: err.stackTrace,
+  });
+};
 
-  if (error.name === 'CastError') {
-    return response.status(400).send({ error: 'malformatted id' })
-  } else if (error.name === 'ValidationError') {
-    return response.status(400).json({ error: error.message })
-  }
+module.exports = { errorHandler, notFound, newErrorhandler };
 
-  next(error)
-}
+// const logger = require('./logger')
 
-module.exports = {
-  requestLogger,
-  unknownEndpoint,
-  errorHandler
-}
+// const requestLogger = (request, response, next) => {
+//   logger.info('Method:', request.method)
+//   logger.info('Path:  ', request.path)
+//   logger.info('Body:  ', request.body)
+//   logger.info('---')
+//   next()
+// }
+
+// const unknownEndpoint = (request, response) => {
+//   response.status(404).send({ error: 'unknown endpoint' })
+// }
+
+// const errorHandler = (error, request, response, next) => {
+//   logger.error(error.message)
+
+//   if (error.name === 'CastError') {
+//     return response.status(400).send({ error: 'malformatted id' })
+//   } else if (error.name === 'ValidationError') {
+//     return response.status(400).json({ error: error.message })
+//   }
+
+//   next(error)
+// }
+
+// module.exports = {
+//   requestLogger,
+//   unknownEndpoint,
+//   errorHandler
+// }

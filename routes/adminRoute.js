@@ -4,6 +4,8 @@ const os = require("os");
 
 const admin_route = express();
 
+const couponRoute = require("./couponRoute");
+
 require("dotenv").config();
 
 const session = require("express-session");
@@ -140,5 +142,7 @@ admin_route.get(
 //   res.redirect("/admin/login");
 
 // })
+
+admin_route.use("/coupon", couponRoute);
 
 module.exports = admin_route;
