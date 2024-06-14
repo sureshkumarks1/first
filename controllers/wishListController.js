@@ -12,9 +12,9 @@ const addToWishlist = asyncHandler(async (req, res) => {
 
   const uerr = validateMongoDbId(userId);
 
-  const perr = validateMongoDbId(productId);
+  // const perr = validateMongoDbId(productId);
 
-  if (uerr || perr) {
+  if (uerr) {
     return res.status(400).json({ message: "Id is not Valid" });
   }
 
@@ -42,11 +42,16 @@ const removeFromWishlist = asyncHandler(async (req, res) => {
 });
 
 //get all wishlist of current user
-const getAllWishlist = asyncHandler(async (req, res) => {
+const getAllWishlist = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   validateMongoDbId(id);
-  const wishlists = await WhishList.find({ userId: id });
-  res.status(200).json(wishlists);
+  const wishlists = await WhishList.find({
+    userId: id,
+  }).populate("productId");
+  // const wishlists = await WhishList.find().populate("product");
+
+  // console.log(wishlists);
+  res.status(200).json({ data: wishlists, id: id });
 });
 
 module.exports = {

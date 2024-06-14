@@ -23,5 +23,6 @@ product_route.post("/del", product.del_prod);
 product_route.get("/prodedt/:id", product.edt_prod);
 product_route.post("/products/getitemcount", product.getProdById);
 product_route.post("/produpdtn", upload.any(), product.updt_prod);
+product_route.put("/rating", product.rating);
 
 module.exports = product_route;

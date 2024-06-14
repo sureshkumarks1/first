@@ -10,6 +10,7 @@ const profileController = require("../controllers/profileController.js");
 const productController = require("../controllers/productController.js");
 const orderController = require("../controllers/orderController.js");
 const wishListController = require("../controllers/wishListController.js");
+const product_route = require("../routes/productRoute");
 
 const auth = require("../middleware/auth");
 // const bodyParser = require("body-parser");
@@ -40,6 +41,8 @@ user_route.set("view engine", "ejs");
 user_route.set("views", "./views/users");
 
 user_route.use(express.static("public"));
+
+user_route.use("/product", product_route);
 
 user_route.set("/nodefile", path.join(__dirname, "/node_modules"));
 

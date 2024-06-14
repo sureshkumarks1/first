@@ -40,7 +40,8 @@ admin_route.use(express.static("uploads"));
 
 admin_route.use("/catagory", catroute);
 
-admin_route.use("/products", auth.isLogin, product_route);
+// admin_route.use("/products", auth.isLogin, product_route);
+
 
 admin_route.use(express.static("public"));
 
