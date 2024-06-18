@@ -10,6 +10,10 @@ const couponSchema = new mongoose.Schema(
       unique: true,
       uppercase: true,
     },
+    startdate: {
+      type: Date,
+      required: true,
+    },
     expiry: {
       type: Date,
       required: true,
@@ -23,21 +27,42 @@ const couponSchema = new mongoose.Schema(
 );
 
 //Export the model
-module.exports = mongoose.model("Coupon", couponSchema);
-// const Coupon = mongoose.model("coupon", couponSchema);
+// module.exports = mongoose.model("Coupon", couponSchema);
+const Coupon = mongoose.model.coupons || mongoose.model("coupon", couponSchema);
 
-const validateCoupon = (Coupon) => {
+const validateCoupon = async (coupon) => {
+  console.log(coupon);
   const schema = Joi.object({
-    name: Joi.string().min(3).max(500).required().messages({
-      "string.empty": `Name is a required field`,
+    name: Joi.string()
+      .min(3)
+      .max(10)
+      .required()
+      .trim()
+      .pattern(new RegExp("^[A-Z0-9]+$"))
+      .messages({
+        "string.empty": `Name is a required`,
+        "string.pattern.base": "Not a valid code eg:ABC123",
+        "string.max": "Length is limited to 10 charactor",
+        "string.min": "Minimum Length required 3 charactor",
+      }),
+    discount: Joi.number().required().min(1).max(100).messages({
+      "any.required": "Discount is a required",
+      "number.max": "Discount must be less than or equal to 100",
+      "number.min": "Discount must be greater than 0",
+      "number.base": "Enter a Valid Number",
+    }),
+    startdate: Joi.date().required().messages({
+      "any.empty": `Date is a required field`,
+      "date.base": `Date format is not correct`,
     }),
     expiry: Joi.date().required().messages({
       "any.empty": `Date is a required field`,
+      "any.required": "End Date is a required",
+      "date.base": `Date format is not correct`,
     }),
-    discount: Joi.number().min(1).max(99).required(),
   });
-  const { error, value } = schema.validate(Coupon);
+  const { error, value } = schema.validate(coupon);
   return { error, value };
 };
 
-// module.exports = { coupon };
+module.exports = { Coupon, validateCoupon };

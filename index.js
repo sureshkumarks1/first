@@ -27,30 +27,15 @@ app.set("/nodefile", path.join(__dirname, "/node_modules"));
 
 app.use("/uploads", express.static("uploads"));
 
-//using helmet
-// app.use(helmet.contentSecurityPolicy({
-//   contentSecurityPolicy: false,
-// }));
-
 //for user routes
 app.use("/", userRoute);
 
 //using Logger
 app.use(logger("common"));
 
-// app.use(notFound);
+// app.all("*", notFound);
 app.use(errorHandler);
-/*
-app.use((error, req, res, next) => {
-  const line = error.stack.split("\n");
-  const eObj = {
-    name: error.name,
-    message: error.message,
-    Line: line[1],
-  };
-  res.status(500).send(eObj);
-});
-*/
+
 //for admin routes
 app.use("/admin", adminRoute);
 

@@ -4,9 +4,11 @@ const couponController = require("../controllers/couponController");
 
 coupon_route.post("/", couponController.createCoupon);
 
-coupon_route.get("/", couponController.getAllCoupons);
-coupon_route.patch("/:id", couponController.updateCoupon);
-coupon_route.delete("/:id", couponController.deleteCoupon);
+coupon_route.get("/", couponController.couponHome);
+coupon_route.get("/getall", couponController.getAllCoupons);
+coupon_route.patch("/", couponController.updateCoupon);
+coupon_route.delete("/delete", couponController.deleteCoupon);
 coupon_route.get("/:id", couponController.getCoupon);
+coupon_route.post("/getCoupon", couponController.getCoupon);
 
 module.exports = coupon_route;

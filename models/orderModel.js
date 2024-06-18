@@ -28,6 +28,11 @@ const orderSchema = new mongoose.Schema(
     paymentType: { type: String, default: "toBeChosen" },
     paymentId: { type: String, default: "" },
     paymentOrdId: { type: String, default: "" },
+    
+    couponId: {
+      type: mongoose.Types.ObjectId,
+      ref: "coupon",
+    },
   },
   { timestamps: true }
 );

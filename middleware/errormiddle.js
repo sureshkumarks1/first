@@ -2,14 +2,21 @@ const notFound = (req, res, next) => {
   res.redirect("/404");
 };
 
-const errorHandler = (err, req, res, next) => {
+const validationErrorHandler = (err) => {
+  const errors = Object.values(err.errors).map((val) => val.message);
+  const errorMessages = errors.join(". ");
+  const msg = `Invalid input data: ${errorMessages}`;
+
+  return new CustomError(msg, 400);
+};
+
+const errorHandler = (error, req, res, next) => {
   const statusCode = res.statusCode ? res.statusCode : 500;
   res.status(statusCode).json({
-    message: err?.message,
-    stack: err?.stackTrace,
-    statusCode: err.statusCode,
-    Title: err?.title,
-    // code: statusCode,
+    message: error?.message,
+    stack: error?.stackTrace,
+    statusCode: error.statusCode,
+    Title: error?.title,
   });
 };
 

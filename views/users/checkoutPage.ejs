@@ -24,8 +24,14 @@
   <body>
     <% if (name) { %> <%- include('files/navbar.ejs', {name}) %> <% } else { %>
     <%- include('files/navbar.ejs', {name:""}) %> <% } %>
-    <div class="breadcrumbs mb-4">
-      <!-- Breadcrumbs content -->
+    <div class="container">
+      <nav aria-label="breadcrum">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item"><a href="/cart">cart</a></li>
+          <li class="breadcrumb-item">checkout</li>
+        </ol>
+      </nav>
     </div>
 
     <div class="container">

@@ -1,0 +1,174 @@
+<%-include("../layouts/header.ejs")-%>
+<div id="layoutSidenav_content">
+  <main>
+    <div class="container-fluid px-4" id="divtable">
+      <h1 class="mt-4">Products</h1>
+      <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/admin/home">Dashboard</a></li>
+        <li class="breadcrumb-item active">Orders</li>
+      </ol>
+
+      <div class="card mb-4">
+        <div class="card-header">
+          <i class="fas fa-table me-1"></i>
+          Coupon
+        </div>
+        <div class="card-body">
+          <div id="toolbar">
+            <!-- <button
+              style="margin-bottom: 10px; border-color: white; display: inline"
+            >
+              Add new Coupon
+            </button> -->
+            <button
+              id="addCoupon"
+              type="button"
+              class="btn btn-primary"
+              data-bs-toggle="modal"
+              data-bs-target="#couponModal"
+            >
+              Add Coupon
+            </button>
+          </div>
+          <!-- <div>
+            <a href="/admin/products/add" class="btn btn-success" id="addprod"
+              >Add</a
+            >
+          </div> -->
+          <table
+            id="showcoupons"
+            class="table table-striped"
+            style="width: 100%"
+          >
+            <thead>
+              <tr>
+                <th>Coupon Id</th>
+                <th>Coupon Name</th>
+                <th>Coupon Discount</th>
+                <th>Coupon Start Date</th>
+                <th>Coupon Expiry</th>
+                <th>Coupon Edit</th>
+                <th>Coupon Delete</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="couponModal"
+  tabindex="-1"
+  aria-labelledby="couponModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form name="couponfrm" id="couponForm" method="post">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="couponModalLabel">Coupon Add</h1>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="container text-center">
+            <!-- form -->
+
+            <!-- Coupon code  -->
+            <div class="row mb-3">
+              <div class="col">Coupon code :</div>
+              <div class="col">
+                <input
+                  type="text"
+                  class="form-control"
+                  value=""
+                  name="code"
+                  id="code"
+                  placeholder="ABC123"
+                />
+              </div>
+              <div id="errorcode" class="text-danger">this is error</div>
+            </div>
+            <!-- Percentage  -->
+            <div class="row mb-3">
+              <div class="col">Discount Percentage :</div>
+              <div class="col">
+                <input
+                  type="text"
+                  class="form-control"
+                  value=""
+                  id="discount"
+                />
+              </div>
+              <div id="errordiscount" class="text-danger d-none"></div>
+            </div>
+            <!-- Start Date  -->
+            <div class="row mb-3">
+              <div class="col">Date From :</div>
+              <div class="col">
+                <input
+                  type="date"
+                  class="form-control"
+                  placeholder="12-02-2012"
+                  value=""
+                  id="sdate"
+                />
+              </div>
+              <div id="errorfromdate" class="text-danger">
+                this is Date From
+              </div>
+            </div>
+            <!-- End Date  -->
+            <div class="row mb-3">
+              <div class="col">Date To :</div>
+              <div class="col">
+                <input
+                  type="date"
+                  class="form-control"
+                  placeholder="12-02-2012"
+                  value=""
+                  id="enddate"
+                />
+              </div>
+              <div id="errorenddate" class="text-danger d-none"></div>
+              <input
+                type="hidden"
+                name="addOrEdit"
+                id="addOrEdit"
+                value="add"
+              />
+              <input type="hidden" name="editId" id="editId" value="" />
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+            id="closeButton"
+          >
+            Close
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            value="save"
+            id="saveCoupon"
+          >
+            Save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<%-include("../layouts/footer-coupon.ejs")-%>

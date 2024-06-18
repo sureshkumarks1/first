@@ -55,19 +55,34 @@
                           ><% if(locals.email){%> <%=email %> <%}%></span
                         >
                       </div>
-                      <div class="form-floating mb-3">
-                        <input
-                          class="form-control"
-                          id="inputPassword"
-                          type="password"
-                          placeholder="Password"
-                          name="password"
-                        />
-
-                        <label for="inputPassword">Password</label>
-                        <span class="text-danger"
-                          ><% if(locals.password){%> <%=password %> <%}%></span
-                        >
+                      <div class=" mb-4">
+                        <div class=" form-floating input-group" id="show_hide_password">
+                            <input
+                              class="form-control"
+                              id="inputPassword"
+                              type="password"
+                              placeholder="Password"
+                              name="password"
+                            />
+                            <!-- <span class="input-group-text">@</span> -->
+                           
+                            <label for="inputPassword">Password</label>
+                            <span class="input-group-text"><a href="" 
+                              ><i
+                                class="fa fa-eye-slash"
+                                aria-hidden="true"
+                              ></i
+                            ></a></span>
+                            <!-- <label for="inputPassword">Password</label> -->
+                            <!-- <span class="text-danger"
+                              ><%# if(locals.password){%> <%#password %>
+                              <%#}%></span
+                            > -->
+                         
+                              
+                            </div>
+                          </div>
+                        </div>
                       </div>
                       <!-- <div class="form-check mb-3">
                         <input
@@ -99,7 +114,7 @@
                         <a href="/" class="btn btn-danger mx-3">Cancel</a>
                       </div>
                     </form>
-                  </div>
+                  
                   <div class="card-footer text-center py-3">
                     <button
                       type="button"
@@ -116,6 +131,7 @@
                       <a href="/profile/fogotPassword">Forgot Password ?</a>
                     </div>
                   </div>
+                </div>
                 </div>
               </div>
             </div>
@@ -144,5 +160,21 @@
     <script src="/login/js/bootstrap.min.js"></script>
 
     <!-- <script src="/login/js/scripts.js"></script> -->
+     <script>
+      $(document).ready(function() {
+    $("#show_hide_password a").on('click', function(event) {
+        event.preventDefault();
+        if($('#show_hide_password input').attr("type") == "text"){
+            $('#show_hide_password input').attr('type', 'password');
+            $('#show_hide_password i').addClass( "fa-eye-slash" );
+            $('#show_hide_password i').removeClass( "fa-eye" );
+        }else if($('#show_hide_password input').attr("type") == "password"){
+            $('#show_hide_password input').attr('type', 'text');
+            $('#show_hide_password i').removeClass( "fa-eye-slash" );
+            $('#show_hide_password i').addClass( "fa-eye" );
+        }
+    });
+});
+     </script>
   </body>
 </html>

@@ -334,7 +334,7 @@ const orderPlacedEnd = async (req, res) => {
   //   orderData: req.session.currentOrder,
   // });
   //delete product from cart since the order is placed
-  // await cartCollection.deleteMany({ userId: req.session.user_id });
+  await cartCollection.deleteMany({ userId: req.session.user_id });
 };
 
 module.exports = {

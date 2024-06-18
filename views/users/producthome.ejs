@@ -11,6 +11,7 @@
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/fontawesome.min.css" integrity="sha512-UuQ/zJlbMVAw/UU8vVBhnI4op+/tFOpQZVT+FormmIEhRSCnJWyHiBbEVgM4Uztsht41f3FzVWgLuwzUqOObKw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/paginationjs/2.6.0/pagination.css" integrity="sha512-TH+vnrhByFI2RzNvaHSqt6EwoJ9Bp+yGAGTWp84qTuTx315ebnypxtyGHpli55Rm4N4J+N/0W9xAL2b5RZ2ZSA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
       a {
@@ -150,7 +151,30 @@
       const productsSpace = document.getElementById("productsSpace");
       const dispAlert = document.getElementById("dispAlert");
 
-      
+      function handleclick(val){
+
+        const formData = {
+          productId : val
+        }
+
+        $.ajax({
+        url: "http://localhost:3000/addtowishlist",
+        method: "POST",
+        data: formData,
+        success: function (response) {
+          
+            if (response.success == true) {
+              console.log(response)
+            }
+        },
+        error: function (xhr, status, error) {
+          // Handle error response
+          console.error(error);
+        },
+      });
+      }
+
+      // href="/product-details/${product._id}"
       function displayData(data) {
         
         if(data.length>0){
@@ -159,7 +183,7 @@
           const productTemplate = ` <div class="col-md-4 col-sm-6">
               <div class="card">
                 <a class="card-img-tiles" href="#" data-abc="true">
-                  <div class="inner">
+                  <div class="inner ">
                     <div class="main-img text-center">
                       <img class="mt-3 rounded"
                         src="${product.image}" width ="200px" height="234px"
@@ -177,6 +201,17 @@
                     data-abc="true"
                     >View Products
                   </a>
+                  <input type="hidden"  value="${product._id}" id="pid">
+                  <button
+                  onclick="handleclick(this.id)"
+                    class="btn btn-outline-primary btn-sm"
+                    href=""
+                   
+                   id="${product._id}"
+                    data-abc="true"
+                    >add to wishlist
+                  </button>
+                  
                 </div>
               </div>
             </div>`;
@@ -194,8 +229,13 @@
     }
   }
 
+
+
+  
 //getting all product on load
       $(document).ready(function() {
+      
+
 
 
 
@@ -274,6 +314,8 @@
 
       });
 
+
+     
          
       /*search code starts here*/
       document.getElementById('searchBar').addEventListener('keyup', (e) => {
@@ -351,7 +393,9 @@
     const val = $(this).attr("value");   
      sortBy(val)
   });
+
       
+
   
     </script>
   </body>

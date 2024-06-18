@@ -40,8 +40,7 @@ admin_route.use(express.static("uploads"));
 
 admin_route.use("/catagory", catroute);
 
-// admin_route.use("/products", auth.isLogin, product_route);
-
+admin_route.use("/products", auth.isLogin, product_route);
 
 admin_route.use(express.static("public"));
 
@@ -144,6 +143,7 @@ admin_route.get(
 
 // })
 
-admin_route.use("/coupon", couponRoute);
+admin_route.use("/coupons", couponRoute);
+
 
 module.exports = admin_route;
