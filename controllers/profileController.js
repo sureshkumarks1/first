@@ -198,12 +198,16 @@ module.exports = {
       let orderData = await orderCollection.find({
         userId: req.session.user_id,
       });
-      orderData = orderData.filter(
-        (order) => order.paymentType !== "toBeChosen"
-      );
+      // orderData = orderData.filter(
+      //   (order) => order.paymentType !== "toBeChosen"
+      // );
 
       orderData = orderData.map((ordata) => {
         ordata.orderDateFormatted = formatDate(ordata.orderDate);
+        //console.log("orderStatus : ", ordata.orderStatus);
+        if (ordata.orderStatus == "Placed") {
+          ordata.paymentType = "Pending";
+        }
         return ordata;
       });
 
@@ -237,9 +241,12 @@ module.exports = {
   cancelOrder: async (req, res) => {
     try {
       const result = await orderCollection.findByIdAndUpdate(
-        { _id: req.params.id },
+        { _id: req.params.id },  
+              
         { $set: { orderStatus: "Cancelled" } }
       );
+
+
 
       res.send({ success: true });
     } catch (error) {

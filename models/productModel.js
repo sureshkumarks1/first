@@ -60,15 +60,37 @@ const productSchema = new mongoose.Schema(
 
 async function validateProd(Products) {
   const schema = Joi.object({
-    name: Joi.string().min(3).required(),
+    name: Joi.string().min(3).required().messages({
+      "string.min": "Minimum Length required 3 charactor",
+      "any.empty": `Name is a required field`,
+    }),
+    category: Joi.string().required().messages({
+      "any.empty": `Category is a required field`,
+    }),
+    description: Joi.string().min(1).required().messages({
+      "string.min": "Minimum Length required 3 charactor",
+      "any.empty": `Name is a required field`,
+    }),
+    price: Joi.number().min(0).required().messages({
+      "number.min": "Cannot set negative value for price",
+      "any.empty": `Price is a required field`,
+    }),
+    stock: Joi.number().min(0).required().messages({
+      "number.min": "Cannot set negative value for price",
+      "any.empty": `Stock is a required field`,
+    }),
   });
 
   try {
-    let value = "";
-    value = await schema.validateAsync(Products);
-    return value;
-  } catch (err) {
-    return err.message;
+    return schema.validate(Products);
+  } catch (error) {
+    next(error);
+    // Catch and handle validation errors
+    // if (error.isJoi) {
+    //   console.error("Validation error:", error.details);
+    // } else {
+    //   console.error("Unexpected error:", error);
+    // }
   }
 }
 

@@ -39,9 +39,18 @@ async function grandTotal(req) {
 
     req.session.grandTotal = grandTotal;
 
-    // console.log("These are the cart value", userCartData);
+    // userCartData.grandTotal = grandTotal;
 
+    // let obj = {
+    //   ...userCartData,
+    //   grandTotal: grandTotal,
+    // };
+
+    // console.log("These are the cart value", obj);
+
+    // return JSON.parse(JSON.stringify(obj));
     return JSON.parse(JSON.stringify(userCartData));
+    // return obj;
   } catch (error) {
     console.log(error);
   }
@@ -112,13 +121,17 @@ const deleteFromCart = async (req, res) => {
   }
 };
 const decQty = async (req, res) => {
+  console.log(">>>>", req.body);
   try {
     let cartProduct = await cartCollection
       .findOne({ _id: req.params.id })
       .populate("productId");
     if (cartProduct.productQuantity > 1) {
-      cartProduct.productQuantity--;
+      --cartProduct.productQuantity;
+      cartProduct.totalCostPerProduct =
+        cartProduct.productQuantity * cartProduct.productId.price;
     }
+
     cartProduct = await cartProduct.save();
     await grandTotal(req);
     res.json({
@@ -139,12 +152,15 @@ const incQty = async (req, res) => {
       .populate("productId");
 
     if (cartProduct.productQuantity < cartProduct.productId.stock) {
-      cartProduct.productQuantity++;
+      ++cartProduct.productQuantity;
+      cartProduct.totalCostPerProduct =
+        cartProduct.productQuantity * cartProduct.productId.price;
     } else {
       res.json({ message: "Limit Exceeded" });
     }
 
     cartProduct = await cartProduct.save();
+
     await grandTotal(req);
     res.json({
       success: true,
@@ -177,6 +193,9 @@ const checkoutPage = async (req, res) => {
         user: req.body.user,
         name: req.body.user,
         currentUser: req.session.currentUser,
+        couponTotal: req.session?.couponTotal
+          ? req.session?.couponTotal
+          : req.session.grandTotal,
         grandTotal: req.session.grandTotal,
         userCartData,
         cartData,
@@ -247,12 +266,10 @@ const cartCount = (req, res) => {
   });
 };
 
-const orderPlacedEnd = async (req, res) => {
-  const { address, payment } = req.body;
+async function createOrder(req) {
+  const { address, payment, total } = req.body;
 
-  let cartData = await cartCollection
-    .find({ userId: req.session.user_id })
-    .populate("productId");
+  // console.log(req.body);
 
   const dataObj = {
     userId: req.session.user_id,
@@ -260,63 +277,96 @@ const orderPlacedEnd = async (req, res) => {
     orderDate: new Date(),
     addressChosen: new ObjectId(address),
     cartData: await grandTotal(req),
-    grandTotalCost: req.session.grandTotal,
+    grandTotalCost: total,
+    // grandTotalCost: req.session.grandTotal,
     paymentType: payment,
   };
 
-  const totAmt = dataObj.grandTotalCost * 100;
-  const odresult = await orderCollection.create(dataObj);
-
-  // console.log("The order is generated and id is :", odresult);
-
-  const Razorpay = require("razorpay");
-
-  const instance = new Razorpay({
-    key_id: process.env.RAZOR_KEY_ID,
-    key_secret: process.env.RAZOR_KEY_SECRET,
-  });
-
-  const options = {
-    amount: parseInt(totAmt), // amount in the smallest currency unit
-    currency: "INR",
-    receipt: odresult._id.toString(),
-  };
-  instance.orders.create(options, function (err, order) {
-    if (err) {
-      console.log("The error is =>>>>", err);
-    }
-    // console.log("The return ", order);
-    res.json({
-      success: true,
-      ord_id: odresult._id.toString(),
-      oid: order.id,
-      totalAmount: parseInt(totAmt),
-      order: order,
+  const odresult = await orderCollection
+    .create(dataObj)
+    .then((data) => {
+      return data;
+      //delete product from cart since the order is placed
+      // await cartCollection.deleteMany({ userId: req.session.user_id });
+    })
+    .catch((err) => {
+      next(err);
     });
-  });
+  return odresult;
+}
 
-  // console.log(dataObj);
-  // console.log(odresult);
-  // req.session.currentOrder = await orderCollection.create({
-  //   userId: req.session.user_id,
-  //   orderNumber: (await orderCollection.countDocuments()) + 1,
-  //   orderDate: new Date(),
-  //   addressChosen: ObjectId(req.params.id),
-  //   cartData: await grandTotal(req),
-  //   grandTotalCost: req.session.grandTotal,
-  //   paymentType: req.params.pm
-  // });
-  /*
+const orderPlacedEnd = async (req, res, next) => {
+  // console.log(req.body);
+
+  try {
+    const { address, payment } = req.body;
+
+    // let cartData = await cartCollection
+    //   .find({ userId: req.session.user_id })
+    //   .populate("productId");
+
+    console.log(payment);
+
+    if (payment == "COD") {
+      const orderResult = await createOrder(req)
+        .then((data) => {
+          res.json({ success: true, data: data });
+        })
+        .catch((err) => next(err));
+    }
+
+    if (payment == "RP") {
+      const orderResult = await createOrder(req);
+
+      const totAmt = orderResult.grandTotalCost * 100;
+      const Razorpay = require("razorpay");
+      const instance = new Razorpay({
+        key_id: process.env.RAZOR_KEY_ID,
+        key_secret: process.env.RAZOR_KEY_SECRET,
+      });
+      const options = {
+        amount: parseInt(totAmt), // amount in the smallest currency unit
+        currency: "INR",
+        receipt: orderResult._id.toString(),
+      };
+      instance.orders.create(options, function (err, order) {
+        if (err) {
+          next(err);
+        }
+        // console.log("The return ", order);
+
+        res.json({
+          success: true,
+          ord_id: orderResult._id.toString(),
+          oid: order.id,
+          totalAmount: parseInt(totAmt),
+          order: order,
+        });
+      });
+    }
+
+    // console.log(dataObj);
+    // console.log(odresult);
+    // req.session.currentOrder = await orderCollection.create({
+    //   userId: req.session.user_id,
+    //   orderNumber: (await orderCollection.countDocuments()) + 1,
+    //   orderDate: new Date(),
+    //   addressChosen: ObjectId(req.params.id),
+    //   cartData: await grandTotal(req),
+    //   grandTotalCost: req.session.grandTotal,
+    //   paymentType: req.params.pm
+    // });
+    /*
   for (const item of cartData) {
     item.productId.productStock -= item.productQuantity; // we use for reducing Qyantity
     item.productId.stockSold += 1; //stocjSolf ++
     await item.productId.save();
   }
 */
-  // let orderData = await orderCollection.findOne({
-  //   _id: req.session.currentOrder._id,
-  // });
-  /*
+    // let orderData = await orderCollection.findOne({
+    //   _id: req.session.currentOrder._id,
+    // });
+    /*
   if (orderData.paymentType == "toBeChosen") {
     orderData.paymentType = "COD";
     orderData.save();
@@ -325,16 +375,20 @@ const orderPlacedEnd = async (req, res) => {
   let x = await cartCollection
     .findByIdAndUpdate({ _id: req.session.currentOrder._id })
     .populate("productId");*/
-  // res.render("orderPlaced", {
-  //   signIn: req.session.signIn,
-  //   user: req.session.user,
-  //   name: req.session.user,
-  //   ordId: odresult._id,
-  //   orderCartData: cartData,
-  //   orderData: req.session.currentOrder,
-  // });
-  //delete product from cart since the order is placed
-  await cartCollection.deleteMany({ userId: req.session.user_id });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const endOrderPage = (req, res, next) => {
+  const { oid } = req.params;
+
+  res.render("orderPlaced", {
+    signIn: req.session.signIn,
+    user: req.session.user,
+    name: req.session.user,
+    ordId: oid,
+  });
 };
 
 module.exports = {
@@ -347,4 +401,5 @@ module.exports = {
   orderPlaced,
   orderPlacedEnd,
   verifyPayment,
+  endOrderPage,
 };

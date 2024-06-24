@@ -11,6 +11,11 @@
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+    />
   </head>
 
   <body>
@@ -67,6 +72,10 @@
     ></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/toastify-js"
+    ></script>
 
     <script>
       function displayData(data) {
@@ -93,6 +102,14 @@
                     data-abc="true"
                     >View Products
                   </a>
+                  <button
+                    class="btn btn-outline-primary btn-sm"
+                    onclick="handleclick(this.id)"
+                     id="${product._id}"
+                    href="#"
+                    data-abc="true"
+                    >Remove
+                  </button>
                 </div>
               </div>
             </div>`;
@@ -117,10 +134,48 @@
             return data.json();
           })
           .then((item) => {
-            console.log(item);
             displayData(item.data[0].productId);
           });
       });
+      // remove item from wishlist codes
+      function handleclick(val) {
+        const formData = {
+          productId: val.trim(),
+        };
+        // console.log(formData);
+
+        $.ajax({
+          url: "http://localhost:3000/removefromwishlist",
+          method: "DELETE",
+          data: formData,
+          success: function (response) {
+            if (response.success == true) {
+              // toastify
+              Toastify({
+                text: response.data,
+                duration: 1000,
+                newWindow: true,
+                close: true,
+                gravity: "top", // `top` or `bottom`
+                position: "right", // `left`, `center` or `right`
+                stopOnFocus: true, // Prevents dismissing of toast on hover
+                style: {
+                  background: "linear-gradient(to right, #ff9a00, #ff0000)",
+                },
+                onClick: function () {}, // Callback after click
+              }).showToast();
+              // toastify
+              $("#wishplace").load(window.location.href + " #wishplace");
+              //wishplace
+            }
+          },
+          error: function (xhr, status, error) {
+            // Handle error response
+            console.error(error);
+          },
+        });
+      }
+      // remove item from wishlist codes
     </script>
   </body>
 </html>

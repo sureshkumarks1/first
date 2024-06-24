@@ -100,9 +100,51 @@ const deleteCoupon = asyncHandler(async (req, res, next) => {
   // res.status(200).json({ success: true, id: id, orders: orders });
 });
 
+const checkCoupon = async (req, res, next) => {
+  console.log(req.body);
+  const { code } = req.body;
+  const checkDate = new Date();
+
+  try {
+    const coupon = await Coupon.findOne({ name: code.trim() });
+
+    if (!coupon) {
+      return res.status(200).json({ success: false, data: "Invalid Coupon" });
+    }
+
+    const checkDate = new Date();
+    console.log("checkDate =>>>>>>>>", checkDate);
+    const startDate = new Date(coupon?.startdate);
+    console.log("startDate =>>>>>>>>", startDate);
+    const endDate = new Date(coupon?.expiry);
+    console.log("endDate =>>>>>>>>", endDate);
+    if (checkDate >= startDate && checkDate <= endDate) {
+      // console.log("startDate =>>>>>>>>", coupon.discount);
+      let total = req.session.grandTotal;
+      //1600 = 1600 = (1600*12/100)
+      total = total - total * (20 / 100);
+      req.session.couponTotal = total;
+      return res.status(200).json({
+        success: true,
+        data: total,
+        discount: coupon.discount,
+        // couponId: coupon._id,
+      });
+      console.log("===========", total);
+    } else {
+      // console.log("The check date is not between the start and end dates.");
+    }
+  } catch (error) {
+    next(error);
+    //console.log(error);
+  }
+};
+
 const getCoupon = asyncHandler(async (req, res) => {
+  console.log(req.body);
   const { id } = req.body;
   // validateMongoDbId(id);
+  // res.status(200).json({ success: true });
 
   const getAcoupon = await Coupon.findById(id);
   console.log(getAcoupon);
@@ -116,4 +158,5 @@ module.exports = {
   deleteCoupon,
   getCoupon,
   couponHome,
+  checkCoupon,
 };

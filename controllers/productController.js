@@ -1,4 +1,4 @@
-const { Product } = require("../models/productModel");
+const { Product, validateProd } = require("../models/productModel");
 const { Catagory } = require("../models/catagoryModel");
 const { orderCollection } = require("../models/orderModel");
 
@@ -51,6 +51,9 @@ const updt_prod = async (req, res) => {
       // images:[image1,image2,image3] ,
       category: pcategory,
     };
+
+    // console.log(product);
+    // const { value, error } = await validateProd(product);
   } else {
     const filetypeerr = req.files.map((file) => {
       return file.mimetype != "image/jpeg" ? false : true;
@@ -145,19 +148,15 @@ const updt_prod = async (req, res) => {
         images: [image1, image2, image3],
         category: pcategory,
       };
-
-      //  console.log(product)
-
-      const rest = await Product.updateOne(filter, product);
-
-      console.log(rest);
-      if (rest.acknowledged == true) {
-        res.redirect("/admin/products");
-      } else {
-        res.redirect("/admin/products").json({ success: false });
-      }
-      //     // res.status(500).json({error:err, success:false})
     }
+  }
+  const rest = await Product.updateOne(filter, product);
+
+  console.log(rest);
+  if (rest.acknowledged == true) {
+    res.redirect("/admin/products");
+  } else {
+    res.redirect("/admin/products").json({ success: false });
   }
 };
 
@@ -483,7 +482,7 @@ const insertProd = async (req, res) => {
     }
   }
 };
-const rating = async (req, res,next) => {
+const rating = async (req, res, next) => {
   const { _id } = "661bce7972068568c941da65";
   const { star, prodId } = req.body;
   try {

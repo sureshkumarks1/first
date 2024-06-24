@@ -1,5 +1,6 @@
 const express = require("express");
 const product_route = express.Router();
+// const flash = require("req-flash");
 
 const path = require("path");
 
@@ -8,6 +9,7 @@ const upload = require("../middleware/upload");
 const product = require("../controllers/productController");
 
 // product_route.set('/uploads', express.static(path.join(__dirname,'../..','/uploads')))
+// product_route.use(flash());
 
 product_route.get("/", product.loadProd);
 product_route.get("/orders", product.loadOrders);

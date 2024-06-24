@@ -13,6 +13,11 @@
     />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/fontawesome.min.css" integrity="sha512-UuQ/zJlbMVAw/UU8vVBhnI4op+/tFOpQZVT+FormmIEhRSCnJWyHiBbEVgM4Uztsht41f3FzVWgLuwzUqOObKw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/paginationjs/2.6.0/pagination.css" integrity="sha512-TH+vnrhByFI2RzNvaHSqt6EwoJ9Bp+yGAGTWp84qTuTx315ebnypxtyGHpli55Rm4N4J+N/0W9xAL2b5RZ2ZSA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+    />
     <style>
       a {
         text-decoration: none;
@@ -164,7 +169,22 @@
         success: function (response) {
           
             if (response.success == true) {
-              console.log(response)
+              // console.log(response)
+              // toastify
+              Toastify({
+                text: response.data,
+                duration: 1000,                
+                newWindow: true,
+                close: true,
+                gravity: "top", // `top` or `bottom`
+                position: "right", // `left`, `center` or `right`
+                stopOnFocus: true, // Prevents dismissing of toast on hover
+                style: {
+                  background: "linear-gradient(to right, #00b09b, #96c93d)",
+                },
+                onClick: function(){} // Callback after click
+              }).showToast();
+              // toastify
             }
         },
         error: function (xhr, status, error) {
@@ -180,7 +200,7 @@
         if(data.length>0){
 
         data.forEach((product) => {
-          const productTemplate = ` <div class="col-md-4 col-sm-6">
+          const productTemplate = ` <div class="col-lg-4 col-md-6 col-xs-8">
               <div class="card">
                 <a class="card-img-tiles" href="#" data-abc="true">
                   <div class="inner ">
@@ -205,7 +225,7 @@
                   <button
                   onclick="handleclick(this.id)"
                     class="btn btn-outline-primary btn-sm"
-                    href=""
+                    href="#"
                    
                    id="${product._id}"
                     data-abc="true"

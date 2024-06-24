@@ -57,7 +57,10 @@ const changeOrderPaymentStatus = async (req, res) => {
   };
 
   let orderData = await orderCollection.updateOne({ _id: ordId }, obj);
-  if (orderData) {
+
+  //console.log("to change the status", orderData);
+
+  if (orderData.modifiedCount) {
     res.json({ success: true });
   } else {
     res.json({ success: false });

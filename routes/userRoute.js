@@ -9,6 +9,7 @@ const cartController = require("../controllers/cartController.js");
 const profileController = require("../controllers/profileController.js");
 const productController = require("../controllers/productController.js");
 const orderController = require("../controllers/orderController.js");
+const couponController = require("../controllers/couponController.js");
 const wishListController = require("../controllers/wishListController.js");
 const product_route = require("../routes/productRoute");
 
@@ -219,6 +220,8 @@ user_route.get(
   auth.isLogin,
   cartController.orderPlacedEnd
 );
+user_route.get("/orderplace/:oid", auth.isLogin, cartController.endOrderPage);
+
 user_route.put("/cancelorder/:id", auth.isLogin, profileController.cancelOrder);
 user_route.get(
   "/order/getorderdetails/:id",
@@ -234,9 +237,14 @@ user_route.get("/404", userController.loadNotFound);
 user_route.post("/addtowishlist", wishListController.addToWishlist);
 user_route.get("/getallwishlist/:id", wishListController.getAllWishlist);
 user_route.delete(
-  "/removefromwishlist/:id",
+  "/removefromwishlist",
   wishListController.removeFromWishlist
 );
+user_route.post("/coupon/check", couponController.checkCoupon);
+
+// user_route.post("/coupon/check", (req, res) => {
+//   console.log("hi");
+// });
 
 /**** not found***** */
 

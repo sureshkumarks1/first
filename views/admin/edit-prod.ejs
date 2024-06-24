@@ -9,6 +9,7 @@
         <li class="breadcrumb-item active">Edit Product</li>
       </ol>
       <div class="container">
+        
         <%if(prod){ %>
 
         <form
@@ -186,30 +187,34 @@
           </div>
 
           <div class="mb-3">
-            <label for="formFile" class="form-label">Product Price</label>
+            <label for="formFile" class="form-label">Product Price </label>
             <input
               name="productprice"
               id="productPrice"
-              type="tel"
+              type="number"
               class="form-control"
-              min="100"
+              min="1"
               placeholder="Product Price"
               required
               value="<%=prod.price %>"
             />
-          </div>
+            <div class="invalid-feedback">Please Enter Postive amount.</div>
+         
+        </div>
           <div class="mb-3">
-            <label for="formFile" class="form-label">Product Stock</label>
+            <label for="formFile" class="form-label">Product Stock </label>
             <input
               name="productstock"
               id="productStock"
-              type="tel"
+              type="number"
               class="form-control"
-              min="0"
+              min="1"
               placeholder="Product Stock"
               required
               value="<%=prod.stock %>"
             />
+            <div class="invalid-feedback">Please Enter Postive amount.</div>
+          
           </div>
           <div class="mb-3">
             <label for="exampleFormControlTextarea1" class="form-label"
@@ -225,6 +230,7 @@
             >
 <%=prod.description %></textarea
             >
+            <div class="invalid-feedback">Please Enter Product Description.</div>
           </div>
           <div class="mb-3">
             <button class="btn btn-primary" id="submit">Submit</button

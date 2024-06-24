@@ -7,45 +7,45 @@ const { ObjectId } = require("mongodb");
 
 const asyncHandler = require("express-async-handler");
 
-// add a product to wishlist
-const addToWishlist = asyncHandler(async (req, res) => {
-  const userId = req.session.user_id;
-  const { productId } = req.body;
-  // console.log(typeof productId);
-  // console.log("user id :", userId);
+// add a product to wishlist and check already added
+const addToWishlist = asyncHandler(async (req, res, next) => {
+  try {
+    const userId = req.session.user_id;
 
-  if (userId === undefined) {
-    // console.log("no user");
-  }
+    if (!req.session.user_id) {
+      return res.json({ success: true, data: "You need to login" });
+    }
 
-  // console.log(req.body);
+    const { productId } = req.body;
 
-  const wishlist = await wishList.find({ userId: userId });
-  // console.log(wishlist);
-  const _id = wishlist[0]._id;
-  const prods = wishlist[0].productId;
-  console.log("the id is :", prods);
+    const wishlist = await wishList.findOne({
+      userId: userId,
+    });
 
-  const alreadyadded = prods.find((id) => id.toString() === productId);
-  // console.log("This is >>>>>>", alreadyadded);
+    const id = wishlist._id;
+    const prods = wishlist.productId;
 
-  if (alreadyadded) {
-    // if (wishlist[0].productId.length > 0) {
-    let newWishlsit = await wishList.findByIdAndUpdate(
-      _id,
-      {
-        $push: { productId: productId },
-      },
-      {
-        new: true,
+    if (id) {
+      const alreadyadded = prods.find((id) => id.toString() === productId);
+      if (!alreadyadded) {
+        let newWishlsit = await wishList.findByIdAndUpdate(
+          { _id: id },
+          {
+            $push: { productId: productId },
+          }
+        );
+
+        return res.json({ success: true, data: "Added Successfully" });
+      } else {
+        return res.json({ success: true, data: "Already Added" });
       }
-    );
-  } else {
-    const newWishlsit = await wishList.create(req.body);
+    } else {
+      const newWishlsit = await wishList.create(req.body);
+      return res.json({ success: true, data: "Added Successfully" });
+    }
+  } catch (err) {
+    next(err);
   }
-
-  // const newWishlsit = await wishList.create(req.body);
-  return res.json({ success: true, data: wishlist });
 });
 
 const getWishList = asyncHandler(async (req, res) => {
@@ -57,12 +57,44 @@ const getWishList = asyncHandler(async (req, res) => {
 });
 
 //remove item from wishlist
-const removeFromWishlist = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  validateMongoDbId(id);
+const removeFromWishlist = asyncHandler(async (req, res, next) => {
+  // const { id } = req.params;
+  // validateMongoDbId(id);
 
-  const deleteWishLost = await wishList.findByIdAndDelete(id);
-  res.status(200).json(deleteWishLost);
+  // const deleteWishLost = await wishList.findByIdAndDelete(id);
+  // res.status(200).json(deleteWishLost);
+
+  try {
+    const userId = req.session.user_id;
+
+    if (!req.session.user_id) {
+      return res.json({ success: true, data: "You need to login" });
+    }
+
+    const { productId } = req.body;
+
+    const wishlist = await wishList.findOne({
+      userId: userId,
+    });
+
+    const id = wishlist._id;
+    const prods = wishlist.productId;
+
+    if (id) {
+      const alreadyadded = prods.find((id) => id.toString() === productId);
+      if (alreadyadded) {
+        let newWishlsit = await wishList.findByIdAndUpdate(
+          { _id: id },
+          {
+            $pull: { productId: productId },
+          }
+        );
+        return res.json({ success: true, data: "Removed Successfully" });
+      }
+    }
+  } catch (err) {
+    next(err);
+  }
 });
 
 //get all wishlist of current user

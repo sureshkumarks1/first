@@ -157,24 +157,26 @@
             <input
               name="productprice"
               id="productPrice"
-              type="tel"
+              type="number"
               class="form-control"
-              min="100"
+              min="1"
               placeholder="Product Price"
               required
             />
+            <div class="invalid-feedback">Please Enter the Product Name.</div>
           </div>
           <div class="mb-3">
             <label for="formFile" class="form-label">Product Stock</label>
             <input
               name="productstock"
               id="productStock"
-              type="tel"
+              type="number"
               class="form-control"
-              min="0"
+              min="1"
               placeholder="Product Stock"
               required
             />
+            <div class="invalid-feedback">Please Enter the Product Name.</div>
           </div>
           <div class="mb-3">
             <label for="exampleFormControlTextarea1" class="form-label"
@@ -188,9 +190,12 @@
               placeholder="Product Description"
               required
             ></textarea>
+            <div class="invalid-feedback">
+              Please Enter Product Description.
+            </div>
           </div>
           <div class="mb-3">
-            <button class="btn btn-primary" id="submit">Submit</button
+            <button class="btn btn-primary mx-2" id="submit">Submit</button
             ><input class="btn btn-primary" type="reset" value="Reset" />
           </div>
         </form>
