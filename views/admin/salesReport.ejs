@@ -1,0 +1,220 @@
+<%-include("../layouts/header.ejs")-%>
+<div id="layoutSidenav_content">
+  <main>
+    <div class="container-fluid px-4" id="divtable">
+      <h1 class="mt-4">Catagory</h1>
+      <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/admin/home">Dashboard</a></li>
+        <li class="breadcrumb-item active">Catagory</li>
+      </ol>
+
+      <div class="card mb-4">
+        <div class="card-header">
+          <i class="fas fa-table me-1"></i>
+          Catagory
+        </div>
+        <div class="card-body">
+          <div
+            class="container d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+          >
+            <h1 class="h4">
+              <%= locals.title ? locals.title : 'Product Offers' %>
+            </h1>
+
+            <div class="d-flex align-items-center gap-2">
+              <div class="btn-toolbar mb-2 mb-md-0">
+                <form class="d-flex needs-validation" method="get" id="reportform" action="/admin//orders/report"  novalidate>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="form-group">
+                      <label for="startDate">From</label>
+                      <input
+                        type="date"
+                        name="startDate"
+                        id="startDate"
+                        class="form-control"
+                        placeholder="Start Date"
+                        value="<%- startDate %>"
+                        required
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label for="endDate">To
+                      <input
+                        type="date"
+                        id="endDate"
+                        name="endDate"
+                        class="form-control"
+                        placeholder="End Date"
+                        value="<%- endDate %>"
+                        required
+                      /></label>
+                    </div>
+                    <div class="form-group">
+                      <!-- <button type="button" class="btn btn-primary "> -->
+                        <button class="btn btn-primary " id="submit-button" type="submit">
+                        <!-- <button class="btn btn-primary collapsed" id="submit-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo"> -->
+                        <i class="bi bi-search"></i>
+                        Get Report
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              
+            </div>
+          </div>
+         
+          <main class="main my-5">
+            <div class="accordion-item">            
+              <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                <button class="invisible collapsed" id="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo"></button>
+                <div class="accordion-body" id="table-content">
+                  <table id="example" class="table table-striped" style="width:100%">
+                    <thead>
+                      <tr>
+                        <th>orderNumber</th>
+                        <th>Order Id</th>
+                            <th>orderDate</th>
+                            <th>orderStatus</th>
+                            <th>Payment</th>
+                            <th>Total</th>
+                            <!-- <th>Address</th> -->
+                            
+                          
+                        </tr>
+                    </thead>
+                    <tbody>
+                     
+                </tbody>
+            </table>
+                </div>
+              </div>
+            </div>
+          
+          </main>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<footer class="py-4 bg-light mt-auto">
+  <div class="container-fluid px-4">
+      <div class="d-flex align-items-center justify-content-between small">
+          <div class="text-muted">Copyright &copy; Your Website 2023</div>
+          <div>
+              <a href="#">Privacy Policy</a>
+              &middot;
+              <a href="#">Terms &amp; Conditions</a>
+          </div>
+      </div>
+  </div>
+</footer>
+</div>
+</div>
+
+<script src="/login/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script src="/login/js/admin-script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="/login/js/datatables.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js"></script>
+<script>
+  (() => {
+  
+
+  // Fetch all the forms we want to apply custom Bootstrap validation styles to
+  const forms = document.querySelectorAll('.needs-validation')
+
+  // Loop over them and prevent submission
+  Array.from(forms).forEach(form => {
+    form.addEventListener('submit', event => {
+      if (!form.checkValidity()) {
+        event.preventDefault()
+        event.stopPropagation()
+      }
+
+      form.classList.add('was-validated')
+    }, false)
+  })
+})()
+
+  $("#reportform").on("submit", function(e){    
+  e.preventDefault();
+
+
+  const  url = $(this).action;
+
+  if($("#startDate").val()!="" && $("#endtDate").val()!=""){
+
+  
+
+  const formData = new FormData(this)
+  for (const [key, value] of formData.entries()) {
+                console.log(`${key}:`, value);
+            }
+/* layout: {
+        topStart: {
+            buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print' // Add export buttons
+                ]
+        }
+    }*/
+
+let table = new DataTable('#example',{ dom: 'Bfrtip', // Add button container
+                buttons: [
+                     'excel', 'pdf', 'print' // Add export buttons
+                ]});
+  $("#accordion-button").click()
+  const url = "http://localhost:3000/admin/orders/report"
+  axios.post(url, formData)
+  .then( (response)=> {
+    console.log(response.data)
+    const responseArray = Object.values(response.data.data);
+    const values = []
+    responseArray.forEach(function(item) {
+              values.push(item)
+            });
+    if (Array.isArray(values)) {
+            // Clear existing table data
+            table.clear();
+
+            // Add new data to the table
+            values.forEach(function(item) {
+              console.log(item.userId)
+              table.row.add([
+                                item.userId?.name,
+                                '<span class="text-center">' +  item._id + '</span>',
+                               moment( item.orderDate).format("DD-MM-YYYY"),
+                                item.orderStatus,
+                                item.paymentType,
+                              
+                                '<span class="text-center"> ₹'  +  item.grandTotalCost + '</span>',
+                                
+                                '<span class="text-center">' +  item?.addressChosen?.firstName+','+ item?.addressChosen?.lastName+','+ item?.addressChosen?.addressLine1+','+ item?.addressChosen?.addressLine2+','+ item?.addressChosen?.state+','+ item?.addressChosen?.phone+ '</span>',
+                               
+                            ]).draw();
+            });
+        } else {
+            console.error('Error: Response is not an array');
+        }
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+}
+});
+</script>
+
+
+
+
+
+
+
+</body>
+</html>

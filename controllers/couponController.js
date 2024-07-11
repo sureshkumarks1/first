@@ -89,7 +89,12 @@ const updateCoupon = asyncHandler(async (req, res, next) => {
 const deleteCoupon = asyncHandler(async (req, res, next) => {
   const { id } = req.body;
 
-  console.log("The id is :", id);
+  //console.log("The id is :", id);
+  let total = req.session.grandTotal;
+  req.session.couponTotal = total;
+  
+   res.status(200).json({ success: true,couponTotal: total});
+
   /*
   const orders = await orderCollection
     .find({

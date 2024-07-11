@@ -5,32 +5,31 @@ const profileCollection = require("../models/addressModel.js");
 const cartCollection = require("../models/cartModel.js");
 const ObjectId = require("mongodb").ObjectId;
 require("dotenv").config();
+const Razorpay = require("razorpay");
 
 const orderCollection = require("../models/orderModel.js");
 
 async function grandTotal(req) {
   try {
+    let grandTotal = 0;
     let userCartData = await cartCollection
       .find({ userId: req.session.user_id })
       .populate("productId");
-
-    // console.log("The value of userData", userCartData);
-
-    let grandTotal = 0;
-    for (const eachitem of userCartData) {
-      grandTotal += eachitem.productId.price * eachitem.productQuantity;
-
-      // console.log("The price is : ", eachitem.productId.price);
-
-      await cartCollection.updateOne(
-        { _id: eachitem._id },
-        {
-          $set: {
-            totalCostPerProduct:
-              eachitem.productId.price * eachitem.productQuantity,
-          },
-        }
-      );
+    if (!userCartData) {
+      grandTotal = 0;
+    } else {
+      for (const eachitem of userCartData) {
+        grandTotal += eachitem.productId.price * eachitem.productQuantity;
+        await cartCollection.updateOne(
+          { _id: eachitem._id },
+          {
+            $set: {
+              totalCostPerProduct:
+                eachitem.productId.price * eachitem.productQuantity,
+            },
+          }
+        );
+      }
     }
 
     userCartData = await cartCollection
@@ -39,16 +38,6 @@ async function grandTotal(req) {
 
     req.session.grandTotal = grandTotal;
 
-    // userCartData.grandTotal = grandTotal;
-
-    // let obj = {
-    //   ...userCartData,
-    //   grandTotal: grandTotal,
-    // };
-
-    // console.log("These are the cart value", obj);
-
-    // return JSON.parse(JSON.stringify(obj));
     return JSON.parse(JSON.stringify(userCartData));
     // return obj;
   } catch (error) {
@@ -106,7 +95,7 @@ const addToCart = async (req, res) => {
     }
 
     //res.redirect("/cart");
-    // res.status(200).json({ success: true });
+    res.status(200).json({ success: true });
   } catch (error) {
     console.log(error);
   }
@@ -114,14 +103,24 @@ const addToCart = async (req, res) => {
 
 const deleteFromCart = async (req, res) => {
   try {
-    await cartCollection.findOneAndDelete({ _id: req.params.id });
-    res.send("hello ur cart is deleted");
+    let cartProduct = await cartCollection.findOneAndDelete({
+      _id: req.params.id,
+    });
+    const cartProducts = await grandTotal(req);
+
+    const totalcartamount = cartProducts.reduce((acc, cur) => {
+      return acc + cur.totalCostPerProduct;
+    }, 0);
+
+    res.json({
+      success: true,
+      grandTotal: totalcartamount,
+    });
   } catch (error) {
     console.error(error);
   }
 };
 const decQty = async (req, res) => {
-  console.log(">>>>", req.body);
   try {
     let cartProduct = await cartCollection
       .findOne({ _id: req.params.id })
@@ -286,12 +285,12 @@ async function createOrder(req) {
     .create(dataObj)
     .then((data) => {
       return data;
-      //delete product from cart since the order is placed
-      // await cartCollection.deleteMany({ userId: req.session.user_id });
     })
     .catch((err) => {
       next(err);
     });
+  //delete product from cart since the order is placed
+  await cartCollection.deleteMany({ userId: req.session.user_id });
   return odresult;
 }
 
@@ -319,7 +318,7 @@ const orderPlacedEnd = async (req, res, next) => {
       const orderResult = await createOrder(req);
 
       const totAmt = orderResult.grandTotalCost * 100;
-      const Razorpay = require("razorpay");
+      console.log("the order result ", orderResult);
       const instance = new Razorpay({
         key_id: process.env.RAZOR_KEY_ID,
         key_secret: process.env.RAZOR_KEY_SECRET,
@@ -329,11 +328,13 @@ const orderPlacedEnd = async (req, res, next) => {
         currency: "INR",
         receipt: orderResult._id.toString(),
       };
+      // console.log("The options are ", options);
+
       instance.orders.create(options, function (err, order) {
         if (err) {
-          next(err);
+          console.log(err);
         }
-        // console.log("The return ", order);
+        console.log("The return ", order);
 
         res.json({
           success: true,
@@ -342,6 +343,10 @@ const orderPlacedEnd = async (req, res, next) => {
           totalAmount: parseInt(totAmt),
           order: order,
         });
+        // res.json({
+        //   success: true,
+        //   order: order,
+        // });
       });
     }
 

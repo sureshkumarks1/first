@@ -369,13 +369,30 @@
                 "cartProduct" + index
               );
               cartProductElement.style.display = "none";
-              fetch("/cart/delete/" + id, { method: "DELETE" }).then((data) =>
-                console.log(data)
-              );
-              Swal.fire({
-                icon: "success",
-                title: "Product has been removed from cart",
-              });
+              fetch("/cart/delete/" + id, { method: "DELETE" })
+                .then((response) => {
+                  return response.json();
+                })
+                .then(async (data) => {
+                  console.log("Success:", data);
+
+                  let totalPriceElement = document.getElementById("totalPrice");
+                  let grandTotalElement =
+                    document.getElementById("total-price");
+
+                  totalPriceElement.innerHTML = "₹" + (await data.grandTotal);
+                  grandTotalElement.innerHTML = "₹" + (await data.grandTotal);
+                })
+                .catch((error) => {
+                  console.error(
+                    "There was a problem with the fetch operation:",
+                    error
+                  );
+                });
+              // Swal.fire({
+              //   icon: "success",
+              //   title: "Product has been removed from cart",
+              // });
             }
           });
         } catch (error) {

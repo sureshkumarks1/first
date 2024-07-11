@@ -1,7 +1,7 @@
-const { Product, validateProd } = require("../models/productModel");
+const { Product, validateProduct } = require("../models/productModel");
 const { Catagory } = require("../models/catagoryModel");
 const { orderCollection } = require("../models/orderModel");
-
+const fs = require("fs");
 const upload = require("../middleware/upload");
 const sharp = require("sharp");
 const { name } = require("ejs");
@@ -158,6 +158,111 @@ const updt_prod = async (req, res) => {
   } else {
     res.redirect("/admin/products").json({ success: false });
   }
+};
+
+const updt_prod_new = async (req, res, next) => {
+  try {
+    const productData = req.body;
+    const filter = { _id: req.body._id };
+    delete productData._id;
+    //console.log(req.body);
+
+    const { error } = validateProduct(productData);
+    if (error) {
+      const errors = error.details.map((detail) => detail.message);
+      return res.status(200).json({ message: "failed", errors });
+    }
+
+    let image;
+
+    image = "http://localhost:3000/uploads/" + req.files[0].filename;
+
+    let newimg = "";
+    req.files.forEach(async (file) => {
+      newimgname = file.filename.replace(".jpg", "");
+      newimg =
+        newimg +
+        "http://localhost:3000/uploads/" +
+        newimgname +
+        "-resized-1024.jpg," +
+        "http://localhost:3000/uploads/" +
+        newimgname +
+        "-resized-400.jpg,";
+
+      await resizeImageNew(file.path, newimgname);
+      await resizeimagefourNew(file.path, newimgname);
+    });
+    let newArr = newimg.split(",");
+    newArr.pop();
+
+    // }
+    const { name, category, price, stock, description } = req.body;
+
+    const data = {
+      name,
+      description,
+      stock,
+      price,
+      image,
+      images: newArr,
+      category,
+    };
+
+    // const product = new Product(data);
+    // delete product._id;
+    console.log("This product goest to database", data);
+    // return res.json({ message: "success", detail: data });
+
+    const rest = await Product.updateOne(filter, data)
+      .then((savedDocument) => {
+        return res.json({ message: "success", detail: savedDocument });
+      })
+      .catch((error) => {
+        console.log("have some errors", error);
+        return res.json({ message: "failed", error: error });
+      });
+  } catch (error) {
+    next(error);
+  }
+  /*try {
+    let image;
+    let images = [];
+    // console.log(req.body);
+    if (!req.files) {
+      image = "http://localhost:3000/uploads/" + req.files[0].filename;
+    } else {
+      image = "http://localhost:3000/uploads/" + req.files[0].filename;
+    }
+    const filter = { _id: req.body._id };
+    req.files.forEach((file) => {
+      newimgname = file.filename.replace(".jpg", "");
+      resizeImageNew(file.path, newimgname);
+      resizeimagefourNew(file.path, newimgname);
+      images.push("http://localhost:3000/uploads/" + file.filename);
+    });
+
+    const {
+      productName,
+      productCategory,
+      productPrice,
+      productStock,
+      productDescription,
+    } = req.body;
+    // const rest = await Product.updateOne(filter, product);
+    const product = {
+      name: productName,
+      description: productDescription,
+      stock: productStock,
+      price: productPrice,
+      image: image,
+      images: images,
+      category: productCategory,
+    };
+    const rest = await Product.updateOne(filter, product);
+    console.log(rest);
+  } catch (err) {
+    console.log(err);
+  }*/
 };
 
 async function resizeimage(files, imgn) {
@@ -367,7 +472,7 @@ const del_prod = async (req, res) => {
 
   let doc = await Product.findOne({ _id: req.body.id }).select("status");
 
-  // console.log("The result is :",doc?.status)
+  console.log("The result is :", doc?.status);
 
   const status = doc.status ? false : true;
 
@@ -395,7 +500,25 @@ const getProdById = async (req, res) => {
     console.log(error.message);
   }
 };
-
+const getProdByIdForEdit = (req, res, next) => {
+  try {
+    console.log("i am from controller");
+    console.log(req.body);
+    res.json({ data: "working" });
+  } catch (error) {
+    console.log(err);
+  }
+};
+const getProdByIdNew = async (req, res) => {
+  try {
+    console.log(req.params);
+    const proddata = await Product.findOne({ _id: req.params.id });
+    console.log(proddata);
+    res.json({ data: proddata });
+  } catch (error) {
+    next(error);
+  }
+};
 const edt_prod = async (req, res) => {
   const id = req.params.id;
 
@@ -403,8 +526,13 @@ const edt_prod = async (req, res) => {
     const catdata = await Catagory.find({ status: true });
     const proddata = await Product.findOne({ _id: id });
     //   console.log(catdata.name)
-    // console.log(proddata)
-    res.render("edit-prod", { category: catdata, prod: proddata });
+    console.log(proddata.images.length);
+    res.render("edit-prod", {
+      category: catdata,
+      prod: proddata,
+      count: proddata.images.length,
+      name: req.session?.uname || "Guest",
+    });
   } catch (error) {
     console.log(error.message);
   }
@@ -536,7 +664,104 @@ const rating = async (req, res, next) => {
     next(error);
   }
 };
+async function resizeimagefourNew(path, imgnn) {
+  try {
+    let newimg400 = "";
 
+    newimg400 = "uploads/" + imgnn + "-resized-400.jpg";
+    await sharp(path)
+      .resize({
+        width: 400,
+        height: 400,
+        fit: "fill",
+      })
+      .toFile(newimg400);
+  } catch (err) {
+    console.log("the error coming from file update", err);
+  }
+}
+async function resizeImageNew(path, imgn) {
+  try {
+    let newimg = "";
+    newimg = "uploads/" + imgn + "-resized-1024.jpg";
+    await sharp(path)
+      .resize({
+        width: 1024,
+        height: 1024,
+        fit: "fill",
+      })
+      .toFile(newimg);
+  } catch (err) {
+    console.log("the error coming from file update", err);
+  }
+}
+const insertProdNew = async (req, res, next) => {
+  try {
+    const productData = req.body;
+    const { error } = validateProduct(productData);
+    if (error) {
+      const errors = error.details.map((detail) => detail.message);
+      return res.status(200).json({ message: "failed", errors });
+    }
+
+    let image;
+
+    image = "http://localhost:3000/uploads/" + req.files[0].filename;
+    let path = "";
+    let newimg = "";
+    req.files.forEach(async (file) => {
+      newimgname = file.filename.replace(".jpg", "");
+      newimg =
+        newimg +
+        "http://localhost:3000/uploads/" +
+        newimgname +
+        "-resized-1024.jpg," +
+        "http://localhost:3000/uploads/" +
+        newimgname +
+        "-resized-400.jpg,";
+
+      await resizeImageNew(file.path, newimgname);
+      await resizeimagefourNew(file.path, newimgname);
+    });
+    let newArr = newimg.split(",");
+    newArr.pop();
+    console.log("Image location for array", newArr);
+    // }
+    const { name, category, price, stock, description } = req.body;
+
+    const data = {
+      name,
+      description,
+      stock,
+      price,
+      image,
+      images: newArr,
+      category,
+    };
+
+    const product = new Product(data);
+
+    console.log("This product goest to database", product);
+
+    const psaved = await product
+      .save()
+      .then((savedDocument) => {
+        // Handle the saved document
+        console.log("Document saved successfully:", savedDocument);
+        return res.json({ message: "success" });
+      })
+      .catch((error) => {
+        // Handle the error
+        console.log("have some errors");
+        return res.json({ message: "failed", error: error });
+      });
+  } catch (error) {
+    next(error);
+  }
+};
+const countDocuments = async () => {
+  const count = await Product.count();
+};
 module.exports = {
   loadProd,
   add_prod,
@@ -552,4 +777,8 @@ module.exports = {
   getAllPorductsByPriceRange,
   getAllPorductsByCategory,
   rating,
+  insertProdNew,
+  getProdByIdNew,
+  getProdByIdForEdit,
+  updt_prod_new,
 };

@@ -1,0 +1,246 @@
+<%-include("../layouts/header.ejs")-%>
+<div id="layoutSidenav_content mtp-5">
+  <main>
+    <div class="container-fluid px-4" id="divtable">
+      <h1 class="mt-4">Add Product</h1>
+      <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/admin/home">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="/admin/products">Products</a></li>
+        <li class="breadcrumb-item active">Edit Product</li>
+      </ol>
+      <div class="container">
+        
+        <%if(prod){ %>
+
+        <form
+          id="prodform"
+          name="productform"
+          method="post"
+          action="/admin/products/produpdtn"
+          enctype="multipart/form-data"
+          class="needs-validation"
+          novalidate
+        >
+          <div class="mb-3">
+            <input
+              type="text"
+              class="d-none"
+              name="_id"
+              value="<%=prod._id %>"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label"
+              >Product Name</label
+            >
+            <input
+              value="<%=prod.name %>"
+              type="text"
+              minlength="3"
+              class="form-control"
+              id="pname"
+              name="pname"
+              placeholder="Enter Product Name"
+              required
+            />
+            <div class="invalid-feedback">Please Enter the Product Name.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Product Catagory</label>
+            <% let cate = prod.category.toString() %>
+
+            <select
+              class="form-select"
+              aria-label="Default select"
+              id="pcategory"
+              name="pcategory"
+              required
+            >
+              <option value="">select category</option>
+
+              <% if(category) { category.forEach(cat => { if(cat._id==cate) {%>
+
+              <option selected value="<%= cat._id %>"><%= cat.name %></option>
+              <%} else { %>
+              <option value="<%= cat._id %>"><%= cat.name %></option>
+              <% }%> <%});%> <% } %>
+            </select>
+
+            <div class="invalid-feedback">Please select a valid Category.</div>
+          </div>
+          <div class="mb-3">
+            <input type="hidden" name="img0" id="img0" value="<%= prod.images[0] %>"></input>
+            <img
+              src="<%= prod.images[0] %>"
+              width="100px"
+              height="100px"
+              id="img"
+              alt="<%= prod.images[0] %>"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="formFile" class="form-label"
+              >Product Image 1
+              <input
+                class="form-control"
+                name="images"
+                type="file"
+                id="input"
+                onchange="viewImage(event)"
+                accept="image/png, image/jpeg"
+              />
+              <div class="invalid-feedback">Please select Product Image.</div>
+            </label>
+          </div>
+          <div class="mb-3">
+            <input type="hidden" name="img1" id="img1" value="<%= prod.images[1] %>"></input>
+            <img
+              src="<%= prod.images[1] %>"
+              width="100px"
+              height="100px"
+              id="imgone"
+              alt="<%= prod.images[1] %>"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="formFile" class="form-label"
+              >Product Image 2
+              <input
+                class="form-control"
+                name="images"
+                type="file"
+                id="input"
+                onchange="viewImage2(event)"
+                accept="image/png, image/jpeg"
+              />
+              <div class="invalid-feedback">Please select Product Image.</div>
+            </label>
+          </div>
+          <div class="mb-3">
+            <input type="hidden" name="img2" id="img2" value="<%= prod.images[2] %>"></input>
+            <img
+              src="<%= prod.images[2] %>"
+              width="100px"
+              height="100px"
+              id="imgtwo"
+              alt="<%= prod.images[2] %>"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="formFile" class="form-label"
+              >Product Image 3
+              <input
+                class="form-control"
+                name="images"
+                type="file"
+                id="input"
+                onchange="viewImage3(event)"
+                accept="image/png, image/jpeg"
+              />
+              <div class="invalid-feedback">Please select Product Image.</div>
+            </label>
+          </div>
+          <div
+            class="modal fade"
+            id="modal"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="modalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="modalLabel">Crop the image</h5>
+                  <button
+                    type="button"
+                    class="close"
+                    data-dismiss="modal"
+                    aria-label="Close"
+                  >
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="img-container">
+                    <img
+                      id="image"
+                      src="/user/images/shoes_images/shoe_1.jpg"
+                    />
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-dismiss="modal"
+                  >
+                    Cancel
+                  </button>
+                  <button type="button" class="btn btn-primary" id="crop">
+                    Crop
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="formFile" class="form-label">Product Price </label>
+            <input
+              name="productprice"
+              id="productPrice"
+              type="number"
+              class="form-control"
+              min="1"
+              placeholder="Product Price"
+              required
+              value="<%=prod.price %>"
+            />
+            <div class="invalid-feedback">Please Enter Postive amount.</div>
+         
+        </div>
+          <div class="mb-3">
+            <label for="formFile" class="form-label">Product Stock </label>
+            <input
+              name="productstock"
+              id="productStock"
+              type="number"
+              class="form-control"
+              min="1"
+              placeholder="Product Stock"
+              required
+              value="<%=prod.stock %>"
+            />
+            <div class="invalid-feedback">Please Enter Postive amount.</div>
+          
+          </div>
+          <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label"
+              >Product's Description</label
+            >
+            <textarea
+              class="form-control"
+              id="pdescription"
+              name="pdescription"
+              rows="3"
+              placeholder="Product Description"
+              required
+            >
+<%=prod.description %></textarea
+            >
+            <div class="invalid-feedback">Please Enter Product Description.</div>
+          </div>
+          <div class="mb-3">
+            <button class="btn btn-primary" id="submit">Submit</button
+            ><input class="btn btn-primary" type="reset" value="Reset" />
+          </div>
+        </form>
+        <%} %>
+      </div>
+    </div>
+  </main>
+</div>
+
+<%-include("../layouts/footer.ejs")-%>

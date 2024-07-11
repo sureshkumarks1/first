@@ -1,14 +1,21 @@
 const bcrypt = require("bcrypt");
+const fs = require("fs");
+const PDFDocument = require("pdfkit");
 const { User } = require("../models/userModel");
 const addressCollection = require("../models/addressModel");
 const orderCollection = require("../models/orderModel");
+const walletCollection = require("../models/walletModel");
+const categoryCollection = require("../models/catagoryModel");
+const cartCollection = require("../models/cartModel");
 const formatDate = require("../services/formatDateHelper");
+const { checkUser } = require("../helper/checkUser");
 
+const moment = require("moment"); // require
 module.exports = {
   myWishList: (req, res) => {
-    res.render("wishlist", { name: req.session?.currentUser?.name });
+    res.render("wishlist", { name: req.session?.name });
   },
-  accountPage: async (req, res) => {
+  accountPage: async (req, res, next) => {
     try {
       let userData = await User.find({
         _id: req.session.user_id,
@@ -20,13 +27,13 @@ module.exports = {
 
       res.render("profile", {
         currentUser: req.session?.currentUser,
-        name: req.session?.currentUser?.name,
+        name: req.session?.name,
         userData,
         addressData,
         userId: req.session?.user_id,
       });
     } catch (error) {
-      console.error(error);
+      next(error);
     }
   },
 
@@ -133,8 +140,11 @@ module.exports = {
     }
   },
 
-  changePassword: async (req, res) => {
+  changePassword: async (req, res, next) => {
     try {
+      if (!req.session.name) {
+        return new Error("No Logined User");
+      }
       const cpassword = await User.findOne({
         _id: req.session.user_id,
       }).select("password");
@@ -145,11 +155,14 @@ module.exports = {
         name: req.session.currentUser.name,
       });
     } catch (error) {
-      console.error(error);
+      next(error);
     }
   },
 
   changePasswordPatch: async (req, res) => {
+    if (!req.session.name) {
+      return new Error("No Logined User");
+    }
     const cpassword = await User.findOne({
       _id: req.body.userId,
     }).select("password");
@@ -195,9 +208,14 @@ module.exports = {
   },
   orderHistory: async (req, res) => {
     try {
-      let orderData = await orderCollection.find({
-        userId: req.session.user_id,
-      });
+      if (!req.session.name) {
+        return new Error("No Logined User");
+      }
+      let orderData = await orderCollection
+        .find({
+          userId: req.session.user_id,
+        })
+        .sort({ orderDate: -1 });
       // orderData = orderData.filter(
       //   (order) => order.paymentType !== "toBeChosen"
       // );
@@ -222,6 +240,9 @@ module.exports = {
   },
   orderStatus: async (req, res) => {
     try {
+      if (!req.session.name) {
+        return new Error("No Logined User");
+      }
       let orderData = await orderCollection
         .findOne({ _id: req.params.id })
         .populate("addressChosen");
@@ -240,13 +261,46 @@ module.exports = {
 
   cancelOrder: async (req, res) => {
     try {
-      const result = await orderCollection.findByIdAndUpdate(
-        { _id: req.params.id },  
-              
-        { $set: { orderStatus: "Cancelled" } }
-      );
+      if (!req.session.name) {
+        return new Error("No Logined User");
+      }
+      /*const result = await orderCollection.findByIdAndUpdate(
+        { _id: req.params.id },
+        { $set: { orderStatus: "Cancelled",  } }
+      );*/
 
+      let orderData = await orderCollection.findOne({ _id: req.params.id });
 
+      /*
+      if (orderData.paymentStatus != "Pending") {
+        let walletTransaction = {
+          transactionDate: new Date(),
+          transactionAmount: orderData.grandTotalCost,
+          transactionType: "Refund from returned Order",
+        };
+
+        const wallet = await walletCollection.findOneAndUpdate(
+          { userId: orderData.userId },
+          {
+            $inc: { walletBalance: orderData.grandTotalCost },
+            $push: { walletTransaction },
+          }
+        );
+      }
+
+      */
+
+      console.log(orderData.cartData);
+      orderData.cartData.map((item) => {
+        item.productId._id.stock += item.productQuantity;
+      });
+
+      //reducing from stock qty
+      // cartData.map(async (v) => {
+      //   v.productId.productStock += v.productQuantity;
+      //   await v.productId.save();
+      //   return v;
+      // });
 
       res.send({ success: true });
     } catch (error) {
@@ -255,8 +309,35 @@ module.exports = {
     }
   },
 
-  getOrderDetails: async (req, res) => {
+  showOrderDetailsPage: async (req, res, next) => {
     try {
+      if (!req.session.name) {
+        return new Error("No Logined User");
+      }
+      const name = req.session.name;
+      let orderData = await orderCollection
+        .find({
+          _id: req.params.id,
+          userId: req.session.user_id,
+        })
+        .populate("addressChosen");
+
+      const products = orderData[0].cartData;
+      res.render("orderDetails", {
+        name: name,
+        data: orderData,
+        products: products,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  getOrderDetails: async (req, res, next) => {
+    try {
+      if (!req.session.name) {
+        return new Error("No Logined User");
+      }
       let orderData = await orderCollection
         .find({
           _id: req.params.id,
@@ -264,9 +345,60 @@ module.exports = {
         })
         .populate("addressChosen");
       res.send({ data: orderData });
-      console.log(orderData);
+      //console.log(orderData);
     } catch (error) {
-      console.error(error);
+      next(error);
+    }
+  },
+  showWallet: (req, res, next) => {
+    res.render("wallet", {
+      name: req.session.user,
+    });
+  },
+  loadWallet: async (req, res, next) => {
+    try {
+      let walletBal = await walletCollection
+        .findOne({
+          userId: req.session.user_id,
+        })
+        .select("walletBalance");
+
+      let walletBalance = await walletCollection.findOne({
+        userId: req.session.user_id,
+      });
+
+      if (!walletBalance) {
+        console.log("i am from wallet no values");
+        return res.json({ message: "There is no wallet Transactions" }); //res.sendStatus(status)
+      } else {
+        walletBalance = walletBalance.walletTransaction.map((transaction) => {
+          let fdate = new Date(transaction.transactionDate);
+          transaction.walletDateFormatted = moment(fdate).format("MMM Do YY");
+          return transaction;
+        });
+        return res.send(200).json({
+          walletBalance,
+          walletBal,
+        });
+      }
+    } catch (error) {
+      next(error);
+    }
+  },
+  //dowload invoice
+  invoiceDownload: async (req, res) => {
+    //const {id} = req.params;
+    try {
+      let orderData = await orderCollection
+        .findOne({
+          _id: req.params.id,
+          userId: req.session.user_id,
+        })
+        .populate("userId addressChosen");
+
+      // Create a PDF document
+    } catch (error) {
+      console.log(error);
     }
   },
 };

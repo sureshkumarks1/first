@@ -97,14 +97,14 @@
                   >
                     Apply
                   </button>
-                  <!-- <button
+                  <button
                     type="button"
                     id="removeCoupon"
                     value="remove"
                     class="btn btn-light border border-1"
                   >
                     Remove
-                  </button> -->
+                  </button>
                 </div>
               </form>
             </div>
@@ -310,8 +310,6 @@
       src="https://cdn.jsdelivr.net/npm/toastify-js"
     ></script>
 
-    <script></script>
-
     <script>
       const orderBtnElement = document.getElementById("orderBtn");
       orderBtnElement.addEventListener("click", orderBtnClickFunction);
@@ -379,9 +377,9 @@
                 data: data,
                 success: async function (response) {
                   // Handle success response
-                  // console.log(response);
+                  console.log(response);
                   if (response.success == true) {
-                    // console.log("----", response.order.receipt);
+                    console.log("----", response);
                     // console.log("<<<<<<<<<", response.oid);
                     try {
                       const result = await initiatePayment(
@@ -390,7 +388,34 @@
                         response.order.id,
                         response.ord_id
                       );
-                      console.log("<<<<<<<<<", result);
+                      // const options = {
+                      //   key: "rzp_test_xOXAdtJXlJAoaN", // Enter the Key ID generated from the Dashboard
+                      //   amount: response?.order?.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                      //   currency: "INR",
+                      //   name: "Acme Corp",
+                      //   description: "Test Transaction",
+                      //   image: "http://localhost:3000/userImages/logo.jpg",
+                      //   order_id: "" + response.order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                      //   handler: function (response) {
+                      //     alert(response.razorpay_payment_id);
+                      //     alert(response.razorpay_order_id);
+                      //     alert(response.razorpay_signature);
+                      //   },
+                      //   prefill: {
+                      //     name: "Gaurav Kumar",
+                      //     email: "gaurav.kumar@example.com",
+                      //     contact: "9000090000",
+                      //   },
+                      //   notes: {
+                      //     address: "Razorpay Corporate Office",
+                      //   },
+                      //   theme: {
+                      //     color: "#3399cc",
+                      //   },
+                      // };
+                      // let rzp1 = new Razorpay(options);
+                      // rzp1.open();
+                      // console.log("<<<<<<<<<", options);
                     } catch (err) {
                       console.log(err);
                     }
@@ -487,6 +512,7 @@
       }
 
       async function initiatePayment(amt, orId, rzpId, oordId) {
+        // console.log("the order id is : ", orId);
         try {
           const options = {
             key: "rzp_test_xOXAdtJXlJAoaN", // Enter the Key ID generated from the Dashboard
@@ -495,7 +521,7 @@
             name: "SHOECASE",
             description: "Test Transaction",
             callback_url: "/orderPlaced",
-            image: "/images/logo-dark.png",
+
             order_id: rzpId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
             theme: {
               color: "#3399cc",
@@ -506,7 +532,7 @@
                 const link = `/orderplace/${orId}`;
                 window.location.href = link;
               }
-              // console.log(">>>>>>>>>>", response);
+              console.log(">>>>>>>>>>", response);
             },
             prefill: {
               name: "Gaurav Kumar",
@@ -518,10 +544,18 @@
             },
           };
           const razorpay = new Razorpay(options);
-
           razorpay.open();
+          razorpay.on("payment.failed", function (response) {
+            alert(response.error.code);
+            alert(response.error.description);
+            alert(response.error.source);
+            alert(response.error.step);
+            alert(response.error.reason);
+            alert(response.error.metadata.order_id);
+            alert(response.error.metadata.payment_id);
+          });
         } catch (error) {
-          console.error(error);
+          next(error);
         }
       }
 
@@ -562,13 +596,51 @@
         });
       });
 
-      $("button#removeCoupon").on("click", function () {
-        $("#couponId").html("");
-        $("#couponId").html("Coupon Succesfully Removed");
-        console.log("the total is:", tot);
-        totalAfterDiscount = tot;
-        $("#grandTotal").html(totalAfterDiscount);
+      document.addEventListener("DOMContentLoaded", function () {
+        const removeCouponBtn = document.getElementById("removeCoupon");
+        const couponIdElement = document.getElementById("couponId");
+        const grandTotalElement = document.getElementById("grandTotal");
+        const applyButton = document.getElementById("applyButton");
+        const couponInput = document.getElementById("couponcode").value;
+        let tot = document.getElementById("totalPrice1").textContent;
+        console.log("The total value", couponInput);
+
+        removeCouponBtn.addEventListener("click", function () {
+          couponIdElement.innerHTML = "";
+          couponIdElement.innerHTML = "Coupon Successfully Removed";
+          // removeCouponBtn.style.display = "none";
+          // applyButton.style.display = "inline-block";
+          couponIdElement.classList.add("text-danger");
+          couponInput.value = "";
+          if (couponInput != "") {
+            const totalAfterDiscount = tot;
+            grandTotalElement.innerHTML = totalAfterDiscount;
+          } else {
+            couponIdElement.innerHTML = "Coupon code not found";
+          }
+          fetch("http://localhost:3000/coupon/remove", {
+            method: "post",
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log(data);
+              // Display the data in the dataDisplay div
+              // dataDisplay.innerHTML = JSON.stringify(data, null, 2);
+              //const removeButton = document.getElementById("removeCoupon");
+            })
+            .catch((error) => {
+              console.error("Error fetching data:", error);
+            });
+        });
       });
+
+      // $("button#removeCoupon").on("click", function () {
+      //   // $("#couponId").html("");
+      //   // $("#couponId").html("Coupon Succesfully Removed");
+      //   // console.log("the total is:", tot);
+      //   // totalAfterDiscount = tot;
+      //   // $("#grandTotal").html(totalAfterDiscount);
+      // });
 
       // Handle coupon form submission
       $(document).on("submit", "#couponFrm", function (e) {

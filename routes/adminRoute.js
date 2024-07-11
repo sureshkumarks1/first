@@ -26,6 +26,8 @@ const admin = require("../controllers/adminController");
 
 const catagory = require("../controllers/catagoryController");
 const orderController = require("../controllers/orderController");
+const adminController = require("../controllers/adminController");
+const reportsController = require("../controllers/reportsController");
 
 admin_route.use(express.json());
 
@@ -120,10 +122,13 @@ admin_route.post("/add-admin", auth.isLogin, admin.insertNewAdmin);
 admin_route.post("/edit-user", auth.isLogin, admin.updateUser);
 
 admin_route.get("/delete-user", auth.isLogin, admin.deleteUser);
+admin_route.get("/salesreport", auth.isLogin, admin.salesReport);
 
 admin_route.post("/block-user", auth.isLogin, admin.blockUser);
 
 admin_route.get("/orders/getorders", auth.isLogin, orderController.getOrders);
+
+admin_route.post("/orders/report", reportsController.salesReport);
 
 admin_route.post(
   "/order/chgstatus",
@@ -144,6 +149,6 @@ admin_route.get(
 // })
 
 admin_route.use("/coupons", couponRoute);
-
+admin_route.get("/dashboardData", adminController.dashboardData);
 
 module.exports = admin_route;

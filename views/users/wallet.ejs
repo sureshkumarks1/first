@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My-Profile</title>
+    <!-- <link rel="stylesheet" href="/user/css/profile.css" /> -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css">
+  </head>
+
+  <body>
+    <% if (name) { %> <%- include('files/navbar.ejs', {name}) %> <% } else { %>
+    <%- include('files/navbar.ejs', {name:""}) %> <% } %>
+    <section class="bg-light">
+      <div class="container">
+        <h3 class="text-center py-2">My Wallet</h3>
+        <div class="row">
+          <div class="col-lg-3 col-xl-3">
+            <nav class="nav flex-lg-column w-100 d-flex nav-pills mb-4">
+              <a class="nav-link my-0 bg-light" href="/profile"
+                ><p class="pb-0 mb-0" style="width: 100px">Account main</p></a
+              >
+              <a class="nav-link my-0 bg-light" href="/profile/orderhistory"
+                ><p class="pb-0 mb-0" style="width: 100px">Orders history</p></a
+              >
+              <a class="nav-link my-0 bg-light" href="/profile/chgpass"
+                ><p class="pb-0 mb-0" style="width: 100px">
+                  Change Password
+                </p></a
+              >
+              <a class="nav-link my-0 bg-light" href="/profile/wishlist"
+                ><p class="pb-0 mb-0" style="width: 100px">My Wishlist</p></a
+              >
+              <a class="nav-link my-0 active" href="/profile/wallet"
+                ><p class="pb-0 mb-0" style="width: 100px">My Wallet</p></a
+              >
+            </nav>
+          </div>
+          <main class="col-lg-9 col-xl-9">
+            <div class="card p-4 mb-0 shadow-0 border">
+              <div class="content-body">               
+                <div class="container m-1 border border-1">
+                  <div class="row h-100">
+                     <table id="walletTable" class="border border-1">
+                      <thead>
+                        <th>Wallet Date</th>
+                        <th>Wallet Amount</th>
+                        <th>Payment Type</th>
+                      </thead>
+                      <tbody>
+                        <tr><td colspan="3" class="border border-1 text-center p-4"><p id="noContent"></p></td></tr>
+                      </tbody>
+                     </table>
+                    </div>
+                </div>        
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
+    </section>
+    
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+      $( document ).ready(function() {
+        let data = "";
+        axios.get('http://localhost:3000/profile/getwalletdetails')
+  .then(function (response) {
+
+    $("#noContent").text(response.data.message)
+    dataSet = response.data.message;
+  })
+  .catch(function (error) {
+    // handle error
+    console.log(error);
+  })
+  .finally(function () {
+    // always executed
+  });
+
+//         let table = new DataTable("#walletTable", {
+//  data :dataSet,
+//   order: [[3, "desc"]],
+//   columns: [
+//     { data: "_id" },
+//     {
+//       data: "orderDate",
+//       render: DataTable.render.datetime("DD MMM YYYY"),
+//     },
+//     { data: "orderStatus" },
+//     {
+//       data: "paymentType",
+//     },
+//     { data: "userId.name" },
+//     {
+//       data: "",
+//       render: (data, type, row) => {
+//         // console.log(row);
+//         return `<a href='/admin/orderDetailsPage/${row._id}'><button class='btn btn-primary'>Details</button></a>`;
+//       },
+//     },
+//   ],
+// });
+      });
+   
+
+
+    </script>
+
+   
+  </body>
+</html>

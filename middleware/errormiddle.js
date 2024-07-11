@@ -18,6 +18,10 @@ const errorHandler = (error, req, res, next) => {
     statusCode: error.statusCode,
     Title: error?.title,
   });
+  // if (req.session.name == undefined) {
+  //   return res.redirect("http://localhost:3000/login");
+  // }
+  // res.redirect("/500");
 };
 
 const newErrorhandler = (err, req, res, next) => {

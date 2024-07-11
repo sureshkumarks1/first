@@ -1,5 +1,6 @@
 const { User, validateUser } = require("../models/userModel");
 const profileController = require("../controllers/profileController.js");
+const walletCollection = require("../models/walletModel");
 const { Product } = require("../models/productModel");
 const { Catagory } = require("../models/catagoryModel");
 const bcrypt = require("bcrypt");
@@ -24,6 +25,9 @@ const securePassword = async (password) => {
 
 const loadNotFound = (req, res) => {
   res.render("404", { title: "not found" });
+};
+const loadfiveHundred = (req, res) => {
+  res.render("500", { title: "Server Error", name: req.session.name });
 };
 
 const loadRegister = async (req, res, next) => {
@@ -81,8 +85,6 @@ const checkvalues = async (req, res) => {
 
 const insertUser = async (req) => {
   try {
-    //console.log(user)
-
     const { name, email, password } = req.body;
 
     if (name !== "" && email !== "" && password !== "") {
@@ -92,18 +94,22 @@ const insertUser = async (req) => {
       if (typeof errors !== "object") {
         console.log(errors);
       } else {
-        console.log("i am fron insert user function");
-
         const spassword = await securePassword(password);
         const user = new User({
           name,
           email,
           password: spassword,
           role: "user",
-          create: new Date(),
         });
 
-        const userData = await user.save();
+        const userData = await user
+          .save()
+          .then(async (data) => {
+            await walletCollection.create({ userId: req.session.user._id });
+          })
+          .catch((err) => {
+            console.log("Some error on user creation and wallet creation");
+          });
 
         if (userData) {
           return { message: "success" };
@@ -222,6 +228,7 @@ const verifyLogin = async (req, res, next) => {
               req.session.user_id = userData._id;
               req.session.currentUser = userData;
               req.session.uname = userData.name;
+              req.session.name = userData.name;
               res.cookie("un", userData.name);
               req.session.userIsThere = {
                 isAlive: true,
@@ -301,6 +308,7 @@ const productPage = async (req, res) => {
 const productDetails = async (req, res) => {
   const id = req.params.id;
 
+  // const prod = await Product.findOne({ _id: id }); //.populate("category");
   const prod = await Product.findOne({ _id: id }).populate("category", "name");
 
   // console.log(prod)
@@ -367,4 +375,5 @@ module.exports = {
   googleLogin,
   resetpasswd,
   loadNotFound,
+  loadfiveHundred,
 };

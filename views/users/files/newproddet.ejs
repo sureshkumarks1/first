@@ -11,53 +11,30 @@
       <li class="breadcrumb-item"><%= proddata.name%></li>
     </ol>
   </nav>
-  <% } %>
 </div>
 <div class="zoomcontainer">
   <!-- zoom container start -->
-
   <div class="xzoom-container">
     <img
       height="400px"
       width="400px"
-      src="<%= proddata.images[0].replace('.jpg', '-resized-400.jpg') %>"
+      src=" <%= proddata.image %>"
       class="xzoom"
     />
 
     <div class="xzoom-thumbs">
-      <a
-        href="<%= proddata.images[0].replace('.jpg', '-resized-1024.jpg')%>"
-        id="one"
-      >
+      <% proddata.images.forEach((element, index, arr) => { if(index %2==1){
+      return } %>
+
+      <a href="<%= arr[index] %>" id="one">
         <img
-          src="<%= proddata.images[0].replace('.jpg', '-resized-400.jpg') %>"
+          src="<%= arr[index] %>"
           class="xzoom-gallery"
-          alt="<%= proddata.images[0].replace('.jpg', '-resized-400.jpg') %>"
-        />
-      </a>
-      <!-- image 2 -->
-      <a
-        href="<%= proddata.images[1].replace('.jpg', '-resized-1024.jpg')%>"
-        id="one"
-      >
-        <img
-          src="<%= proddata.images[1].replace('.jpg', '-resized-400.jpg') %>"
-          class="xzoom-gallery"
-          alt="<%= proddata.images[1].replace('.jpg', '-resized-400.jpg') %>"
+          alt="<%= arr[index] %>"
         />
       </a>
 
-      <!-- image 3 -->
-      <a
-        href="<%= proddata.images[2].replace('.jpg', '-resized-1024.jpg')%>"
-        id="one"
-      >
-        <img
-          src="<%= proddata.images[2].replace('.jpg', '-resized-400.jpg') %>"
-          class="xzoom-gallery"
-          alt="<%= proddata.images[2].replace('.jpg', '-resized-400.jpg') %>"
-        />
-      </a>
+      <%}); %>
     </div>
   </div>
 
@@ -87,6 +64,7 @@
     </div>
   </div>
   <!-- description  end -->
+  <% } %>
 </div>
 <script>
   try {
@@ -94,24 +72,22 @@
     const frmData = {
       id: pid,
     };
+
     function addToCart() {
-      console.log(frmData);
       $.ajax({
         // url: `http://localhost:3000/product/cart/`,
         url: `http://localhost:3000/product/test`,
         data: frmData,
         method: "POST",
         success: function (response) {
-          console.log(response);
+          Swal.fire({
+            icon: "success",
+            title: "Item Added to Cart",
+            showConfirmButton: false,
+            timer: 1500,
+          });
         },
       });
-
-      // Swal.fire({
-      //     icon: 'success',
-      //     title: 'Item Added to Cart',
-      //     showConfirmButton: false,
-      //     timer: 1500
-      // });
     }
   } catch (error) {
     console.log(error);

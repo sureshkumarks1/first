@@ -1,6 +1,7 @@
 const { Admin } = require("../models/adminModel");
 const { User } = require("../models/userModel");
-
+const { orderCollection } = require("../models/orderModel");
+const dashboardHelper = require("../helper/dashboardHelper");
 const bcrypt = require("bcrypt");
 
 //show the login page
@@ -110,27 +111,6 @@ const verifyLogin = async (req, res) => {
   }
 };
 
-const adminDashboard = async (req, res) => {
-  try {
-    // var search = '';
-    // if (req.query.search) {
-    //   search = req.query.search;
-    // }
-    // const userdata = await User.find({
-    //   is_admin: 0,
-    //   $or: [
-    //     { name: { $regex: ".*" +search+ ".*" ,$options:"i"} },
-    //     { email: { $regex: ".*" +search+ ".*",$options:"i" } },
-    //     { mobile: { $regex: ".*" +search+ ".*",$options:"i" } }
-    //   ]
-    // });
-    const userdata = await User.find({ role: "admin" });
-    res.render("home", { user: userdata });
-  } catch (error) {
-    console.log(error.message);
-  }
-};
-
 // for admin logout
 const adminLogout = async (req, res) => {
   try {
@@ -173,6 +153,22 @@ const editUserLoads = async (req, res) => {
   } catch (error) {
     console.log(error.message);
   }
+};
+
+const salesReport = (req, res, next) => {
+  let startDate = req.query.startDate
+    ? new Date(req.query.startDate)
+    : new Date();
+
+  let endDate = req.query.endDate ? new Date(req.query.endDate) : new Date();
+
+  startDate.setUTCHours(0, 0, 0, 0);
+  // endDate.setUTCHours(23, 59, 59, 999);
+
+  console.log(startDate, endDate);
+  const locals = { title: "Shoecase - Reports" };
+  const orders = [];
+  res.render("salesreport", { startDate, endDate, orders, locals });
 };
 
 const updateUser = async (req, res) => {
@@ -280,6 +276,72 @@ const insertNewAdmin = async (req, res) => {
     console.log(error.message);
   }
 };
+//load dashBoard
+const adminDashboard = async (req, res, next) => {
+  try {
+    const userdata = await User.find({ role: "admin" });
+    res.render("home", {
+      user: userdata,
+    });
+  } catch (error) {
+    next(error);
+  }
+
+  // res.render("admin/dashboard", {
+  //   bestSellingCategory,
+  //   bestSellingProducts,
+  //   bestSellingBrand,
+  // });
+};
+
+const test = (req, res, next) => {
+  res.json({ message: "Working" });
+};
+
+//admin dashboard data
+const dashboardData = async (req, res, next) => {
+  try {
+    const [
+      productCount,
+      userCount,
+      categoryCount,
+      pendingOrdersCount,
+      totalOrdersCount,
+      totalRevenue,
+      currentDayRevenue,
+      currentMonthRevenue,
+      currentWeekRevenue,
+      categoryWiseRevenue,
+    ] = await Promise.all([
+      dashboardHelper.productCount(),
+      dashboardHelper.userCount(),
+      dashboardHelper.categoryCount(),
+      dashboardHelper.pendingOrdersCount(),
+      dashboardHelper.totalOrdersCount(),
+      dashboardHelper.totalRevenue(),
+      dashboardHelper.currentDayRevenue(),
+      dashboardHelper.currentMonthRevenue(),
+      dashboardHelper.currentWeekRevenue(),
+      dashboardHelper.categoryWiseRevenue(),
+    ]);
+    const data = {
+      productCount,
+      userCount,
+      categoryCount,
+      pendingOrdersCount,
+      totalOrdersCount,
+      totalRevenue,
+      currentDayRevenue,
+      currentMonthRevenue,
+      currentWeekRevenue,
+      categoryWiseRevenue,
+    };
+
+    res.json(data);
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports = {
   loadLogin,
@@ -298,4 +360,7 @@ module.exports = {
   blockUser,
   loadUsersNew,
   loadUserData,
+  dashboardData,
+  test,
+  salesReport,
 };

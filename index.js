@@ -34,6 +34,7 @@ app.use("/", userRoute);
 app.use(logger("common"));
 
 // app.all("*", notFound);
+
 app.use(errorHandler);
 
 //for admin routes

@@ -1,9 +1,9 @@
 const isLogin = async (req, res, next) => {
   try {
-    if (req.cookies.un || req.session.uname) {
+    if (req.cookies.un || req.session.uname || req.session.name) {
       next();
     } else {
-      res.redirect("/login");
+      res.redirect("http://localhost:3000/login");
     }
   } catch (error) {
     console.log(error.message);
@@ -12,7 +12,7 @@ const isLogin = async (req, res, next) => {
 
 const isLogout = async (req, res, next) => {
   try {
-    if (req.cookies.un || req.session.uname) {
+    if (req.cookies.un || req.session.uname || req.session.name) {
       res.redirect("/logout");
     } else {
       next();

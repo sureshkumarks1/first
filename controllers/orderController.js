@@ -1,5 +1,8 @@
 const orderCollection = require("../models/orderModel");
+const walletCollection = require("../models/walletModel");
+const cartCollection = require("../models/cartModel");
 const formatDate = require("../helper/date");
+const moment = require("moment");
 const mongoose = require("mongoose");
 
 const ObjectId = new mongoose.Types.ObjectId();
@@ -11,7 +14,7 @@ const getOrders = async (req, res) => {
   try {
     let orderData = await orderCollection
       .find({})
-      .sort({ orderDate: -1 })
+      // .sort({ orderDate: -1 })
       .populate("userId");
     //   .populate("userId addressChosen");
 
@@ -44,6 +47,14 @@ const orderDetailspage = async (req, res) => {
     .find({ _id: req.params.id })
     .populate("userId")
     .populate("addressChosen");
+
+  orderData = orderData.map((data) => {
+    let newDate = new Date(data.orderDate);
+    console.log(newDate + moment(newDate).format("DD-MM-YYYY"));
+    data.orderDate = moment(newDate).format("DD-MM-YYYY");
+    return data;
+  });
+
   res.render("orderDetailsPage", { id: req.params.id, details: orderData });
 };
 
@@ -54,6 +65,7 @@ const changeOrderPaymentStatus = async (req, res) => {
     paymentId: razorpay_payment_id,
     paymentOrdId: razorpay_order_id,
     orderStatus: "confirm",
+    paymentStatus: "success",
   };
 
   let orderData = await orderCollection.updateOne({ _id: ordId }, obj);
@@ -67,9 +79,113 @@ const changeOrderPaymentStatus = async (req, res) => {
   }
 };
 
+const acceptReturnOrder = async (req, res, next) => {
+  try {
+    const orderData = await orderCollection.findByIdAndUpdate(
+      { _id: req.params.id },
+      { $set: { orderStatus: "Return Accepted", paymentStatus: "Refund" } }
+    );
+
+    const userId = orderData.userId.toString();
+
+    let walletTransaction = {
+      transactionDate: new Date(),
+      transactionAmount: orderData.grandTotalCost,
+      transactionType: "Refund from returned Order",
+    };
+
+    const existingUser = await walletCollection.findOne({ userId: userId });
+    console.log(existingUser);
+    if (existingUser == null) {
+      const newWallet = {
+        userId: userId,
+        walletBalance: 0,
+        walletTransaction: [], // Initial balance
+      };
+      await walletCollection.create(newWallet);
+    } else {
+      const wallet = await walletCollection.findOneAndUpdate(
+        { userId: orderData.userId },
+        {
+          $inc: { walletBalance: orderData.grandTotalCost },
+          $push: { walletTransaction },
+        }
+      );
+    }
+
+    let cartData = await cartCollection
+      .find({ userId: orderData.userId })
+      .populate("productId");
+
+    //reducing from stock qty
+    cartData.map(async (v) => {
+      v.productId.productStock += v.productQuantity;
+      await v.productId.save();
+      return v;
+    });
+
+    // console.log("productQuantity Added");
+    res.json({ success: true });
+  } catch (error) {
+    next(error);
+  }
+};
+const acceptCanceOrder = async (req, res, next) => {
+  try {
+    const orderData = await orderCollection.findByIdAndUpdate(
+      { _id: req.params.id },
+      { $set: { orderStatus: "Cancelled", paymentStatus: "Refund" } }
+    );
+
+    const userId = orderData.userId.toString();
+
+    let walletTransaction = {
+      transactionDate: new Date(),
+      transactionAmount: orderData.grandTotalCost,
+      transactionType: "Cancel Order",
+    };
+
+    const existingUser = await walletCollection.findOne({ userId: userId });
+    console.log(existingUser);
+    if (existingUser == null) {
+      const newWallet = {
+        userId: userId,
+        walletBalance: 0,
+        walletTransaction: [], // Initial balance
+      };
+      await walletCollection.create(newWallet);
+    } else {
+      const wallet = await walletCollection.findOneAndUpdate(
+        { userId: orderData.userId },
+        {
+          $inc: { walletBalance: orderData.grandTotalCost },
+          $push: { walletTransaction },
+        }
+      );
+    }
+
+    let cartData = await cartCollection
+      .find({ userId: orderData.userId })
+      .populate("productId");
+
+    //reducing from stock qty
+    cartData.map(async (v) => {
+      v.productId.productStock += v.productQuantity;
+      await v.productId.save();
+      return v;
+    });
+
+    // console.log("productQuantity Added");
+    res.json({ success: true });
+  } catch (error) {
+    next(error);
+  }
+};
 module.exports = {
   getOrders,
   orderDetailspage,
   updateStatus,
   changeOrderPaymentStatus,
+  acceptReturnOrder,
+  acceptCanceOrder,
 };

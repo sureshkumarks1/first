@@ -177,7 +177,7 @@ user_route.patch(
 
 user_route.patch(
   "/profile/chgresetpass",
-
+  auth.isLogin,
   profileController.chgresetpass
 );
 user_route.post(
@@ -195,6 +195,12 @@ user_route.post(
   "/profile/addAddress",
   auth.isLogin,
   profileController.addAddressPost
+);
+user_route.get("/profile/wallet", auth.isLogin, profileController.showWallet);
+user_route.get(
+  "/profile/getwalletdetails",
+  auth.isLogin,
+  profileController.loadWallet
 );
 /*========================user profile code ends here=============================== */
 
@@ -221,31 +227,48 @@ user_route.get(
   cartController.orderPlacedEnd
 );
 user_route.get("/orderplace/:oid", auth.isLogin, cartController.endOrderPage);
+user_route.get("/order/invoice/:id", profileController.invoiceDownload);
 
-user_route.put("/cancelorder/:id", auth.isLogin, profileController.cancelOrder);
+user_route.put(
+  "/cancelorder/:id",
+  auth.isLogin,
+  orderController.acceptCanceOrder
+);
+user_route.put(
+  "/returnorder/:id",
+  auth.isLogin,
+  orderController.acceptReturnOrder
+);
 user_route.get(
   "/order/getorderdetails/:id",
   auth.isLogin,
   profileController.getOrderDetails
 );
-/****************cart section*****************/
 
+user_route.get(
+  "/order/details/:id",
+  auth.isLogin,
+  profileController.showOrderDetailsPage
+);
+
+/****************cart section*****************/
+//showOrderDetailsPage
 // user_route.get("/*", userController.notfound);
 
 /**** not found***** */
 user_route.get("/404", userController.loadNotFound);
 user_route.post("/addtowishlist", wishListController.addToWishlist);
 user_route.get("/getallwishlist/:id", wishListController.getAllWishlist);
-user_route.delete(
-  "/removefromwishlist",
-  wishListController.removeFromWishlist
-);
+user_route.delete("/removefromwishlist", wishListController.removeFromWishlist);
 user_route.post("/coupon/check", couponController.checkCoupon);
+user_route.post("/coupon/remove", couponController.deleteCoupon);
 
 // user_route.post("/coupon/check", (req, res) => {
 //   console.log("hi");
 // });
 
 /**** not found***** */
+
+user_route.get("/500", userController.loadfiveHundred);
 
 module.exports = user_route;

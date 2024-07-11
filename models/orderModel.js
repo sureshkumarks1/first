@@ -7,6 +7,7 @@ const orderSchema = new mongoose.Schema(
       required: true,
       ref: "users",
     },
+
     orderNumber: { type: Number, required: true },
     orderDate: {
       type: Date,
@@ -28,7 +29,7 @@ const orderSchema = new mongoose.Schema(
     paymentType: { type: String, default: "toBeChosen" },
     paymentId: { type: String, default: "" },
     paymentOrdId: { type: String, default: "" },
-    
+    paymentStatus: { type: String, default: "" },
     couponId: {
       type: mongoose.Types.ObjectId,
       ref: "coupon",

@@ -2,7 +2,7 @@ let table = new DataTable("#showorders", {
   ajax: "http://localhost:3000/admin/orders/getorders",
   order: [[3, "desc"]],
   columns: [
-    { data: "orderNumber" },
+    { data: "_id" },
     {
       data: "orderDate",
       render: DataTable.render.datetime("DD MMM YYYY"),

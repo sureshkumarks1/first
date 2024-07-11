@@ -16,8 +16,52 @@
     <link href="/login/css/jquery-confirm.min.css" rel="stylesheet" />
     <link href="/login/css/buttons.dataTables.css" rel="stylesheet" />
     <link href="/login/js/bootstrap-datepicker.css" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+    />
+    <style>
+      .img-container {
+        max-width: 80%;
+        max-height: 60vh; /* Adjust this value as needed */
+        margin: 0 auto;
+        overflow: hidden;
+      }
+      .modal-lg {
+        max-width: 90%;
+      }
+      #image {
+        width: 100%; /* Ensure the image takes full width of the modal */
+      }
+
+      .remove-btn {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: red;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      .rmv-btn {
+        top: -33px;
+        right: 30px;
+        position: relative;
+        background-color: transparent;
+      }
+    </style>
     <!-- <link href="/login/css/dataTables.dataTables.css" rel="stylesheet" /> -->
     <link href="/login/js/datatables.min.css" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.datatables.net/buttons/3.0.2/css/buttons.bootstrap5.min.css"
+      rel="stylesheet"
+    />
+
     <script src="/login/js/jquery.js"></script>
     <script src="/login/js/jquery-confirm.min.js"></script>
     <script src="/login/js/all.js" crossorigin="anonymous"></script>
@@ -109,6 +153,10 @@
               <a class="nav-link" href="/admin/coupons">
                 <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                 Coupons
+              </a>
+              <a class="nav-link" href="/admin/salesreport">
+                <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                Sale Report
               </a>
             </div>
           </div>
