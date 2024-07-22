@@ -47,14 +47,15 @@
               <div class="content-body">               
                 <div class="container m-1 border border-1">
                   <div class="row h-100">
+                    <div><h4>Balance :  <span id="walBal"></span> .00</h4></div>
                      <table id="walletTable" class="border border-1">
                       <thead>
                         <th>Wallet Date</th>
                         <th>Wallet Amount</th>
-                        <th>Payment Type</th>
+                        <th>Description</th>
                       </thead>
                       <tbody>
-                        <tr><td colspan="3" class="border border-1 text-center p-4"><p id="noContent"></p></td></tr>
+                        <div class="border border-1 text-center "><p id="noContent"></p></div>
                       </tbody>
                      </table>
                     </div>
@@ -76,14 +77,49 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
     <script>
       $( document ).ready(function() {
+        let table = new DataTable("#walletTable",  {order: [[0, 'desc']]});
         let data = "";
         axios.get('http://localhost:3000/profile/getwalletdetails')
   .then(function (response) {
 
-    $("#noContent").text(response.data.message)
-    dataSet = response.data.message;
+    $("#noContent").text(response?.data?.message)
+    let  dataSet = response.data;
+    $("#walBal").text("₹ "+dataSet?.walletBal?.walletBalance)
+    
+    table.clear();
+
+                // Add new data to the table
+                dataSet?.walletBalance?.forEach(function (item) {
+                  // console.log(item);
+                  table.row
+                    .add([                      
+                      moment(item.transactionDate).format("DD-MM-YYYY"),                     
+                      '<span class="text-center text-success">+ ₹' +
+                        (item.transactionAmount).toFixed(2) +
+                        " Cr</span>",
+                        item.transactionType,
+                     
+                    ])
+                    .draw();
+                });
+                dataSet?.orderData?.forEach(function (item) {
+                  // console.log(item);
+                  table.row
+                    .add([                      
+                      moment(item.orderDate).format("DD-MM-YYYY"),                     
+                      '<span class="text-center text-danger">- ₹' +
+                        (item.grandTotalCost).toFixed(2) +
+                        " Dr</span>",
+                        item._id,
+                     
+                    ])
+                    .draw();
+                });
+              
+
   })
   .catch(function (error) {
     // handle error

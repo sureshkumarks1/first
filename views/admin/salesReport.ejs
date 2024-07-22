@@ -168,9 +168,9 @@
 let table = new DataTable('#example',{ dom: 'Bfrtip', // Add button container
                 buttons: [
                      'excel', 'pdf', 'print' // Add export buttons
-                ]});
+                ], order:[[2,"desc"]]});
   $("#accordion-button").click()
-  const url = "http://localhost:3000/admin/orders/report"
+  const url = "http://localhost:3000/admin/orders/report/"
   axios.post(url, formData)
   .then( (response)=> {
     console.log(response.data)
@@ -193,7 +193,7 @@ let table = new DataTable('#example',{ dom: 'Bfrtip', // Add button container
                                 item.orderStatus,
                                 item.paymentType,
                               
-                                '<span class="text-center"> ₹'  +  item.grandTotalCost + '</span>',
+                                '<span class="text-center"> ₹'  +  (item.grandTotalCost).toFixed(2) + '</span>',
                                 
                                 '<span class="text-center">' +  item?.addressChosen?.firstName+','+ item?.addressChosen?.lastName+','+ item?.addressChosen?.addressLine1+','+ item?.addressChosen?.addressLine2+','+ item?.addressChosen?.state+','+ item?.addressChosen?.phone+ '</span>',
                                

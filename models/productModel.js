@@ -23,6 +23,10 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    offer: {
+      type: Number,
+      required: true,
+    },
     image: {
       type: String,
       default: "",
@@ -78,6 +82,10 @@ const productValidationSchema = Joi.object({
   stock: Joi.number().min(0).required().messages({
     "number.min": "Cannot set negative value for price",
     "any.empty": `Stock is a required field`,
+  }),
+  offer: Joi.number().min(0).required().messages({
+    "number.min": "Cannot set negative value for offer",
+    "any.empty": `Offer is a required field`,
   }),
 });
 const validateProduct = (product) => {

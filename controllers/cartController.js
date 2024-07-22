@@ -2,33 +2,61 @@ const mongoose = require("mongoose");
 const { User } = require("../models/userModel");
 const { Product } = require("../models/productModel");
 const profileCollection = require("../models/addressModel.js");
+const { Coupon } = require("../models/couponModel.js");
 const cartCollection = require("../models/cartModel.js");
+const walletCollection = require("../models/walletModel");
 const ObjectId = require("mongodb").ObjectId;
 require("dotenv").config();
 const Razorpay = require("razorpay");
 
 const orderCollection = require("../models/orderModel.js");
+const { json } = require("body-parser");
 
 async function grandTotal(req) {
   try {
-    let grandTotal = 0;
+    let newVar = 0;
+    let afterDiscount = 0;
+
+    let totalDisc = 0;
     let userCartData = await cartCollection
       .find({ userId: req.session.user_id })
       .populate("productId");
     if (!userCartData) {
-      grandTotal = 0;
+      afterDiscount = 0;
+      totalDisc = 0;
     } else {
       for (const eachitem of userCartData) {
-        grandTotal += eachitem.productId.price * eachitem.productQuantity;
+        let disc = 0;
+
+        let totalPrice = 0;
+        let singlePrice = 0;
+        singlePrice = eachitem.productId.price;
+        if (eachitem.productId.offer > 0) {
+          disc = singlePrice * (eachitem.productId.offer / 100).toFixed(2);
+
+          if (disc > 0) {
+            totalPrice = eachitem.productId.price * eachitem.productQuantity;
+            totalPrice = totalPrice - disc;
+            console.log("The amount after discount is : ", totalPrice);
+          }
+          // } else {
+          // totalPrice = eachitem.productId.price * eachitem.productQuantity;
+          // }
+        } else {
+          totalPrice = eachitem.productId.price * eachitem.productQuantity;
+        }
+
         await cartCollection.updateOne(
           { _id: eachitem._id },
           {
             $set: {
-              totalCostPerProduct:
-                eachitem.productId.price * eachitem.productQuantity,
+              totalCostPerProduct: totalPrice,
+              //eachitem.productId.price * eachitem.productQuantity,
             },
           }
         );
+        totalDisc += disc;
+        afterDiscount += totalPrice;
       }
     }
 
@@ -36,9 +64,15 @@ async function grandTotal(req) {
       .find({ userId: req.session.user_id })
       .populate("productId");
 
-    req.session.grandTotal = grandTotal;
+    const source = {
+      totalDiscount: totalDisc,
+    };
 
-    return JSON.parse(JSON.stringify(userCartData));
+    const returnedTarget = Object.assign(userCartData, source);
+    console.log("the  new cart collection is : ", returnedTarget);
+    req.session.grandTotal = afterDiscount;
+
+    return JSON.parse(JSON.stringify(returnedTarget));
     // return obj;
   } catch (error) {
     console.log(error);
@@ -266,20 +300,58 @@ const cartCount = (req, res) => {
 };
 
 async function createOrder(req) {
-  const { address, payment, total } = req.body;
+  const { address, payment, total, afterDiscount, couponCode } = req.body;
+  let couponId = {};
+  let dataObj = {};
+  if (couponCode != "") {
+    couponId = await Coupon.findOne({ name: couponCode }).select("_id");
+  } else {
+    couponId._id = "";
+    // console.log(typeof couponCode);
+    // console.log(couponId._id);
+  }
+  if (payment == "WALLET") {
+    const walletBala = await walletCollection
+      .findOne({ userId: req.session?.user_id })
+      .select("walletBalance");
+    const currentBal = walletBala?.walletBalance - afterDiscount;
 
-  // console.log(req.body);
+    await walletCollection.updateOne(
+      { userId: req.session?.user_id },
+      {
+        $set: {
+          walletBalance: currentBal,
+        },
+      }
+    );
+  }
 
-  const dataObj = {
-    userId: req.session.user_id,
-    orderNumber: (await orderCollection.countDocuments()) + 1,
-    orderDate: new Date(),
-    addressChosen: new ObjectId(address),
-    cartData: await grandTotal(req),
-    grandTotalCost: total,
-    // grandTotalCost: req.session.grandTotal,
-    paymentType: payment,
-  };
+  if (couponId?._id == "") {
+    dataObj = {
+      userId: req.session.user_id,
+      orderNumber: (await orderCollection.countDocuments()) + 1,
+      orderDate: new Date(),
+      addressChosen: new ObjectId(address),
+      cartData: await grandTotal(req),
+      grandTotalCost: afterDiscount,
+      totalAmount: total,
+      paymentType: payment,
+    };
+  } else {
+    dataObj = {
+      userId: req.session.user_id,
+      orderNumber: (await orderCollection.countDocuments()) + 1,
+      orderDate: new Date(),
+      addressChosen: new ObjectId(address),
+      cartData: await grandTotal(req),
+      grandTotalCost: afterDiscount,
+      totalAmount: total,
+      couponId: couponId?._id,
+      paymentType: payment,
+    };
+  }
+  // console.log(dataObj);
+  //return dataObj;
 
   const odresult = await orderCollection
     .create(dataObj)
@@ -287,7 +359,7 @@ async function createOrder(req) {
       return data;
     })
     .catch((err) => {
-      next(err);
+      console.log(err);
     });
   //delete product from cart since the order is placed
   await cartCollection.deleteMany({ userId: req.session.user_id });
@@ -307,13 +379,39 @@ const orderPlacedEnd = async (req, res, next) => {
     console.log(payment);
 
     if (payment == "COD") {
+      // const orderResult = await createOrder(req);
+      // console.log(orderResult);
+      // res.json({ success: false, data: orderResult });
       const orderResult = await createOrder(req)
         .then((data) => {
           res.json({ success: true, data: data });
         })
         .catch((err) => next(err));
     }
+    if (payment == "WALLET") {
+      try {
+        const { address, payment, total, afterDiscount, couponCode } = req.body;
 
+        let walletBal = await walletCollection
+          .findOne({
+            userId: req.session.user_id,
+          })
+          .select("walletBalance");
+
+        // if (!couponCode) {
+        if (afterDiscount <= walletBal?.walletBalance) {
+          const orderResult = await createOrder(req)
+            .then((data) => {
+              res.json({ success: true, data: data });
+            })
+            .catch((err) => next(err));
+        } else {
+          return res.json({ message: "Wallet Balance is low" });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
     if (payment == "RP") {
       const orderResult = await createOrder(req);
 

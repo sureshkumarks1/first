@@ -27,6 +27,22 @@ const getOrders = async (req, res) => {
     console.log(error);
   }
 };
+//getOrders by User Id
+const getOrdersByUser = async (req, res) => {
+  console.log(req.body);
+  /*try {
+    let orderData = await orderCollection.find({userId:});
+
+    const orderDataNew = orderData.map((v) => {
+      v.orderDateFormatted = formatDate(v.orderDate);
+      return v;
+    });
+    res.json({ data: orderData });
+  } catch (error) {
+    console.log(error);
+  }
+  */
+};
 
 const updateStatus = async (req, res) => {
   try {
@@ -35,8 +51,8 @@ const updateStatus = async (req, res) => {
       { orderStatus: req.body.orderStatus }
     );
     if (rest.acknowledged) {
-      res.send({ success: true });
-    } else res.send({ success: false });
+      res.send({ success: true, val: req.body.orderStatus });
+    } else res.send({ success: false, val: req.body.orderStatus });
   } catch (err) {
     res.send({ success: false, msg: err });
   }
@@ -46,15 +62,17 @@ const orderDetailspage = async (req, res) => {
   let orderData = await orderCollection
     .find({ _id: req.params.id })
     .populate("userId")
-    .populate("addressChosen");
+    .populate("addressChosen")
+    .populate("couponId");
 
   orderData = orderData.map((data) => {
     let newDate = new Date(data.orderDate);
-    console.log(newDate + moment(newDate).format("DD-MM-YYYY"));
-    data.orderDate = moment(newDate).format("DD-MM-YYYY");
+    console.log(moment(newDate).format("DD-MM-YYYY"));
+    data["newDate"] = moment(newDate).format("DD-MM-YYYY");
+    console.log(data.newDate);
     return data;
   });
-
+  console.log(orderData);
   res.render("orderDetailsPage", { id: req.params.id, details: orderData });
 };
 
@@ -142,11 +160,11 @@ const acceptCanceOrder = async (req, res, next) => {
     let walletTransaction = {
       transactionDate: new Date(),
       transactionAmount: orderData.grandTotalCost,
-      transactionType: "Cancel Order",
+      transactionType: "Cancelled Order",
     };
 
     const existingUser = await walletCollection.findOne({ userId: userId });
-    console.log(existingUser);
+    
     if (existingUser == null) {
       const newWallet = {
         userId: userId,
@@ -183,6 +201,7 @@ const acceptCanceOrder = async (req, res, next) => {
 };
 module.exports = {
   getOrders,
+  getOrdersByUser,
   orderDetailspage,
   updateStatus,
   changeOrderPaymentStatus,

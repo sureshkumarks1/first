@@ -1,26 +1,31 @@
-let table = new DataTable("#showorders", {
-  ajax: "http://localhost:3000/admin/orders/getorders",
-  order: [[3, "desc"]],
-  columns: [
-    { data: "_id" },
-    {
-      data: "orderDate",
-      render: DataTable.render.datetime("DD MMM YYYY"),
-    },
-    { data: "orderStatus" },
-    {
-      data: "paymentType",
-    },
-    { data: "userId.name" },
-    {
-      data: "",
-      render: (data, type, row) => {
-        // console.log(row);
-        return `<a href='/admin/orderDetailsPage/${row._id}'><button class='btn btn-primary'>Details</button></a>`;
+let table = new DataTable(
+  "#showorders",
+
+  {
+    ajax: "http://localhost:3000/admin/orders/getorders",
+
+    columns: [
+      { data: "_id" },
+      {
+        data: "orderDate",
+        render: DataTable.render.datetime("DD MMM YYYY"),
       },
-    },
-  ],
-});
+      { data: "orderStatus" },
+      {
+        data: "paymentType",
+      },
+      { data: "userId.name" },
+      {
+        data: "",
+        render: (data, type, row) => {
+          // console.log(row);
+          return `<a href='/admin/orderDetailsPage/${row._id}'><button class='btn btn-primary'>Details</button></a>`;
+        },
+      },
+    ],
+    order: [[1, "desc"]],
+  }
+);
 
 table.on("click", "td.unlist-list", function (e) {
   //console.log($("#btn-unlist").text())

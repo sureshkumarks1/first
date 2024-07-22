@@ -199,7 +199,7 @@ user_route.post(
 user_route.get("/profile/wallet", auth.isLogin, profileController.showWallet);
 user_route.get(
   "/profile/getwalletdetails",
-  auth.isLogin,
+
   profileController.loadWallet
 );
 /*========================user profile code ends here=============================== */
@@ -212,6 +212,7 @@ user_route.post("/profile/editAddress", profileController.editAddressPost);
 /****************cart section*****************/
 user_route.get("/checkout/:id", auth.isLogin, cartController.checkoutPage);
 user_route.post("/orderplaced", auth.isLogin, cartController.orderPlaced);
+
 user_route.post("/payment", auth.isLogin, cartController.orderPlacedEnd);
 user_route.patch(
   "/chgpaymtsts",
@@ -262,6 +263,11 @@ user_route.get("/getallwishlist/:id", wishListController.getAllWishlist);
 user_route.delete("/removefromwishlist", wishListController.removeFromWishlist);
 user_route.post("/coupon/check", couponController.checkCoupon);
 user_route.post("/coupon/remove", couponController.deleteCoupon);
+user_route.get("/profile/getorders", profileController.orderHistory);
+user_route.get(
+  "/profile/getordersbyuser",
+  profileController.orderHistoryByUser
+);
 
 // user_route.post("/coupon/check", (req, res) => {
 //   console.log("hi");

@@ -28,7 +28,7 @@ const couponSchema = new mongoose.Schema(
 
 //Export the model
 // module.exports = mongoose.model("Coupon", couponSchema);
-const Coupon = mongoose.model.coupons || mongoose.model("coupon", couponSchema);
+const Coupon = mongoose.model("coupon", couponSchema);
 
 const validateCoupon = async (coupon) => {
   console.log(coupon);

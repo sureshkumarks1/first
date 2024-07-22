@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const fs = require("fs");
 const PDFDocument = require("pdfkit");
+const pdfService = require("../services/pdf-service");
 const { User } = require("../models/userModel");
 const addressCollection = require("../models/addressModel");
 const orderCollection = require("../models/orderModel");
@@ -216,6 +217,7 @@ module.exports = {
           userId: req.session.user_id,
         })
         .sort({ orderDate: -1 });
+
       // orderData = orderData.filter(
       //   (order) => order.paymentType !== "toBeChosen"
       // );
@@ -223,21 +225,58 @@ module.exports = {
       orderData = orderData.map((ordata) => {
         ordata.orderDateFormatted = formatDate(ordata.orderDate);
         //console.log("orderStatus : ", ordata.orderStatus);
-        if (ordata.orderStatus == "Placed") {
-          ordata.paymentType = "Pending";
-        }
+        // if (ordata.orderStatus == "Placed") {
+        //   ordata.paymentType = "Pending";
+        // }
         return ordata;
       });
 
+      // res.json({ data: orderData, name: req.session.uname });
       res.render("orderHistory", {
-        currentUser: req.session.currentUser,
+        // currentUser: req.session.currentUser,
         name: req.session?.currentUser?.name,
-        orderData,
+        // orderData,
       });
     } catch (error) {
       console.error(error);
     }
   },
+  //order history by id
+  orderHistoryByUser: async (req, res) => {
+    try {
+      if (!req.session.name) {
+        return new Error("No Logined User");
+      }
+      let orderData = await orderCollection
+        .find({
+          userId: req.session.user_id,
+        })
+        .sort({ orderDate: -1 });
+
+      // orderData = orderData.filter(
+      //   (order) => order.paymentType !== "toBeChosen"
+      // );
+
+      orderData = orderData.map((ordata) => {
+        ordata.orderDateFormatted = formatDate(ordata.orderDate);
+        //console.log("orderStatus : ", ordata.orderStatus);
+        // if (ordata.orderStatus == "Placed") {
+        //   ordata.paymentType = "Pending";
+        // }
+        return ordata;
+      });
+
+      res.json({ data: orderData });
+      // res.render("orderHistory", {
+      //   // currentUser: req.session.currentUser,
+      //   name: req.session?.currentUser?.name,
+      //   // orderData,
+      // });
+    } catch (error) {
+      console.error(error);
+    }
+  },
+
   orderStatus: async (req, res) => {
     try {
       if (!req.session.name) {
@@ -320,7 +359,7 @@ module.exports = {
           _id: req.params.id,
           userId: req.session.user_id,
         })
-        .populate("addressChosen");
+        .populate("addressChosen couponId");
 
       const products = orderData[0].cartData;
       res.render("orderDetails", {
@@ -367,8 +406,12 @@ module.exports = {
         userId: req.session.user_id,
       });
 
+      let orderData = await orderCollection.find({
+        userId: req.session.user_id,
+        paymentType: "WALLET",
+      });
+
       if (!walletBalance) {
-        console.log("i am from wallet no values");
         return res.json({ message: "There is no wallet Transactions" }); //res.sendStatus(status)
       } else {
         walletBalance = walletBalance.walletTransaction.map((transaction) => {
@@ -376,9 +419,11 @@ module.exports = {
           transaction.walletDateFormatted = moment(fdate).format("MMM Do YY");
           return transaction;
         });
-        return res.send(200).json({
+
+        return res.json({
           walletBalance,
           walletBal,
+          orderData,
         });
       }
     } catch (error) {
@@ -387,7 +432,8 @@ module.exports = {
   },
   //dowload invoice
   invoiceDownload: async (req, res) => {
-    //const {id} = req.params;
+    const { id } = req.params;
+    console.log("The id is : ", id);
     try {
       let orderData = await orderCollection
         .findOne({
@@ -396,7 +442,23 @@ module.exports = {
         })
         .populate("userId addressChosen");
 
+      const addressData = await addressCollection.find({
+        userId: req.session?.user_id,
+        _id: orderData?.addressChosen?._id,
+      });
+
       // Create a PDF document
+      if (orderData) {
+        const stream = res.writeHead(200, {
+          "Content-Type": "application/pdf",
+          "Content-Disposition": `attachment;filename=invoice.pdf`,
+        });
+        pdfService.buildPDF(
+          (chunk) => stream.write(chunk),
+          () => stream.end(),
+          orderData
+        );
+      }
     } catch (error) {
       console.log(error);
     }

@@ -24,6 +24,7 @@ const orderSchema = new mongoose.Schema(
       required: true,
       ref: "addresses",
     },
+    totalAmount: { type: Number },
     cartData: { type: Array },
     grandTotalCost: { type: Number },
     paymentType: { type: String, default: "toBeChosen" },

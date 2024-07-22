@@ -8,6 +8,7 @@ let table = new DataTable("#showcoupons", {
     url: "http://localhost:3000/admin/coupons/getall",
     dataSrc: "",
   },
+  order: [[0, "desc"]],
   columnDefs: [
     {
       target: 0,

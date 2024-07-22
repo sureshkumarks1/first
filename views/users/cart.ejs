@@ -4,11 +4,19 @@
   <%- include('files/navbar.ejs', {name:""}) %> <% } %>
   <div class="container">
     <nav aria-label="breadcrum">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/">Home</a></li>
-        <li class="breadcrumb-item"><a href="/cart">cart</a></li>
+      <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary rounded-3">
+        <li class="breadcrumb-item">
+          <a  href="/">
+            <i class="fa fa-home" aria-hidden="true" ></i>
+            <span class="visually-hidden">Home</span>
+          </a>
+        </li>
+        <li class="link-body-emphasis fw-semibold text-decoration-none"><a href="/cart">cart</a></li>
+        
       </ol>
+      
     </nav>
+  
   </div>
   <div class="container main-container headerOffset">
     <!--/.row-->
@@ -38,93 +46,62 @@
     <div class="row">
       <% if (userCartData.length) { %>
       <div class="col-lg-9 col-md-9 col-sm-7">
-        <div class="row userInfo">
-          <div class="col-xs-12 col-sm-12">
-            <div class="cartContent w100">
-              <table class="cartTable table-responsive" style="width: 100%">
-                <tbody>
-                  <tr class="CartProduct cartTableHeader">
+        <div class="row userInfo  p-2">
+          <div class="col-xs-12 col-sm-12  ">
+            <div class="w100 ">
+              <table class="table" style="width: 100%">
+                <thead class="text-center ">
+                  <tr>
+                    <th>Product</th>
+                    <th>Details</th>
+                    <th>QTY</th>
+                    <th>Rate</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>                  
+                  <!-- <tr >
                     <td style="width: 15%">Product</td>
                     <td style="width: 30%">Details</td>
                     <td style="width: 20%">QTY</td>
                     <td style="width: 10%">Available</td>
-
                     <td style="width: 15%">Total</td>
                     <td style="width: 10%" class="delete">&nbsp;</td>
-                  </tr>
+                  </tr> -->
                   <% userCartData.forEach(function(item, index) { %>
-                  <tr class="CartProduct" id="cartProduct<%= index %>">
-                    <td class="CartProductThumb">
+                  <tr id="cartProduct<%= index %>"> <td colspan="6">
+                    <!-- new code -->
+                    <div class="d-flex flex-row justify-content-between align-items-center p-2 bg-white mt-2  rounded shadow">
+                      <div class="mr-1"><img class="rounded "  src="<%= item.productId.image %>" width="70">  <input
+                        type="hidden"
+                        name="cartId"
+                        id="cartId"
+                        value="<%= item._id %>"
+                      /></div>
+                      <div class="d-flex flex-column align-items-center product-details"><span class="font-weight-bold"><a href="/product-details/<%= item.productId._id %>"
+                        ><%= item.productId.name %></a
+                      ></span>
+                          <div class="d-flex flex-row product-desc">                              
+                              
+                          </div>
+                      </div>
+                      <div class="d-flex flex-row align-items-center qty"><i class="fa fa-minus text-danger" onclick="cartDec('<%= item._id %>','<%= index %>')" ></i>
+                          <h5 class="text-grey mt-1 mr-1 ml-1"> <span id="productQuantity<%= index %>">
+                            <%= item.productQuantity %>
+                          </span></h5> <div id="stockLimit<%= index %>" class="d-none">
+                            <%= item.productId.stock %>
+                          </div><i class="fa fa-plus text-success" onclick="cartInc('<%= item._id %>','<%= index %>')"></i></div>
+                          <div class="text-center"><span class="fs-6 text-body-secondary" ><s>₹<%= item.productId.price %></s></span> &nbsp;<%= item.productId.offer %>% Off</span></div>
                       <div>
-                        <a href=""
-                          ><img
-                            src="<%= item.productId.image %>"
-                            alt=""
-                            width="100px"
-                            height="100px"
-                        /></a>
-                        <input
-                          type="hidden"
-                          name="cartId"
-                          id="cartId"
-                          value="<%= item._id %>"
-                        />
+                          <h5 class="text-grey"><span id="totalCostPerProduct<%= index %>"> ₹<%= (item.totalCostPerProduct).toFixed(2) %></span></h5>
                       </div>
-                    </td>
-                    <td>
-                      <div class="CartDescription">
-                        <h6>
-                          <a href="/product-details/<%= item.productId._id %>"
-                            ><%= item.productId.name %></a
-                          >
-                        </h6>
-                        <div id="productPrice<%= index %>" class="price">
-                          <span>₹<%= item.productId.price %></span>
-                        </div>
-                      </div>
-                    </td>
-
-                    <td>
-                      <button
-                        type="button"
-                        class="btn btn-danger btn-sm"
-                        onclick="cartDec('<%= item._id %>','<%= index %>')"
-                      >
-                        -
-                      </button>
-
-                      <span id="productQuantity<%= index %>">
-                        <%= item.productQuantity %>
-                      </span>
-
-                      <button
-                        type="button"
-                        class="btn btn-primary btn-sm"
-                        onclick="cartInc('<%= item._id %>','<%= index %>')"
-                      >
-                        +
-                      </button>
-                    </td>
-                    <td class="quantity-col">
-                      <div class="cart-product-quantity">
-                        <div id="stockLimit<%= index %>" class="">
-                          <%= item.productId.stock %>
-                        </div>
-                      </div>
-                    </td>
-                    <td id="totalCostPerProduct<%= index %>" class="price">
-                      ₹<%= item.totalCostPerProduct %>
-                    </td>
-                    <td class="delete">
-                      <a
-                        title="Delete"
-                        onclick="deleteCart('<%= item._id %>','<%= index %>')"
-                      >
-                        <i class="fa fa-trash" style="color: red"></i
-                      ></a>
-                    </td>
+                      <div class="d-flex align-items-center"><i class="fa fa-trash mb-1 text-danger" onclick="deleteCart('<%= item._id %>','<%= index %>')"></i></div>
+                  </div>
+                  </td>
                   </tr>
-                  <% }); %>
+                  <% });  %>
+                  
                 </tbody>
               </table>
             </div>
@@ -157,11 +134,22 @@
           <div class="w100 costDetails">
             <div class="table-block" id="order-detail-content">
               <div class="w100 cartMiniTable">
-                <table id="cart-summary" class="std table">
+                <table id="cart-summary" class="std table shadow">
                   <tbody>
                     <tr>
                       <td>Total Price</td>
-                      <td id="totalPrice" class="price">₹<%= grandTotal %></td>
+                      <td id="totalPrice" class="price">₹<%= (grandTotal).toFixed(2) %></td>
+                    </tr>
+                   
+                    <tr>
+                      <td>Total Discount</td>
+                      <td>5.00</td>
+                    </tr>
+                    <tr>
+                      <td>Grand Total</td>
+                      <td class="site-color" id="total-price">
+                        <h5 id="grandTotal">₹<%= (grandTotal).toFixed(2) %></h5>
+                      </td>
                     </tr>
                     <tr>
                       <td>Shipping</td>
@@ -170,13 +158,7 @@
                       </td>
                     </tr>
                     <tr>
-                      <td>Grand Total</td>
-                      <td class="site-color" id="total-price">
-                        ₹<span id="grandTotal"><%= grandTotal %></span>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td colspan="2" align="center">
+                      <td colspan="2" class="text-center" >
                         <% if (userCartData.length) { %>
 
                         <a
@@ -231,39 +213,9 @@
     <script src="assets/js/jquery/jquery-2.1.3.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <!-- include  parallax plugin -->
-    <script
-      type="text/javascript"
-      src="assets/js/jquery.parallax-1.1.js"
-    ></script>
 
-    <!-- optionally include helper plugins -->
-    <script
-      type="text/javascript"
-      src="assets/js/helper-plugins/jquery.mousewheel.min.js"
-    ></script>
 
-    <!-- include mCustomScrollbar plugin //Custom Scrollbar  -->
-
-    <script
-      type="text/javascript"
-      src="assets/js/jquery.mCustomScrollbar.js"
-    ></script>
-
-    <!-- include icheck plugin // customized checkboxes and radio buttons   -->
-    <script
-      type="text/javascript"
-      src="assets/plugins/icheck-1.x/icheck.min.js"
-    ></script>
-
-    <!-- include grid.js // for equal Div height  -->
-    <script src="assets/plugins/jquery-match-height-master/dist/jquery.matchHeight-min.js"></script>
-    <script src="assets/js/grids.js"></script>
-
-    <!-- include carousel slider plugin  -->
-    <script src="assets/js/owl.carousel.min.js"></script>
-
-    <!-- jQuery select2 // custom select   -->
-    <script src="../../../../cdnjs.cloudflare.com/ajax/libs/select2/4."></script>
+   
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -409,7 +361,7 @@
         window.location.href = link;
       });
     </script>
-
+</div>
     <%- include('files/footer.ejs') %>
   </div>
 </body>

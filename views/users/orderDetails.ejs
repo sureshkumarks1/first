@@ -51,10 +51,14 @@
                     >Back</a
                   >
                 </div>
+
                 <!-- Order Management table -->
                 <div class="container m-1 border border-1">
-                  <div class="row h-100">
-                    <div class="col-lg-4 col-md-6 d-flex align-items-center">
+                  <div
+                    class="row d-flex justify-content-between align-items-center"
+                    id="ordDetails"
+                  >
+                    <div class="col-lg-4 col-md-6">
                       <% if(data[0]?.addressChosen){ let disable = true; %>
                       <p>
                         <b>Delivery Address</b><br />
@@ -84,12 +88,17 @@
                           >
                         </p>
                         <p>
-                          Order Amount <B>₹<%= data[0]?.grandTotalCost%></B>
+                          Order Amount
+                          <B>₹<%= (data[0]?.grandTotalCost).toFixed(2) %></B>
                         </p>
                         <p>
-                          Payment Status :<B
+                          Discount : ₹ <%= (data[0]?.totalAmount
+                          -data[0]?.grandTotalCost).toFixed(2) %>
+                        </p>
+                        <p>
+                          Payment Mode :<B
                             ><span id="paymentStatus"
-                              ><%= data[0]?.paymentStatus%></span
+                              ><%= data[0]?.paymentType%></span
                             ></B
                           >
                           <!-- <button class="btn btn-info mb-3" id="payNow">
@@ -97,13 +106,12 @@
                           </button> -->
                         </p>
                         <p>
-                          <button
-                            class="btn btn-danger mb-3 cancelBtn"
+                          <a
                             id="<%= data[0]?._id%>"
-                            onclick="downloadinvoice(this.id)"
+                            href="/order/invoice/<%= data[0]?._id%>"
+                            class="btn btn-primary shadow-0"
+                            >Download Invoice</a
                           >
-                            Downlod invoice
-                          </button>
                         </p>
                       </div>
                     </div>
@@ -111,9 +119,7 @@
                       class="col-lg-4 col-md-12 d-flex justify-content-center align-items-center"
                     >
                       <div id="buttons">
-                        <% if (data[0]?.orderStatus != "Cancelled"){ if
-                        (data[0]?.orderStatus != "Return"){ %>
-
+                        <% if (data[0]?.orderStatus != "Cancelled"){ %>
                         <button
                           class="btn btn-danger mb-3 cancelBtn"
                           id="<%= data[0]?._id %>"
@@ -121,6 +127,7 @@
                         >
                           Cancel Order</button
                         ><br />
+                        <% }%> <% if (data[0]?.orderStatus == "Delivered"){ %>
                         <button
                           class="btn btn-info returnBtn"
                           onclick="returnOrder(this.id)"
@@ -128,17 +135,27 @@
                         >
                           Return Order
                         </button>
-                        <% }}%>
+                        <% }%>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="container m-1 border border-1 d-flex">
-                  <% if(products) { %> <%products.forEach((product)=>{%>
-                  <div class="row">
-                    <div
-                      class="col-lg-2 col-sm-12 col-md-3 d-flex align-items-center"
-                    >
+                <div class="container m-1 border border-1">
+                  <div>
+                    <table class="w-100">
+                      <thead>
+                        <th style="width: 20%">Image</th>
+                        <th style="width: 35%">Description</th>
+                        <th style="width: 20%">Qty</th>
+                        <th>Total</th>
+                      </thead>
+                    </table>
+                  </div>
+                  <div
+                    class="row d-flex justify-content-between align-items-center"
+                  >
+                    <% if(products) { %> <%products.forEach((product)=>{%>
+                    <div class="col-lg-2 col-sm-12 col-md-3">
                       <img
                         src="<%= product.productId.image%>"
                         width="100px"
@@ -146,20 +163,14 @@
                         alt="image place"
                       />
                     </div>
-                    <div
-                      class="col-lg-4 col-sm-12 col-md-3 d-flex align-items-center"
-                    >
+                    <div class="col-lg-4 col-sm-12 col-md-3">
                       <p><%= product.productId.name%></p>
                     </div>
-                    <div
-                      class="col-lg-3 col-sm-12 col-md-3 d-flex align-items-center justify-content-center"
-                    >
+                    <div class="col-lg-3 col-sm-12 col-md-3">
                       <p><%= product.productQuantity %> No</p>
                     </div>
-                    <div
-                      class="col-lg-3 col-sm-12 col-md-3 d-flex align-items-center justify-content-center"
-                    >
-                      <p>₹<%= product.totalCostPerProduct%></p>
+                    <div class="col-lg-3 col-sm-12 col-md-3">
+                      <p>₹<%= Math.floor(product.totalCostPerProduct)%></p>
                     </div>
 
                     <% }) %>
@@ -224,11 +235,33 @@
           }
         });
       }
+      async function cancelOrder(orderId) {
+        Swal.fire({
+          title: "Are you sure?",
+          text: "You are sure to Cancel this order ? ",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, Cancell this order",
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            await fetch("/cancelorder/" + orderId, { method: "PUT" }).then(
+              (d) => {
+                console.log(d);
+                // if (d.success == true) {
+                //   // $("#ordDetails").load(" #ordDetails > *");
+                // }
+              }
+            );
+          }
+        });
+      }
 
       async function downloadinvoice(orderId) {
         const url = `http://localhost:3000/order/invoice/${orderId}`;
-        console.log(url);
-        const result = fetch(url, {
+        // console.log(url);
+        const result = await fetch(url, {
           method: "GET",
         });
       }

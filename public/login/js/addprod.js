@@ -115,6 +115,7 @@ $(document).ready(function () {
     const pcategory = document.getElementById("pcategory").value;
     const productPrice = document.getElementById("productPrice").value;
     const productStock = document.getElementById("productStock").value;
+    const pOffer = document.getElementById("productOffer").value;
     const pdescription = document.getElementById("pdescription").value;
     files.forEach((file, i) => {
       //   console.log(file);
@@ -126,6 +127,7 @@ $(document).ready(function () {
     formData.append("price", productPrice);
     formData.append("stock", productStock);
     formData.append("description", pdescription);
+    formData.append("offer", pOffer);
 
     try {
       const response = await axios
@@ -154,7 +156,7 @@ $(document).ready(function () {
               duration: 3000,
               className: "info",
               style: {
-                background: "linear-gradient(to right, #00b09b, #96c93d)",
+                background: "linear-gradient(to right, #ffc300, #c1121f)",
               },
             }).showToast();
           }

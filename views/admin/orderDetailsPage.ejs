@@ -20,7 +20,7 @@
           >
         </div>
         <div class="card-body text-center">
-          <table class="table table-striped table-hover">
+          <table class="table table-striped table-hover text-start">
             <% if(details){ details.forEach(item => {%>
 
             <tr>
@@ -32,21 +32,39 @@
             </tr>
             <tr>
               <td>Order Date</td>
-              <td><%= item.orderDate %></td>
+              <td>
+                <%= new Date(item.orderDate).getDate() %> <%= new
+                Date(item.orderDate).toLocaleString('default', {month: 'long'});
+                %>,<%= new Date(item.orderDate).getFullYear(); %>
+              </td>
             </tr>
             <tr>
               <td>Order Status</td>
               <td>
-                <div id="updatedStatus"><%= item.orderStatus %></div>
-                <button
-                  type="button"
-                  class="btn btn-primary"
-                  data-bs-toggle="modal"
-                  data-bs-target="#statusChange"
-                >
-                  Change Status
-                </button>
+                <div id="updatedStatus">
+                  <span id="upstatus"> <%= item.orderStatus %> </span>
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#statusChange"
+                  >
+                    Change Status
+                  </button>
+                </div>
               </td>
+            </tr>
+            <tr>
+              <td>Order Total</td>
+              <td>₹ <%= item.grandTotalCost %>.00</td>
+            </tr>
+            <tr>
+              <td>Coupon Applied</td>
+              <td><%= item?.couponId?.name %></td>
+            </tr>
+            <tr>
+              <td>Discount</td>
+              <td>₹ <%= item?.totalAmount -item?.grandTotalCost %></td>
             </tr>
             <tr>
               <td>User Name</td>
@@ -54,22 +72,46 @@
             </tr>
             <tr>
               <td>Delivery Address</td>
-              <td></td>
-            </tr>
-            <!-- <tr>
-              <td>Product Details</td>
               <td>
-                <%# item.cartData[0]._id %>
-                <button
-                  type="button"
-                  class="btn btn-primary"
-                  data-bs-toggle="modal"
-                  data-bs-target="#exampleModal"
-                >
-                  View
-                </button>
+                <%= item?.addressChosen?.addressTitle %><br />
+                <%= item?.addressChosen?.firstName %> <br /><%=
+                item?.addressChosen?.lastName %><br />
+                <%= item?.addressChosen?.addressLine1 %> <br /><%=
+                item?.addressChosen?.addressLine2 %> <br /><%=
+                item?.addressChosen?.state %> <br />Mobile : <%=
+                item?.addressChosen?.phone %>
               </td>
-            </tr> -->
+            </tr>
+            <tr>
+              <td colspan="2">
+                <table class="w-100">
+                  <thead>
+                    <th>Product Image</th>
+                    <th>Product Description</th>
+                    <th>Qty</th>
+                    <th>Total</th>
+                  </thead>
+                  <tbody>
+                    <% item?.cartData.forEach((product)=>{ %>
+                    <tr>
+                      <td>
+                        <img
+                          src="
+                  <%= product.productId.image %>"
+                          width="100"
+                          height="100"
+                        />
+                      </td>
+                      <td><%= product.productId.description %></td>
+                      <td><%= product.productQuantity %> Nos</td>
+                      <td>₹ <%= product.totalCostPerProduct %></td>
+
+                      <%}) %>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
             <% }); } %>
           </table>
         </div>
@@ -166,6 +208,8 @@
   </div>
 </div>
 <script>
+  // Get the select element by its ID
+
   const statsfrm = document.getElementsByName("statuschangefrm");
 
   $(statsfrm).on("submit", (e) => {
@@ -186,7 +230,8 @@
       data: formData,
       success: function (response) {
         $("#btnclose").click();
-        $("#updatedStatus").html(stats);
+        console.log(response);
+        // $("#updatedStatus").text(stats);
         // $("#updatedStatus").load(" #updatedStatus > *");
         if (response.success == true) {
           Swal.fire({
@@ -194,6 +239,8 @@
             icon: "success",
           });
         }
+        $("#upstatus").text(response.val);
+        // $("#updatedStatus").load(" #updatedStatus > *");
       },
       error: function (xhr, status, error) {
         // Handle error response

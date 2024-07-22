@@ -165,7 +165,7 @@ const updt_prod_new = async (req, res, next) => {
     const productData = req.body;
     const filter = { _id: req.body._id };
     delete productData._id;
-    //console.log(req.body);
+    console.log(req.body);
 
     const { error } = validateProduct(productData);
     if (error) {
@@ -196,12 +196,13 @@ const updt_prod_new = async (req, res, next) => {
     newArr.pop();
 
     // }
-    const { name, category, price, stock, description } = req.body;
+    const { name, category, price, offer, stock, description } = req.body;
 
     const data = {
       name,
       description,
       stock,
+      offer,
       price,
       image,
       images: newArr,
@@ -210,7 +211,7 @@ const updt_prod_new = async (req, res, next) => {
 
     // const product = new Product(data);
     // delete product._id;
-    console.log("This product goest to database", data);
+    //console.log("This product goest to database", data);
     // return res.json({ message: "success", detail: data });
 
     const rest = await Product.updateOne(filter, data)
@@ -702,59 +703,60 @@ const insertProdNew = async (req, res, next) => {
     if (error) {
       const errors = error.details.map((detail) => detail.message);
       return res.status(200).json({ message: "failed", errors });
-    }
+    } else {
+      let image;
 
-    let image;
+      image = "http://localhost:3000/uploads/" + req.files[0].filename;
+      let path = "";
+      let newimg = "";
+      req.files.forEach(async (file) => {
+        newimgname = file.filename.replace(".jpg", "");
+        newimg =
+          newimg +
+          "http://localhost:3000/uploads/" +
+          newimgname +
+          "-resized-1024.jpg," +
+          "http://localhost:3000/uploads/" +
+          newimgname +
+          "-resized-400.jpg,";
 
-    image = "http://localhost:3000/uploads/" + req.files[0].filename;
-    let path = "";
-    let newimg = "";
-    req.files.forEach(async (file) => {
-      newimgname = file.filename.replace(".jpg", "");
-      newimg =
-        newimg +
-        "http://localhost:3000/uploads/" +
-        newimgname +
-        "-resized-1024.jpg," +
-        "http://localhost:3000/uploads/" +
-        newimgname +
-        "-resized-400.jpg,";
-
-      await resizeImageNew(file.path, newimgname);
-      await resizeimagefourNew(file.path, newimgname);
-    });
-    let newArr = newimg.split(",");
-    newArr.pop();
-    console.log("Image location for array", newArr);
-    // }
-    const { name, category, price, stock, description } = req.body;
-
-    const data = {
-      name,
-      description,
-      stock,
-      price,
-      image,
-      images: newArr,
-      category,
-    };
-
-    const product = new Product(data);
-
-    console.log("This product goest to database", product);
-
-    const psaved = await product
-      .save()
-      .then((savedDocument) => {
-        // Handle the saved document
-        console.log("Document saved successfully:", savedDocument);
-        return res.json({ message: "success" });
-      })
-      .catch((error) => {
-        // Handle the error
-        console.log("have some errors");
-        return res.json({ message: "failed", error: error });
+        await resizeImageNew(file.path, newimgname);
+        await resizeimagefourNew(file.path, newimgname);
       });
+      let newArr = newimg.split(",");
+      newArr.pop();
+      console.log("Image location for array", newArr);
+      // }
+      const { name, category, offer, price, stock, description } = req.body;
+
+      const data = {
+        name,
+        description,
+        stock,
+        offer,
+        price,
+        image,
+        images: newArr,
+        category,
+      };
+
+      const product = new Product(data);
+
+      console.log("This product goest to database", product);
+
+      const psaved = await product
+        .save()
+        .then((savedDocument) => {
+          // Handle the saved document
+          console.log("Document saved successfully:", savedDocument);
+          return res.json({ message: "success" });
+        })
+        .catch((error) => {
+          // Handle the error
+          console.log("have some errors");
+          return res.json({ message: "failed", error: error });
+        });
+    }
   } catch (error) {
     next(error);
   }

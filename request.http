@@ -7,4 +7,6 @@
 
 # http://localhost:3000/admin/orders/report
 
-http://localhost:3000/profile/order/invoice/668bae3017f02269464405f5
+# http://localhost:3000/profile/order/invoice/668bae3017f02269464405f5
+
+http://localhost:3000/profile/getorders

@@ -11,6 +11,14 @@
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.css"
+    />
   </head>
 
   <body>
@@ -55,64 +63,8 @@
                         <th>Total</th>
                         <th>Status</th>
                         <th>Action</th>
-                        
                       </tr>
                     </thead>
-                    <tbody>
-                      <% if(orderData.length>0){ let count=1;
-                      orderData.forEach(element => { %>
-
-                      <tr
-                        style="font-size: 13px"
-                        data-order-id="<%= element._id %>"
-                      >
-                        <td><%= count %></td>
-                        <td><%= element.orderDateFormatted %></td>
-                        <td><%= element.paymentType %></td>
-                        <td>
-                          <% if(element.grandTotalCost ==null){ %> - <%
-                          }else{%>₹ <%= element.grandTotalCost %> <%}%>
-                        </td>
-                        <td
-                          id="orderStatus"
-                          data-status="<%= element.orderStatus %>"
-                        >
-                          <%= element.orderStatus %>
-                        </td>
-                        <td>
-                         
-                          <div>
-                            <a href="/order/details/<%= element._id %>">
-                            <button
-                              type="button"
-                              class="btn btn-primary btn-sm"
-                              // data-bs-toggle="modal"
-                              // data-bs-target="#viewDetailModal"
-                              data-bs-id="<%= element._id %>"
-                            >
-                              View Details
-                            </button>
-                          </a>
-                          </div>
-                          
-                        </td>
-
-                        <td>
-                         
-                        </td>
-
-                        <td>
-                         
-                        </td>
-                      </tr>
-                      <% count++ }); } else{ %>
-                      <tr>
-                        <td colspan="6">
-                          <p class="text-warning">There are no orders</p>
-                        </td>
-                      </tr>
-                      <% } %>
-                    </tbody>
                   </table>
                 </div>
               </div>
@@ -121,191 +73,70 @@
         </div>
       </div>
     </section>
-    <!-- Modal -->
 
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"
     ></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
+    <!-- <script src="/public/login/js/user-order-fetch.js"></script> -->
     <script>
-      const viewDetail = document.getElementById("viewDetailModal");
-      if (viewDetail) {
-        viewDetail.addEventListener("show.bs.modal", async (event) => {
-          // Button that triggered the modal
-          const button = event.relatedTarget;
-          // Extract info from data-bs-* attributes
-          const id = button.getAttribute("data-bs-id");
+      $(document).ready(async function () {
+        try {
+          // const data = await fetch("http://localhost:3000/profile/getorders", {
+          //   method: "GET",
+          // });
+          // console.log(data);
+          let table = new DataTable("#productTable", {
+            responsive: true,
+            order: [[0, "desc"]],
+          });
 
-          let orderDetails = await getOrderDetails(id);
-          // console.log(orderDetails);
+          const url = "http://localhost:3000/profile/getordersbyuser";
+          axios
+            .get(url)
+            .then((response) => {
+              const responseArray = Object.values(response.data.data);
+              const values = [];
+              responseArray.forEach(function (item) {
+                values.push(item);
+              });
+              console.log(values);
+              if (Array.isArray(values)) {
+                // Clear existing table data
+                table.clear();
 
-          if (!orderDetails) {
-            Swal.fire({
-              icon: "error",
-              title: "Oops...",
-              text: "Something went wrong!",
+                // Add new data to the table
+                values.forEach(function (item) {
+                  console.log(item.orderDate);
+                  table.row
+                    .add([
+                      '<span class="text-center">' + item._id + "</span>",
+                      moment(item.orderDate).format("DD-MM-YYYY"),
+                      item.paymentType,
+
+                      '<span class="text-center"> ₹' +
+                        item.grandTotalCost.toFixed(2) +
+                        "</span>",
+                      item.orderStatus,
+                      `<div><a href="/order/details/${item._id}"><button type="button" class="btn btn-primary btn-sm" data-bs-id="${item._id}"> View Details</button></a></div>`,
+                    ])
+                    .draw();
+                });
+              } else {
+                console.error("Error: Response is not an array");
+              }
+            })
+            .catch(function (error) {
+              console.log(error);
             });
-          } else {
-            //first name
-            const orderNumber = viewDetail.querySelector("#orderNumber");
-            orderNumber.innerHTML = orderDetails.orderNumber; //orderDate
-
-            const orderDate = viewDetail.querySelector("#orderDate");
-            orderDate.innerHTML = orderDetails.orderDate; //payment
-
-            const payment = viewDetail.querySelector("#payment");
-            payment.innerHTML = orderDetails.paymentType; //payment
-
-            const totalamount = viewDetail.querySelector("#totalamount");
-            totalamount.innerHTML = orderDetails.grandTotalCost; //orderStatus
-
-            const orderStatus = viewDetail.querySelector("#orderStatus");
-            orderStatus.innerHTML = orderDetails.orderStatus; //orderStatus
-
-            const orderAddress = viewDetail.querySelector("#orderAddress");
-            const address =
-              orderDetails.addressChosen.addressTitle +
-              ",<br/>" +
-              orderDetails.addressChosen.firstName +
-              ",<br/>" +
-              orderDetails.addressChosen.lastName +
-              ",<br/>" +
-              orderDetails.addressChosen.addressLine1 +
-              ",<br/>" +
-              orderDetails.addressChosen.addressLine2 +
-              ",<br/>" +
-              orderDetails.addressChosen.state +
-              ",<br/>" +
-              orderDetails.addressChosen.phone;
-            orderAddress.innerHTML = address; //orderStatus
-          } //else end bracket
-          // addressTitle
-
-          // If necessary, you could initiate an Ajax request here
-          // and then do the updating in a callback.
-        });
-      }
-
-      async function getOrderDetails(id) {
-        let response = await fetch("/order/getorderdetails/" + id, {
-          method: "GET",
-        });
-        let data = await response.json();
-        return data.data[0];
-      }
-
-      // return order
-
-      async function returnOrder(orderId) {
-        Swal.fire({
-          title: "Are you sure?",
-          text: "You are Returning this order ? ",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#3085d6",
-          cancelButtonColor: "#d33",
-          confirmButtonText: "Yes, Cancel the order",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            fetch("/returnorder/" + orderId, { method: "PUT" }).then((d) => {});
-            $("#productTable").load(" #productTable > *");
-            Swal.fire({
-              title: "Returned!",
-              text: "Your order has been Returned.",
-              icon: "success",
-            });
-          }
-        });
-      }
-
-      // cancel Order
-      async function cancelOrder(orderId) {
-        Swal.fire({
-          title: "Are you sure?",
-          text: "You are cancelling this order ? ",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#3085d6",
-          cancelButtonColor: "#d33",
-          confirmButtonText: "Yes, Cancel the order",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            fetch("/cancelorder/" + orderId, { method: "PUT" }).then((d) => {});
-            /*let cancelBtnElement = document.getElementById('cancelBtn')
-                    let cancelledBtnElement = document.getElementById('597a5bdf082df5a383c94b')
-
-                    cancelBtnElement.style.display = 'none'
-                    cancelledBtnElement.style.display = 'block'*/
-
-            $("#productTable").load(" #productTable > *");
-            Swal.fire({
-              title: "Cancelled!",
-              text: "Your order has been cancelled.",
-              icon: "success",
-            });
-          }
-        });
-      }
-    </script>
-
-    <script>
-      // JavaScript
-      document.addEventListener("DOMContentLoaded", function () {
-        // Get all elements with the "orderStatus" ID
-        const orderStatusElements = document.querySelectorAll("#orderStatus");
-
-        // Loop through each element
-        orderStatusElements.forEach(function (element) {
-          // Get the status value from the data-status attribute
-          const status = element.getAttribute("data-status");
-
-          // Assign a class based on the status value
-          switch (status) {
-            case "Pending":
-              element.classList.add("text-danger"); // Add a class for Pending status
-              break;
-            case "Shipped":
-              element.classList.add("text-warning"); // Add a class for Shipped status
-              break;
-            case "Delivered":
-              element.classList.add("text-success"); // Add a class for Delivered status
-              break;
-            case "Return":
-              element.classList.add("text-danger"); // Add a class for Delivered status
-              break;
-            case "Return Pending":
-              element.classList.add("text-warning"); // Add a class for Delivered status
-              break;
-            case "Cancelled":
-              element.classList.add("text-danger"); // Add a class for Delivered status
-              break;
-            default:
-              // Add a default class for other statuses
-              element.classList.add("text-dark");
-          }
-        });
-      });
-    </script>
-
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        // Get the table element
-        const orderTable = document.getElementById("orderTable");
-
-        // Attach click event listener to table rows
-        orderTable.addEventListener("click", function (event) {
-          // Check if the clicked element is a table row
-          if (event.target.tagName === "TR") {
-            // Retrieve the order ID from the data-order-id attribute
-            const orderId = event.target.dataset.orderId;
-
-            // Redirect to the order details page
-            window.location.href = "/orders/" + orderId;
-          }
-        });
+        } catch (error) {
+          console.log(error);
+        }
       });
     </script>
   </body>

@@ -54,7 +54,13 @@
       <p><%= proddata.description%></p>
     </div>
     <input type="hidden" id="pid" value="<%= proddata._id %>" />
-    <span>Price : ₹<%= proddata.price%></span>
+    <span class=""> -<%= proddata.offer%>%</span>
+    &nbsp;
+    <span>
+      <strike> <p>₹<%= proddata.price%></p></strike>
+    </span>
+    <% let pricedisc = proddata.price * (proddata.offer/100) %>
+    <span> ₹<%= (proddata.price - pricedisc).toFixed(2) %></span>
 
     <div>
       <button class="buy">Buy Now</button>

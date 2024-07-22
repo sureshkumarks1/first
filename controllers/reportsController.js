@@ -16,14 +16,14 @@ const salesReport = async (req, res, next) => {
           $lte: new Date(endDate),
         },
         orderStatus: {
-          $eq: "Placed",
+          $eq: "Delivered",
         },
         grandTotalCost: {
           $gt: 0,
         },
       })
       .populate("userId addressChosen");
-    console.log(salesData);
+    // console.log(salesData);
 
     salesData = salesData.map((v) => {
       // v.orderDateFormatted = formatDate(v.orderDate);
